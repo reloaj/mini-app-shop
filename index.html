@@ -3,41 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Shop</title>
+    <title>Shop v2.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 20px; text-align: center; }
-        button { padding: 20px; font-size: 20px; width: 100%; background: blue; color: white; border: none; border-radius: 10px;}
+        /* КРАСНАЯ КНОПКА - ЧТОБЫ ВИДЕТЬ ОБНОВЛЕНИЕ */
+        button { padding: 20px; font-size: 20px; width: 100%; background: red; color: white; border: none; border-radius: 10px;}
     </style>
 </head>
 <body>
-    <h1>Тест связи</h1>
-    <button onclick="buy()">КУПИТЬ (ТЕСТ)</button>
+    <h1>ВЕРСИЯ 2.0</h1>
+    <p>Если кнопка красная - сайт обновился.</p>
+    <button onclick="buy()">КУПИТЬ (RED)</button>
 
     <script>
-        // 1. Проверка загрузки
-        alert("Сайт загрузился! Если ты это видишь, JS работает.");
-
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         function buy() {
-            // 2. Проверка нажатия
-            alert("Кнопка нажата! Пытаюсь отправить данные...");
-
             const data = JSON.stringify({
                 title: "Супер Товар",
                 price: 1000,
-                desc: "Тест"
+                desc: "Тест v2"
             });
-
-            try {
-                // 3. Самый важный момент
-                tg.sendData(data);
-                alert("Команда sendData выполнена! Теперь закрой окно руками.");
-            } catch (e) {
-                alert("ОШИБКА: " + e); // Если что-то сломалось, мы увидим тут
-            }
+            tg.sendData(data);
         }
     </script>
 </body>
