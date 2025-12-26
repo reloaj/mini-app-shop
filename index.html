@@ -6,6 +6,25 @@
     <title>Flower Shop Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* --- ЭКРАН ЗАГРУЗКИ --- */
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-color);
+    z-index: 9999; /* Самый верхний слой */
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.5s;
+}
+.loader-spinner {
+    width: 50px; height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--accent-color); /* Розовый */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         :root {
             --bg-color: var(--tg-theme-bg-color, #fff);
             --text-color: var(--tg-theme-text-color, #000);
@@ -148,6 +167,14 @@
     </style>
 </head>
 <body>
+    <!-- ЭКРАН ЗАГРУЗКИ -->
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+        <div style="font-weight: bold; color: #888;">Загружаем красоту...</div>
+    </div>
+    
+    <!-- Дальше идет твой header, страницы и т.д. -->
+    
 
     <header>
         <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" class="logo">
@@ -458,6 +485,24 @@
         renderGrid(products, 'products-container');
         updateBadge();
         loadProfile();
+
+         // 👇👇👇 ВСТАВЛЯЙ КОД НИЖЕ, ВОТ СЮДА 👇👇👇
+
+        window.onload = function() {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                // Делаем прозрачным
+                if(preloader) {
+                    preloader.style.opacity = '0';
+                    // Через полсекунды удаляем совсем
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 500);
+                }
+            }, 500);
+        };
+
+        // 👆👆👆 КОНЕЦ ВСТАВКИ 👆👆👆
 
     </script>
 </body>
