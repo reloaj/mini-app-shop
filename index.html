@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            background-color: var(--tg-theme-bg-color, #fff); 
+            color: var(--tg-theme-text-color, #000); 
+            font-family: sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; 
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 20px; border-radius: 15px; text-align: center; width: 80%;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none; padding: 15px 30px; border-radius: 10px; font-size: 16px; margin-top: 15px; cursor: pointer; width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Супер Товар</h2>
+        <p>Описание твоего товара.</p>
+        <h3>1000 RUB</h3>
+        <button onclick="buy()">Купить</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function buy() {
+            // Данные о товаре, которые уйдут боту
+            const data = JSON.stringify({
+                title: "Супер Товар",
+                price: 1000,
+                desc: "Тестовая покупка"
+            });
+            tg.sendData(data); // Отправляем данные в бота
+        }
+    </script>
+</body>
+</html>
