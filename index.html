@@ -2,60 +2,194 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotton Flowerс</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini App Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             background-color: var(--tg-theme-bg-color, #fff);
             color: var(--tg-theme-text-color, #000);
             font-family: sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; margin: 0;
+            margin: 0;
+            padding: 10px;
+            padding-bottom: 80px; /* Чтобы кнопка не перекрывала контент */
         }
-        .card {
-            padding: 20px;
-            border-radius: 15px;
+
+        /* СЕТКА ТОВАРОВ (2 колонки) */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* КАРТОЧКА ТОВАРА */
+        .item {
             background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 12px;
+            padding: 10px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        button {
-            margin-top: 20px;
-            padding: 15px 40px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
+
+        .item img {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .title { font-weight: bold; font-size: 14px; margin: 5px 0; }
+        .price { color: var(--tg-theme-hint-color, #888); font-size: 13px; margin-bottom: 8px;}
+
+        /* КНОПКИ */
+        .btn {
             background-color: var(--tg-theme-button-color, #2481cc);
             color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 12px;
             cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn-add { background-color: var(--tg-theme-button-color, #2481cc); }
+        .btn-desc { background-color: transparent; color: var(--tg-theme-link-color, #2481cc); margin-top: 5px; }
+
+        /* ВСПЛЫВАШКА С ОПИСАНИЕМ */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .popup-content {
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 20px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 24px; cursor: pointer; color: #888;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Корзинка Бусинка</h1>
-        <p>Сухоцветы.</p>
-        <h2>2999 RUB</h2>
-        <button onclick="buy()">КУПИТЬ СЕЙЧАС</button>
+
+    <!-- СЮДА JS ВСТАВИТ ТОВАРЫ -->
+    <div id="list" class="grid"></div>
+
+    <!-- ОКНО ОПИСАНИЯ ТОВАРА -->
+    <div id="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup()">&times;</span>
+            <h2 id="p-title"></h2>
+            <p id="p-desc"></p>
+            <h3 id="p-price"></h3>
+            <button class="btn" id="p-btn">Добавить в корзину</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // На весь экран
+        tg.expand();
 
-        function buy() {
-            const data = JSON.stringify({
-                title: "Корзинка Бусинка",
-                price: 2999,
-                desc: "Размер 25*25, Хлопок, стабилизированая роза"
-            });
+        // --- БАЗА ДАННЫХ ТОВАРОВ (10 шт) ---
+        const products = [
+            {id: 1, title: "Футболка White", price: 1000, img: "👕", desc: "Классическая белая футболка, 100% хлопок."},
+            {id: 2, title: "Джинсы Slim", price: 2500, img: "👖", desc: "Узкие джинсы, синий деним."},
+            {id: 3, title: "Кроссовки Run", price: 5000, img: "👟", desc: "Беговые кроссовки, мягкая подошва."},
+            {id: 4, title: "Кепка NY", price: 800, img: "🧢", desc: "Стильная кепка с вышивкой."},
+            {id: 5, title: "Часы Smart", price: 3000, img: "⌚", desc: "Считают шаги и пульс."},
+            {id: 6, title: "Рюкзак City", price: 1500, img: "🎒", desc: "Вмещает ноутбук 15 дюймов."},
+            {id: 7, title: "Очки Sun", price: 1200, img: "🕶️", desc: "Защита от ультрафиолета."},
+            {id: 8, title: "Наушники Bass", price: 2000, img: "🎧", desc: "Глубокий бас и шумоподавление."},
+            {id: 9, title: "Чехол Phone", price: 500, img: "📱", desc: "Силиконовый прозрачный чехол."},
+            {id: 10, title: "Носки (3 пары)", price: 300, img: "🧦", desc: "Набор носков на каждый день."}
+        ];
 
-            // Отправляем данные боту
-            tg.sendData(data);
+        // Корзина (храним тут список выбранного)
+        let cart = [];
+
+        // --- ФУНКЦИЯ ОТРИСОВКИ ТОВАРОВ ---
+        const list = document.getElementById('list');
+        products.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
+                <div style="font-size: 40px;">${item.img}</div>
+                <div class="title">${item.title}</div>
+                <div class="price">${item.price} ₽</div>
+                <button class="btn btn-add" onclick="addToCart(${item.id})">В корзину</button>
+                <button class="btn btn-desc" onclick="openPopup(${item.id})">Подробнее</button>
+            `;
+            list.appendChild(div);
+        });
+
+        // --- ЛОГИКА КОРЗИНЫ ---
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            cart.push(item);
+            updateMainButton();
             
-            // Закрываем окно (чтобы увидеть счет)
-            // Telegram сам закроет окно, когда получит данные через sendData
+            // Вибрация (приятный тактильный отклик)
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function updateMainButton() {
+            if (cart.length === 0) {
+                tg.MainButton.hide();
+            } else {
+                // Считаем общую сумму
+                const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+                
+                tg.MainButton.setText(`Оплатить ${totalPrice} ₽ (${cart.length} шт)`);
+                tg.MainButton.show();
+            }
+        }
+
+        // --- ЛОГИКА ОПЛАТЫ (При нажатии на главную кнопку) ---
+        tg.MainButton.onClick(function() {
+            // Формируем данные для бота
+            const data = JSON.stringify({
+                items: cart,
+                total: cart.reduce((sum, item) => sum + item.price, 0)
+            });
+            
+            // Отправляем и закрываем
+            tg.sendData(data);
+        });
+
+        // --- ЛОГИКА ПОПАПА (ОПИСАНИЕ) ---
+        const popup = document.getElementById('popup');
+        
+        function openPopup(id) {
+            const item = products.find(p => p.id === id);
+            document.getElementById('p-title').innerText = item.title;
+            document.getElementById('p-desc').innerText = item.desc;
+            document.getElementById('p-price').innerText = item.price + " ₽";
+            
+            // Настраиваем кнопку внутри попапа
+            const btn = document.getElementById('p-btn');
+            btn.onclick = function() {
+                addToCart(id);
+                closePopup();
+            };
+            
+            popup.style.display = 'flex';
+        }
+
+        function closePopup() {
+            popup.style.display = 'none';
         }
     </script>
 </body>
