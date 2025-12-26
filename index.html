@@ -31,18 +31,31 @@
         <button onclick="buy()">Купить</button>
     </div>
 
-    <script>
+        <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Раскрываем на весь экран
 
         function buy() {
-            // Данные о товаре, которые уйдут боту
+            // 1. Сначала проверим, видит ли нас Телеграм
+            if (!tg.initDataUnsafe || !tg.initDataUnsafe.user) {
+                alert("Ошибка: Запустите приложение внутри Telegram!");
+                return;
+            }
+
             const data = JSON.stringify({
                 title: "Супер Товар",
                 price: 1000,
                 desc: "Тестовая покупка"
             });
-            tg.sendData(data); // Отправляем данные в бота
+
+            // 2. Пытаемся отправить данные
+            try {
+                tg.sendData(data); 
+                // 3. Закрываем окно, чтобы юзер увидел счет в чате
+                tg.close();
+            } catch (e) {
+                alert("Ошибка отправки: " + e);
+            }
         }
     </script>
 </body>
