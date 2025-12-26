@@ -3,30 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop v2.0</title>
+    <title>Shop Debug 3.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; }
-        /* КРАСНАЯ КНОПКА - ЧТОБЫ ВИДЕТЬ ОБНОВЛЕНИЕ */
-        button { padding: 20px; font-size: 20px; width: 100%; background: red; color: white; border: none; border-radius: 10px;}
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f5f5f5; }
+        button { 
+            padding: 20px; font-size: 18px; width: 100%; 
+            background: #28a745; color: white; 
+            border: none; border-radius: 10px; margin-top: 20px;
+        }
+        #log { margin-top: 20px; color: red; font-size: 14px; }
     </style>
 </head>
 <body>
-    <h1>ВЕРСИЯ 2.0</h1>
-    <p>Если кнопка красная - сайт обновился.</p>
-    <button onclick="buy()">КУПИТЬ (RED)</button>
+    <h1>ПРОВЕРКА СВЯЗИ</h1>
+    <p>Нажми кнопку. Если вылезет ошибка — мы её увидим.</p>
+    <button onclick="buy()">🚀 ОТПРАВИТЬ ЗАКАЗ</button>
+    <div id="log"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         function buy() {
+            // Проверка 1: Видит ли нас Телеграм?
+            if (!tg.initDataUnsafe || !tg.initDataUnsafe.user) {
+                alert("⛔ ОШИБКА: Сайт открыт НЕ в Telegram (или данные не подгрузились).");
+                return;
+            }
+
             const data = JSON.stringify({
-                title: "Супер Товар",
+                title: "Товар 3.0",
                 price: 1000,
-                desc: "Тест v2"
+                desc: "Финальный тест"
             });
-            tg.sendData(data);
+
+            try {
+                // Проверка 2: Пытаемся отправить
+                tg.sendData(data);
+                alert("✅ УСПЕХ: Команда sendData ушла! Теперь закрой окно крестиком и смотри в терминал.");
+            } catch (e) {
+                // Если ошибка - покажем её
+                alert("❌ СБОЙ sendData: " + e);
+                document.getElementById('log').innerText = e;
+            }
         }
     </script>
 </body>
