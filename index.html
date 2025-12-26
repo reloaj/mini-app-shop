@@ -3,507 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop Ultimate</title>
+    <title>Flower Fast</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* --- ЭКРАН ЗАГРУЗКИ --- */
-#preloader {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg-color);
-    z-index: 9999; /* Самый верхний слой */
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    transition: opacity 0.5s;
-}
-.loader-spinner {
-    width: 50px; height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--accent-color); /* Розовый */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         :root {
-            --bg-color: var(--tg-theme-bg-color, #fff);
-            --text-color: var(--tg-theme-text-color, #000);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            --accent-color: #e91e63; /* Основной цвет (Розовый) */
-            --fav-color: #ff3b30;     /* Цвет сердечка */
-            --nav-height: 60px;
+            --bg: var(--tg-theme-bg-color, #fff);
+            --text: var(--tg-theme-text-color, #000);
+            --block: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            --accent: #e91e63; /* Розовый */
+            --green: #4caf50;
+            --nav-h: 60px;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0;
-            padding-bottom: calc(var(--nav-height) + 20px);
+            background: var(--bg); color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0; padding-bottom: 80px;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- ШАПКА --- */
+        /* ШАПКА */
         header {
-            position: sticky; top: 0; z-index: 50;
-            background: var(--bg-color);
-            padding: 10px 15px;
+            position: sticky; top: 0; background: var(--bg); z-index: 10;
+            padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; align-items: center; gap: 10px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .logo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .brand-name { font-weight: 700; font-size: 18px; }
-
-        /* --- СТРАНИЦЫ --- */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- ПОИСК --- */
-        .search-bar {
-            width: 100%; padding: 12px; border-radius: 12px;
-            border: 1px solid #ddd; background: var(--secondary-bg);
-            color: var(--text-color); font-size: 16px; outline: none;
-            margin-bottom: 20px; box-sizing: border-box;
+        .logo-circle {
+            width: 35px; height: 35px; background: var(--accent);
+            border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-        .search-bar:focus { border-color: var(--accent-color); }
+        .brand { font-weight: 800; font-size: 18px; }
 
-        /* --- СЕТКА ТОВАРОВ --- */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        .card {
-            background: var(--secondary-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            padding-bottom: 10px;
+        /* ПОИСК */
+        .search-wrap { padding: 10px 15px; }
+        .search-input {
+            width: 100%; padding: 10px; border-radius: 10px; border: none;
+            background: var(--block); color: var(--text); font-size: 16px; outline: none;
         }
 
-        /* ИКОНКА ИЗБРАННОГО (СЕРДЦЕ) */
-        .fav-icon-overlay {
+        /* СЕТКА */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        .card { background: var(--block); border-radius: 12px; overflow: hidden; position: relative; }
+
+        /* ОФЛАЙН КАРТИНКА (ГРАДИЕНТ) */
+        .img-placeholder {
+            height: 140px; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 60px;
+        }
+
+        /* КНОПКИ НА КАРТОЧКЕ */
+        .fav-btn {
             position: absolute; top: 8px; right: 8px;
-            width: 30px; height: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; z-index: 20; cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 30px; height: 30px; background: rgba(255,255,255,0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .fav-icon-overlay.active { color: var(--fav-color); }
-        .fav-icon-overlay:not(.active) { color: #ccc; }
+        .cart-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            width: 36px; height: 36px; background: var(--accent); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
+        }
 
-        /* СЛАЙДЕР ФОТО */
-        .slider-wrapper { position: relative; width: 100%; height: 160px; overflow: hidden; }
-        .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
-        .slider::-webkit-scrollbar { display: none; }
-        .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* КАРТОЧКА ИНФО */
-        .card-body { padding: 8px; position: relative; }
-        .card-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;}
-        .card-price { font-weight: 700; font-size: 15px; color: var(--text-color); }
-        
-        /* КРУГЛАЯ КНОПКА КОРЗИНЫ */
-        .btn-cart-circle {
-            position: absolute;
-            bottom: 8px; right: 8px;
-            width: 36px; height: 36px;
-            background: var(--accent-color);
-            color: white;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
-            cursor: pointer;
-            z-index: 10;
-        }
-        .btn-cart-circle:active { transform: scale(0.9); }
+        .info { padding: 10px; }
+        .name { font-weight: 600; font-size: 14px; margin-bottom: 5px; height: 34px; overflow: hidden; }
+        .price { font-weight: 800; font-size: 15px; }
 
-        /* --- НИЖНЕЕ МЕНЮ --- */
-        .tab-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height);
-            background: var(--bg-color); border-top: 1px solid rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom);
+        /* МОДАЛКА */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 100; overflow-y: auto;
         }
-        .tab-btn {
-            background: none; border: none; color: #aaa;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 9px; font-weight: 500; width: 20%;
+        .modal-img { height: 300px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+        .modal-content { padding: 20px; }
+        .close-btn {
+            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
+            background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
         }
-        .tab-btn.active { color: var(--accent-color); }
-        .tab-icon { font-size: 22px; margin-bottom: 2px; }
+        .big-btn {
+            width: 100%; padding: 15px; background: var(--accent); color: white;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 20px;
+        }
+
+        /* МЕНЮ */
+        nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+            background: var(--bg); border-top: 1px solid #eee;
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; color: #999; background: none; border: none;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; margin-bottom: 3px; }
         .badge {
-            position: absolute; top: 2px; margin-left: 14px;
-            background: red; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;
+            position: absolute; top: 5px; margin-left: 15px; background: red; color: white;
+            font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;
         }
 
-        /* --- КОРЗИНА --- */
-        .list-item { display: flex; gap: 10px; background: var(--secondary-bg); padding: 10px; border-radius: 10px; margin-bottom: 10px; position: relative; }
-        .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
-        .list-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .list-remove { position: absolute; top: 10px; right: 10px; color: #ff3b30; font-size: 20px; cursor: pointer; }
-
-        /* --- ПРОФИЛЬ --- */
-        .profile-header { background: var(--secondary-bg); padding: 30px 20px; border-radius: 20px; text-align: center; margin-bottom: 20px;}
-        .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .profile-name { font-size: 20px; font-weight: 800; }
+        /* СТРАНИЦЫ */
+        .page { display: none; animation: fade 0.2s; }
+        .page.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
         
-        /* --- МОДАЛЬНОЕ ОКНО --- */
-        #product-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; overflow-y: auto; flex-direction: column; }
-        .close-circle { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 210; }
-        .detail-slider { width: 100%; height: 380px; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
-        .detail-slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
-        .detail-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .detail-body { padding: 20px; padding-bottom: 80px; }
-        .detail-title { font-size: 24px; font-weight: 800; margin-bottom: 5px;}
-        .detail-price { font-size: 22px; color: var(--accent-color); font-weight: 700; margin-bottom: 20px; }
-        
-        .sticky-btn { position: sticky; bottom: 20px; padding: 0 20px; display: flex; gap: 10px; }
-        .btn-big { flex-grow: 1; padding: 15px; font-size: 16px; background: var(--accent-color); color: white; border: none; border-radius: 12px; font-weight: bold; box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3); }
-        .btn-share { width: 50px; background: var(--secondary-bg); color: var(--text-color); border-radius: 12px; border: none; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        /* КОРЗИНА СПИСОК */
+        .cart-row { display: flex; align-items: center; gap: 10px; background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 10px; }
+        .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
     </style>
 </head>
 <body>
-    <!-- ЭКРАН ЗАГРУЗКИ -->
-    <div id="preloader">
-        <div class="loader-spinner"></div>
-        <div style="font-weight: bold; color: #888;">Загружаем красоту...</div>
-    </div>
-    
-    <!-- Дальше идет твой header, страницы и т.д. -->
-    
 
     <header>
-        <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" class="logo">
-        <div class="brand-name">Flower Boutique</div>
+        <div class="logo-circle">🌸</div>
+        <div class="brand">Flower Shop</div>
     </header>
 
-    <!-- 1. КАТАЛОГ -->
-    <div id="page-catalog" class="page active">
-        <div class="grid" id="products-container"></div>
-    </div>
-
-    <!-- 2. ПОИСК (ВМЕСТО ИСТОРИИ) -->
-    <div id="page-search" class="page">
-        <h2>Поиск цветов 🔍</h2>
-        <input type="text" class="search-bar" id="search-input" placeholder="Название цветка..." oninput="searchProducts()">
-        <div class="grid" id="search-results"></div>
-        <p id="search-empty" style="color: #888; text-align: center; display: none;">Ничего не найдено</p>
-    </div>
-
-    <!-- 3. КОРЗИНА -->
-    <div id="page-cart" class="page">
-        <h2>Корзина</h2>
-        <div id="cart-list">Пусто</div>
-        <div style="text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px;">
-            Итого: <span id="cart-total">0</span> ₽
+    <!-- 1. ГЛАВНАЯ -->
+    <div id="p-home" class="page active">
+        <div class="search-wrap">
+            <input type="text" class="search-input" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
         </div>
-        <button class="btn-big" style="width: 100%; margin-top: 20px;" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>
+        <div class="grid" id="grid"></div>
     </div>
 
-    <!-- 4. ИЗБРАННОЕ -->
-    <div id="page-fav" class="page">
-        <h2>Избранное ❤️</h2>
-        <div class="grid" id="fav-container"></div>
-        <p id="fav-empty" style="color: #888; display:none">Здесь будут ваши любимые цветы.</p>
-    </div>
-
-    <!-- 5. ПРОФИЛЬ -->
-    <div id="page-profile" class="page">
-        <div class="profile-header">
-            <!-- ФОТО ИЗ ТГ -->
-            <img src="" id="user-ava" class="profile-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
-            <div class="profile-name" id="user-name">Гость</div>
-            <div style="color: #888; font-size: 14px; margin-top: 5px;">Любитель цветов</div>
+    <!-- 2. КОРЗИНА -->
+    <div id="p-cart" class="page">
+        <h2 style="padding: 0 15px;">Корзина</h2>
+        <div id="cart-items"></div>
+        <div style="padding: 15px; text-align: right; font-weight: bold; font-size: 18px;">
+            Итого: <span id="total-price">0</span> ₽
         </div>
-        
-        <div style="background: var(--secondary-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px;">
-            📦 <b>Мои заказы</b> <span style="float: right;">></span>
-        </div>
-        <div style="background: var(--secondary-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px;">
-            💬 <b>Поддержка</b> <span style="float: right;">></span>
+        <div style="padding: 15px;">
+            <button class="big-btn" onclick="checkout()">ОФОРМИТЬ</button>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО (ДЕТАЛИ) -->
-    <div id="product-modal">
-        <div class="close-circle" onclick="closeModal()">×</div>
-        <div class="detail-slider" id="modal-slider"></div>
-        <div class="detail-body">
-            <div class="detail-title" id="modal-title"></div>
-            <div class="detail-price" id="modal-price"></div>
-            
-            <h3 style="margin-bottom: 5px;">Состав</h3>
-            <p id="modal-comp" style="margin-bottom: 15px; color: #555;"></p>
-            
-            <h3 style="margin-bottom: 5px;">Описание</h3>
-            <p id="modal-desc" style="color: #555; line-height: 1.5;"></p>
+    <!-- 3. ИЗБРАННОЕ -->
+    <div id="p-fav" class="page">
+        <h2 style="padding: 0 15px;">Избранное ❤️</h2>
+        <div class="grid" id="fav-grid"></div>
+        <p id="fav-empty" style="text-align:center; color:#999; display:none">Пусто</p>
+    </div>
+
+    <!-- 4. ПРОФИЛЬ -->
+    <div id="p-prof" class="page">
+        <div style="text-align: center; padding: 30px;">
+            <div style="width: 80px; height: 80px; background: #eee; border-radius: 50%; margin: 0 auto; display:flex; align-items:center; justify-content:center; font-size:40px;" id="u-ava">👤</div>
+            <h2 id="u-name" style="margin-top: 10px;">Гость</h2>
         </div>
-        <div class="sticky-btn">
-            <button class="btn-share" onclick="shareProduct()">📤</button>
-            <button class="btn-big" id="modal-add-btn">В корзину</button>
+        <div style="padding: 0 15px;">
+            <div class="cart-row">📞 Поддержка</div>
+            <div class="cart-row">⚙️ Настройки</div>
         </div>
     </div>
 
-    <!-- НИЖНЕЕ МЕНЮ -->
-    <nav class="tab-bar">
-        <button class="tab-btn active" onclick="openTab('catalog', this)">
-            <div class="tab-icon">🌺</div>Каталог
+    <!-- МОДАЛКА -->
+    <div id="modal">
+        <div class="close-btn" onclick="closeModal()">×</div>
+        <div class="modal-img" id="m-img"></div>
+        <div class="modal-content">
+            <h1 id="m-title" style="margin: 0;"></h1>
+            <div id="m-price" style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 10px 0;"></div>
+            <p id="m-desc" style="line-height: 1.5; color: #555;"></p>
+            <button class="big-btn" onclick="addCurrentToCart()">В корзину</button>
+        </div>
+    </div>
+
+    <!-- МЕНЮ -->
+    <nav>
+        <button class="nav-item active" onclick="go('home', this)"><span class="nav-icon">🏠</span>Каталог</button>
+        <button class="nav-item" style="position:relative" onclick="go('cart', this)">
+            <span class="badge" id="badge">0</span>
+            <span class="nav-icon">🛒</span>Корзина
         </button>
-        <button class="tab-btn" onclick="openTab('search', this)">
-            <div class="tab-icon">🔍</div>Поиск
-        </button>
-        <button class="tab-btn" style="position: relative;" onclick="openTab('cart', this)">
-            <span class="badge" id="cart-badge">0</span>
-            <div class="tab-icon">🛒</div>Корзина
-        </button>
-        <button class="tab-btn" onclick="openTab('fav', this)">
-            <div class="tab-icon">❤️</div>Избранное
-        </button>
-        <button class="tab-btn" onclick="openTab('profile', this)">
-            <div class="tab-icon">👤</div>Профиль
-        </button>
+        <button class="nav-item" onclick="go('fav', this)"><span class="nav-icon">❤️</span>Избранное</button>
+        <button class="nav-item" onclick="go('prof', this)"><span class="nav-icon">👤</span>Профиль</button>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // --- БАЗА ДАННЫХ ---
-        const products = [
-            { id: 1, name: "Букет 'Нежность'", price: 3500, comp: "Розы, Эвкалипт", desc: "Самый популярный букет для первого свидания.", images: ["https://images.unsplash.com/photo-1587575494201-11fe74d90d38?w=400", "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400"] },
-            { id: 2, name: "101 Красная Роза", price: 15000, comp: "Розы Гран При (60см)", desc: "Классика, которая растопит любое сердце.", images: ["https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400", "https://images.unsplash.com/photo-1559563362-c667ba5f5480?w=400"] },
-            { id: 3, name: "Тюльпаны Микс", price: 2500, comp: "15 тюльпанов", desc: "Яркие весенние цветы разных оттенков.", images: ["https://images.unsplash.com/photo-1520763185298-1b434c919102?w=400", "https://images.unsplash.com/photo-1586944686443-bd287c4d5d4b?w=400"] },
-            { id: 4, name: "Пионы Сара Бернар", price: 4500, comp: "Пионы (5 шт)", desc: "Крупные ароматные бутоны.", images: ["https://images.unsplash.com/photo-1563241527-300027e99740?w=400", "https://images.unsplash.com/photo-1554631221-f9603e6808be?w=400"] },
-            { id: 5, name: "Шляпная коробка", price: 5000, comp: "Микс цветов", desc: "Удобно и стильно. Ваза не нужна.", images: ["https://images.unsplash.com/photo-1585220177021-d107293ebc56?w=400", "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400"] },
-            { id: 6, name: "Лаванда", price: 1500, comp: "Сухоцветы", desc: "Аромат Прованса у вас дома.", images: ["https://images.unsplash.com/photo-1498757581981-8ddb3c0b9b07?w=400", "https://images.unsplash.com/photo-1595123550441-d377e017de6a?w=400"] }
+        // --- БЫСТРАЯ БАЗА (ОФЛАЙН КАРТИНКИ - CSS ГРАДИЕНТЫ) ---
+        // bg: цвет фона карточки
+        // icon: эмодзи цветка
+        const db = [
+            { id: 1, name: "Букет 'Нежность'", price: 3500, desc: "Розы и эвкалипт. Очень стойкие.", icon: "💐", bg: "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)" },
+            { id: 2, name: "101 Роза", price: 15000, desc: "Огромный букет красных роз.", icon: "🌹", bg: "linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)" },
+            { id: 3, name: "Тюльпаны Микс", price: 2500, desc: "Яркие весенние цветы.", icon: "🌷", bg: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)" },
+            { id: 4, name: "Пионы", price: 4500, desc: "Крупные розовые пионы.", icon: "🌺", bg: "linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)" },
+            { id: 5, name: "Подсолнухи", price: 3000, desc: "Солнечное настроение.", icon: "🌻", bg: "linear-gradient(to top, #fdcbf1 0%, #e6dee9 100%)" },
+            { id: 6, name: "Лаванда", price: 1500, desc: "Ароматный сухоцвет.", icon: "🌾", bg: "linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)" },
+            { id: 7, name: "Ромашки", price: 2000, desc: "Полевые цветы.", icon: "🌼", bg: "linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)" },
+            { id: 8, name: "Сакура", price: 4000, desc: "Ветка цветущей вишни.", icon: "🌸", bg: "linear-gradient(to top, #dad4ec 0%, #dad4ec 1%, #f3e7e9 100%)" }
         ];
 
-        // ЗАГРУЗКА ДАННЫХ ИЗ ПАМЯТИ
-        let cart = JSON.parse(localStorage.getItem('cart_v1')) || [];
-        let favorites = JSON.parse(localStorage.getItem('favs_v1')) || [];
-        
-        // Переменная для текущего открытого товара (для кнопки Поделиться)
-        let currentModalProduct = null;
+        let cart = JSON.parse(localStorage.getItem('cart_v2')) || [];
+        let favs = JSON.parse(localStorage.getItem('favs_v2')) || [];
+        let currentId = null;
 
-        // --- ГЕНЕРАЦИЯ КАРТОЧКИ ---
-        function createCardHTML(p) {
-            let slides = '';
-            p.images.forEach(img => slides += `<div class="slide"><img src="${img}"></div>`);
-
-            const isFav = favorites.includes(p.id) ? 'active' : '';
-            const heartIcon = isFav ? '❤️' : '🤍';
-
-            // Обрати внимание: Клик по слайдеру (фото) открывает модальное окно
-            // Кнопка корзины - это кружок справа внизу
+        // ОТРИСОВКА КАРТОЧКИ
+        function drawCard(p) {
+            const isFav = favs.includes(p.id) ? 'active' : '';
+            const heart = isFav ? '❤️' : '🤍';
             return `
                 <div class="card">
-                    <div class="fav-icon-overlay ${isFav}" onclick="toggleFav(${p.id}, this, event)">${heartIcon}</div>
-                    
-                    <div class="slider-wrapper" onclick="openModal(${p.id})">
-                        <div class="slider">${slides}</div>
+                    <div class="fav-btn" onclick="toggleFav(${p.id}, event)">${heart}</div>
+                    <div class="img-placeholder" style="background: ${p.bg}" onclick="openModal(${p.id})">${p.icon}</div>
+                    <div class="info">
+                        <div class="name" onclick="openModal(${p.id})">${p.name}</div>
+                        <div class="price">${p.price} ₽</div>
                     </div>
-                    
-                    <div class="card-body">
-                        <div class="card-title" onclick="openModal(${p.id})">${p.name}</div>
-                        <div class="card-price">${p.price} ₽</div>
-                    </div>
-
-                    <div class="btn-cart-circle" onclick="addToCart(${p.id}, event)">🛒</div>
+                    <div class="cart-btn" onclick="add(${p.id}, event)">+</div>
                 </div>
             `;
         }
 
-        function renderGrid(items, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            items.forEach(p => {
-                const div = document.createElement('div');
-                div.innerHTML = createCardHTML(p);
-                container.appendChild(div.firstElementChild); // Вставляем только внутренний div
-            });
+        // ГЛАВНАЯ ОТРИСОВКА
+        function render(list = db, containerId = 'grid') {
+            document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join('');
         }
 
-        // --- ПОИСК ---
-        function searchProducts() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const found = products.filter(p => p.name.toLowerCase().includes(query));
-            
-            renderGrid(found, 'search-results');
-            
-            document.getElementById('search-empty').style.display = found.length === 0 ? 'block' : 'none';
+        // ПОИСК
+        function doSearch(val) {
+            const found = db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()));
+            render(found);
         }
 
-        // --- КОРЗИНА С СОХРАНЕНИЕМ ---
-        function addToCart(id, event) {
-            if(event) event.stopPropagation(); // Чтобы не открылся модал
-            
-            const item = products.find(p => p.id === id);
-            cart.push(item);
-            saveData(); // СОХРАНЯЕМ!
-            
-            tg.HapticFeedback.impactOccurred('light');
-            updateBadge();
-            
-            tg.showPopup({ title: 'Добавлено', message: 'Товар в корзине 🛒', buttons: [{type: 'ok'}] });
-        }
-
-        function saveData() {
-            localStorage.setItem('cart_v1', JSON.stringify(cart));
-            localStorage.setItem('favs_v1', JSON.stringify(favorites));
-        }
-
-        function updateBadge() {
-            const badge = document.getElementById('cart-badge');
-            badge.style.display = cart.length > 0 ? 'block' : 'none';
-            badge.innerText = cart.length;
-        }
-
-        function renderCart() {
-            const list = document.getElementById('cart-list');
-            list.innerHTML = '';
-            let total = 0;
-            if(cart.length === 0) {
-                list.innerHTML = '<p style="text-align:center; margin-top:30px; color:#888">Корзина пуста 🛒</p>';
-            } else {
-                cart.forEach((item, idx) => {
-                    total += item.price;
-                    list.innerHTML += `
-                        <div class="list-item">
-                            <img src="${item.images[0]}" class="list-img">
-                            <div class="list-info"><b>${item.name}</b><br>${item.price} ₽</div>
-                            <div class="list-remove" onclick="removeCart(${idx})">×</div>
-                        </div>`;
-                });
-            }
-            document.getElementById('cart-total').innerText = total;
-        }
-
-        function removeCart(idx) { 
-            cart.splice(idx, 1); 
-            saveData(); // СОХРАНЯЕМ ПОСЛЕ УДАЛЕНИЯ
-            renderCart(); 
-            updateBadge(); 
-        }
-
-        // --- ИЗБРАННОЕ ---
-        function toggleFav(id, btn, event) {
-            event.stopPropagation();
-            const index = favorites.indexOf(id);
-            if (index === -1) {
-                favorites.push(id);
-                btn.classList.add('active'); btn.innerText = '❤️';
-                tg.HapticFeedback.impactOccurred('medium');
-            } else {
-                favorites.splice(index, 1);
-                btn.classList.remove('active'); btn.innerText = '🤍';
-                tg.HapticFeedback.impactOccurred('light');
-            }
-            saveData();
-            if(document.getElementById('page-fav').classList.contains('active')) renderFavPage();
-        }
-
-        function renderFavPage() {
-            const container = document.getElementById('fav-container');
-            container.innerHTML = '';
-            const favItems = products.filter(p => favorites.includes(p.id));
-            
-            if(favItems.length === 0) {
-                document.getElementById('fav-empty').style.display = 'block';
-            } else {
-                document.getElementById('fav-empty').style.display = 'none';
-                renderGrid(favItems, 'fav-container');
-            }
-        }
-
-        // --- МОДАЛЬНОЕ ОКНО ---
+        // МОДАЛКА
         function openModal(id) {
-            const p = products.find(i => i.id === id);
-            currentModalProduct = p; // Запоминаем для Share
+            currentId = id;
+            const p = db.find(x => x.id === id);
+            document.getElementById('m-img').innerText = p.icon;
+            document.getElementById('m-img').style.background = p.bg;
+            document.getElementById('m-title').innerText = p.name;
+            document.getElementById('m-price').innerText = p.price + ' ₽';
+            document.getElementById('m-desc').innerText = p.desc;
+            document.getElementById('modal').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function addCurrentToCart() { add(currentId); closeModal(); }
 
-            let slides = '';
-            p.images.forEach(img => slides += `<div class="detail-slide"><img src="${img}"></div>`);
+        // КОРЗИНА
+        function add(id, e) {
+            if(e) e.stopPropagation();
+            cart.push(db.find(x => x.id === id));
+            save(); updateUI();
+            tg.HapticFeedback.impactOccurred('light');
+        }
+        function updateUI() {
+            document.getElementById('badge').style.display = cart.length ? 'block' : 'none';
+            document.getElementById('badge').innerText = cart.length;
             
-            document.getElementById('modal-slider').innerHTML = slides;
-            document.getElementById('modal-title').innerText = p.name;
-            document.getElementById('modal-price').innerText = p.price + ' ₽';
-            document.getElementById('modal-comp').innerText = p.comp;
-            document.getElementById('modal-desc').innerText = p.desc;
-            
-            document.getElementById('modal-add-btn').onclick = () => { addToCart(id); closeModal(); };
-            
-            document.getElementById('product-modal').style.display = 'flex';
+            // Рендер корзины
+            const total = cart.reduce((a,b) => a + b.price, 0);
+            document.getElementById('total-price').innerText = total;
+            document.getElementById('cart-items').innerHTML = cart.map((p, i) => `
+                <div class="cart-row">
+                    <div class="cart-img-mini" style="background:${p.bg}">${p.icon}</div>
+                    <div style="flex:1"><b>${p.name}</b><br>${p.price} ₽</div>
+                    <div onclick="del(${i})" style="color:red; font-weight:bold; padding:5px">✕</div>
+                </div>
+            `).join('');
+        }
+        function del(i) { cart.splice(i, 1); save(); updateUI(); }
+        function save() { 
+            localStorage.setItem('cart_v2', JSON.stringify(cart)); 
+            localStorage.setItem('favs_v2', JSON.stringify(favs));
         }
 
-        function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-
-        // --- ПОДЕЛИТЬСЯ ---
-        function shareProduct() {
-            if(!currentModalProduct) return;
-            const text = `Смотри, какой букет: ${currentModalProduct.name} за ${currentModalProduct.price}₽! 🌸`;
-            // Используем нативную функцию Telegram для шеринга текста
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`);
+        // ИЗБРАННОЕ
+        function toggleFav(id, e) {
+            e.stopPropagation();
+            const idx = favs.indexOf(id);
+            if(idx < 0) favs.push(id); else favs.splice(idx, 1);
+            save();
+            render(); // Обновить сердца на главной
+            renderFavs(); // Обновить вкладку избранного
+        }
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            render(list, 'fav-grid');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
         }
 
-        // --- ПРОФИЛЬ ---
-        function loadProfile() {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-                const fullName = `${user.first_name} ${user.last_name || ''}`.trim();
-                
-                document.getElementById('user-name').innerText = fullName;
-                
-                if (user.photo_url) {
-                    document.getElementById('user-ava').src = user.photo_url;
-                }
-            }
-        }
-
-        // --- НАВИГАЦИЯ ---
-        function openTab(name, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + name).classList.add('active');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // НАВИГАЦИЯ
+        function go(id, btn) {
+            document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             btn.classList.add('active');
-
-            if(name === 'cart') renderCart();
-            if(name === 'fav') renderFavPage();
-            if(name === 'search') document.getElementById('search-input').focus();
+            if(id === 'fav') renderFavs();
         }
 
+        // ОФОРМЛЕНИЕ
         function checkout() {
-            if(cart.length === 0) return;
-            const total = cart.reduce((a, b) => a + b.price, 0);
-            tg.sendData(JSON.stringify({ total: total, items: cart.map(i => i.name) }));
+            if(!cart.length) return;
+            const total = cart.reduce((a,b) => a + b.price, 0);
+            tg.sendData(JSON.stringify({ total, items: cart.map(x => x.name) }));
         }
 
-        // СТАРТ
-        renderGrid(products, 'products-container');
-        updateBadge();
-        loadProfile();
+        // ПРОФИЛЬ
+        if(tg.initDataUnsafe?.user) {
+            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+            if(tg.initDataUnsafe.user.photo_url)
+                document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
+        }
 
-         // 👇👇👇 ВСТАВЛЯЙ КОД НИЖЕ, ВОТ СЮДА 👇👇👇
-
-        window.onload = function() {
-            setTimeout(() => {
-                const preloader = document.getElementById('preloader');
-                // Делаем прозрачным
-                if(preloader) {
-                    preloader.style.opacity = '0';
-                    // Через полсекунды удаляем совсем
-                    setTimeout(() => {
-                        preloader.style.display = 'none';
-                    }, 500);
-                }
-            }, 500);
-        };
-
-        // 👆👆👆 КОНЕЦ ВСТАВКИ 👆👆👆
-
+        // START
+        render();
+        updateUI();
     </script>
 </body>
 </html>
