@@ -3,50 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Debug 3.0</title>
+    <title>Cotton Flowerс</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f5f5f5; }
-        button { 
-            padding: 20px; font-size: 18px; width: 100%; 
-            background: #28a745; color: white; 
-            border: none; border-radius: 10px; margin-top: 20px;
+        body {
+            background-color: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            font-family: sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0;
         }
-        #log { margin-top: 20px; color: red; font-size: 14px; }
+        .card {
+            padding: 20px;
+            border-radius: 15px;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>ПРОВЕРКА СВЯЗИ</h1>
-    <p>Нажми кнопку. Если вылезет ошибка — мы её увидим.</p>
-    <button onclick="buy()">🚀 ОТПРАВИТЬ ЗАКАЗ</button>
-    <div id="log"></div>
+    <div class="card">
+        <h1>Корзинка Бусинка</h1>
+        <p>Сухоцветы.</p>
+        <h2>2999 RUB</h2>
+        <button onclick="buy()">КУПИТЬ СЕЙЧАС</button>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // На весь экран
 
         function buy() {
-            // Проверка 1: Видит ли нас Телеграм?
-            if (!tg.initDataUnsafe || !tg.initDataUnsafe.user) {
-                alert("⛔ ОШИБКА: Сайт открыт НЕ в Telegram (или данные не подгрузились).");
-                return;
-            }
-
             const data = JSON.stringify({
-                title: "Товар 3.0",
+                title: "Корзинка Бусинка",
                 price: 1000,
-                desc: "Финальный тест"
+                desc: "Размер 25*25, Хлопок, стабилизированая роза"
             });
 
-            try {
-                // Проверка 2: Пытаемся отправить
-                tg.sendData(data);
-                alert("✅ УСПЕХ: Команда sendData ушла! Теперь закрой окно крестиком и смотри в терминал.");
-            } catch (e) {
-                // Если ошибка - покажем её
-                alert("❌ СБОЙ sendData: " + e);
-                document.getElementById('log').innerText = e;
-            }
+            // Отправляем данные боту
+            tg.sendData(data);
+            
+            // Закрываем окно (чтобы увидеть счет)
+            // Telegram сам закроет окно, когда получит данные через sendData
         }
     </script>
 </body>
