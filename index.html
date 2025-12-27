@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Live</title>
+    <title>Flower Shop Yandex</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -26,8 +26,9 @@
         @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ШАПКА */
         header {
-            position: sticky; top: 0; background: var(--bg); z-index: 20;
+            position: sticky; top: 0; background: var(--bg); z-index: 10;
             padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; align-items: center; gap: 10px;
         }
@@ -50,7 +51,7 @@
             background: var(--block); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box;
         }
 
-        /* --- СЕТКА --- */
+        /* СЕТКА */
         .grid { 
             display: grid; gap: 12px; padding: 0 15px;
             grid-template-columns: 1fr 1fr;
@@ -62,45 +63,19 @@
         .card { 
             background: var(--block); border-radius: 12px; overflow: hidden; position: relative; 
             animation: slideIn 0.3s backwards; transition: transform 0.1s;
+            cursor: pointer;
         }
         .card:active { transform: scale(0.98); }
 
-        /* --- СЛАЙДЕР В КАРТОЧКЕ --- */
-        .slider-wrapper {
-            position: relative;
-            width: 100%;
-            height: 160px; /* Высота фото */
-            overflow: hidden;
-        }
-        
-        .slider {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory; /* Главная магия свайпа */
-            height: 100%;
-            scrollbar-width: none; /* Скрыть скроллбар Firefox */
-        }
-        .slider::-webkit-scrollbar { display: none; } /* Скрыть скроллбар Chrome */
+        /* СЛАЙДЕР */
+        .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
+        .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
+        .slider::-webkit-scrollbar { display: none; }
+        .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        .slide {
-            min-width: 100%; /* Одно фото на всю ширину */
-            height: 100%;
-            scroll-snap-align: center; /* Центрировать при свайпе */
-        }
-        
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Чтобы фото не растягивалось, а обрезалось красиво */
-            display: block;
-        }
-
-        /* ИНДИКАТОР (Точки) */
-        .dots {
-            position: absolute; bottom: 8px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 4px; pointer-events: none;
-        }
-        .dot { width: 4px; height: 4px; background: rgba(255,255,255,0.6); border-radius: 50%; }
+        .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
+        .dot { width: 5px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
         /* КНОПКИ */
         .fav-btn {
@@ -109,7 +84,7 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 18px; transition: 0.2s; cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 10; /* Поверх слайдера */
+            z-index: 5;
         }
         .fav-btn.active-anim { animation: pop 0.3s ease; color: red !important; }
         .fav-btn.is-active { color: red; }
@@ -119,7 +94,7 @@
             width: 36px; height: 36px; background: var(--accent); color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 20px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
-            cursor: pointer; z-index: 10;
+            cursor: pointer; z-index: 5;
         }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
@@ -151,19 +126,12 @@
         }
         .modal-active { display: block !important; animation: slideIn 0.2s; }
         
-        /* БОЛЬШОЙ СЛАЙДЕР В МОДАЛКЕ */
-        .modal-slider-wrap {
-            width: 100%; height: 350px; overflow: hidden; position: relative;
-        }
-        .modal-slider {
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
-            height: 100%; scrollbar-width: none;
-        }
+        .modal-slider-wrap { width: 100%; height: 350px; overflow: hidden; position: relative; }
+        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .modal-content { padding: 20px; max-width: 600px; margin: 0 auto; }
-        
         .close-btn {
             position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
             background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
@@ -295,54 +263,52 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // --- БАЗА С ФОТОГРАФИЯМИ (Unsplash ?w=400 - легкие) ---
+        // ----------------------------------------------------
+        // БАЗА ДАННЫХ С КАРТИНКАМИ
+        // Сюда вставляй ссылки из Яндекса (Правя кнопка -> Копировать URL картинки)
+        // ----------------------------------------------------
         const db = [
             { 
-                id: 1, name: "Букет 'Нежность'", price: 3500, desc: "Кустовая роза, эвкалипт, диантус. Идеально для свидания.", 
+                id: 1, name: "Нежный букет", price: 3500, desc: "Кустовая роза и эвкалипт. Очень стойкие.", 
                 images: [
-                    "https://avatars.mds.yandex.net/get-shedevrum/16150120/img_07e1b4777dfd11f0b0a63e2f0e65f5d3/orig,
+                    "https://avatars.mds.yandex.net/get-shedevrum/18113826/img_07a98381e30311f0aaf38a639498c946/orig",
                     "https://avatars.mds.yandex.net/get-shedevrum/13936135/img_031f183a118911f0905676232a015dfe/orig",
-                    "https://avatars.mds.yandex.net/get-shedevrum/18113826/img_07a98381e30311f0aaf38a639498c946/orig"
+                    "https://avatars.mds.yandex.net/get-shedevrum/16150120/img_07e1b4777dfd11f0b0a63e2f0e65f5d3/orig"
                 ] 
             },
             { 
                 id: 2, name: "101 Красная Роза", price: 15000, desc: "Роза Гран При 60 см. Впечатляет с первого взгляда.", 
                 images: [
-                    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400",
-                    "https://images.unsplash.com/photo-1559563362-c667ba5f5480?w=400",
-                    "https://images.unsplash.com/photo-1597826368522-9f4588856294?w=400"
+                    "https://avatars.mds.yandex.net/i?id=2a00000179eebf7d7e3540237782635b7507-4322107-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=96c7377527630737036712328005373d_l-5343469-images-thumbs&n=13"
                 ] 
             },
             { 
                 id: 3, name: "Тюльпаны Микс", price: 2500, desc: "15 ярких тюльпанов в крафтовой упаковке.", 
                 images: [
-                    "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=400",
-                    "https://images.unsplash.com/photo-1586944686443-bd287c4d5d4b?w=400",
-                    "https://images.unsplash.com/photo-1555050552-32b72457fb75?w=400"
+                    "https://avatars.mds.yandex.net/i?id=563363673f320d740875791726a869e4_l-5236262-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=2a0000017a42a66e7677d670a535446f7765-4762294-images-thumbs&n=13"
                 ] 
             },
             { 
                 id: 4, name: "Пионы Premium", price: 4500, desc: "Крупные розовые пионы Сара Бернар (5 шт).", 
                 images: [
-                    "https://images.unsplash.com/photo-1563241527-300027e99740?w=400",
-                    "https://images.unsplash.com/photo-1554631221-f9603e6808be?w=400",
-                    "https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=400"
+                    "https://avatars.mds.yandex.net/i?id=8e888365544702b376260275a5075677_l-5234552-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=2a00000179f4f66307205566777655552667-4286667-images-thumbs&n=13"
                 ] 
             },
             { 
-                id: 5, name: "Шляпная коробка", price: 5000, desc: "Микс цветов на флористической губке. Ваза не нужна.", 
+                id: 5, name: "Шляпная коробка", price: 5000, desc: "Микс цветов на флористической губке.", 
                 images: [
-                    "https://images.unsplash.com/photo-1585220177021-d107293ebc56?w=400",
-                    "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400",
-                    "https://images.unsplash.com/photo-1596627685698-c92c55b62e4c?w=400"
+                    "https://avatars.mds.yandex.net/i?id=2a00000179da676666772777777777777777-4286667-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=2a00000179da676666772777777777777777-4286667-images-thumbs&n=13"
                 ] 
             },
             { 
-                id: 6, name: "Лаванда", price: 1500, desc: "Сухоцветы лаванды. Аромат сохраняется годами.", 
+                id: 6, name: "Лаванда", price: 1500, desc: "Сухоцветы лаванды.", 
                 images: [
-                    "https://images.unsplash.com/photo-1498757581981-8ddb3c0b9b07?w=400",
-                    "https://images.unsplash.com/photo-1595123550441-d377e017de6a?w=400",
-                    "https://images.unsplash.com/photo-1533038590840-1cde6b468956?w=400"
+                    "https://avatars.mds.yandex.net/i?id=2a0000017a01d67066777666666666666666-4286667-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=2a0000017a01d67066777666666666666666-4286667-images-thumbs&n=13"
                 ] 
             }
         ];
@@ -351,13 +317,12 @@
         let favs = JSON.parse(localStorage.getItem('favs_v5')) || [];
         let currentId = null;
 
-        // --- ГЕНЕРАЦИЯ КАРТОЧКИ (СЛАЙДЕР ВНУТРИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const heart = isFav ? '❤️' : '🤍';
             const activeClass = isFav ? 'is-active' : '';
             
-            // Собираем слайды
+            // Слайдер (3 фото)
             let slidesHtml = p.images.map(url => 
                 `<div class="slide"><img src="${url}" loading="lazy"></div>`
             ).join('');
@@ -370,10 +335,7 @@
                         <div class="slider">
                             ${slidesHtml}
                         </div>
-                        <!-- Точки (декор) -->
-                        <div class="dots">
-                            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                        </div>
+                        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
                     </div>
 
                     <div class="info">
@@ -394,7 +356,6 @@
             render(found);
         }
 
-        // --- ЛОГИКА ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
@@ -504,7 +465,6 @@
             currentId = id;
             const p = db.find(x => x.id === id);
             
-            // Генерируем слайдер для модалки
             const slider = document.getElementById('m-slider');
             slider.innerHTML = p.images.map(url => 
                 `<div class="modal-slide"><img src="${url}"></div>`
