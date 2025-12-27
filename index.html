@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Animated</title>
+    <title>Flower Smart</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -12,6 +12,7 @@
             --block: var(--tg-theme-secondary-bg-color, #f5f5f5);
             --accent: #e91e63;
             --green: #4caf50;
+            --red: #ff3b30;
         }
 
         body {
@@ -21,34 +22,9 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- АНИМАЦИИ (KEYFRAMES) --- */
-        
-        /* 1. Появление списка снизу вверх */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 2. Пульсация сердца (Лайк) */
-        @keyframes heartPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.4); }
-            100% { transform: scale(1); }
-        }
-
-        /* 3. Прыжок корзины */
-        @keyframes cartBounce {
-            0% { transform: scale(1); }
-            40% { transform: scale(1.2) rotate(-10deg); }
-            80% { transform: scale(0.9) rotate(5deg); }
-            100% { transform: scale(1) rotate(0); }
-        }
-
-        /* 4. Зум модального окна */
-        @keyframes modalZoom {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        /* АНИМАЦИИ */
+        @keyframes pop { 50% { transform: scale(1.2); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ШАПКА */
         header {
@@ -62,92 +38,100 @@
         }
         .brand { font-weight: 800; font-size: 18px; }
 
+        /* ЗАГОЛОВКИ С КНОПКОЙ ОЧИСТКИ */
+        .head-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 15px; margin-top: 15px; margin-bottom: 10px;
+        }
+        .head-title { font-size: 22px; font-weight: 800; margin: 0; }
+        .clear-btn {
+            color: #999; font-size: 14px; background: none; border: none;
+            display: flex; align-items: center; gap: 5px; cursor: pointer;
+        }
+        .clear-btn:active { color: var(--red); }
+
         /* ПОИСК */
         .search-wrap { padding: 10px 15px; }
         .search-input {
-            width: 100%; padding: 10px; border-radius: 10px; border: none;
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
             background: var(--block); color: var(--text); font-size: 16px; outline: none;
-            transition: box-shadow 0.2s; /* Плавная подсветка */
         }
-        .search-input:focus { box-shadow: 0 0 0 2px var(--accent); }
 
         /* СЕТКА */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
         
         .card { 
             background: var(--block); border-radius: 12px; overflow: hidden; position: relative; 
-            /* Анимация нажатия */
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Анимация появления */
-            animation: fadeInUp 0.5s ease backwards;
+            animation: slideIn 0.3s backwards;
         }
-        
-        /* Эффект нажатия на карточку */
-        .card:active { transform: scale(0.96); }
+        .card:active { transform: scale(0.98); transition: 0.1s; }
 
-        /* Задержка анимации для каждого элемента (каскад) */
-        .card:nth-child(1) { animation-delay: 0.05s; }
-        .card:nth-child(2) { animation-delay: 0.1s; }
-        .card:nth-child(3) { animation-delay: 0.15s; }
-        .card:nth-child(4) { animation-delay: 0.2s; }
-        .card:nth-child(5) { animation-delay: 0.25s; }
-        .card:nth-child(6) { animation-delay: 0.3s; }
-
+        /* ЗАГЛУШКИ ФОТО */
         .img-placeholder {
             height: 140px; width: 100%;
             display: flex; align-items: center; justify-content: center;
             font-size: 60px;
         }
 
-        /* КНОПКИ НА КАРТОЧКЕ */
+        /* КНОПКИ КАРТОЧКИ */
         .fav-btn {
             position: absolute; top: 8px; right: 8px;
             width: 30px; height: 30px; background: rgba(255,255,255,0.9);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            font-size: 16px; transition: 0.2s;
         }
-        /* Класс для анимации лайка */
-        .fav-btn.popping { animation: heartPop 0.4s ease; color: red; }
+        .fav-btn.active { color: red; animation: pop 0.3s; }
 
         .cart-btn {
             position: absolute; bottom: 10px; right: 10px;
             width: 36px; height: 36px; background: var(--accent); color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 18px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
-            transition: background 0.2s;
         }
-        /* Класс для анимации добавления в корзину */
-        .cart-btn.bouncing { animation: cartBounce 0.5s ease; background: var(--green); }
+        .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
         .info { padding: 10px; }
         .name { font-weight: 600; font-size: 14px; margin-bottom: 5px; height: 34px; overflow: hidden; }
         .price { font-weight: 800; font-size: 15px; }
 
+        /* КОРЗИНА (УМНАЯ СТРОКА) */
+        .cart-row { 
+            display: flex; align-items: center; gap: 10px; 
+            background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 12px; 
+            animation: slideIn 0.2s;
+        }
+        .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        
+        /* УПРАВЛЕНИЕ КОЛИЧЕСТВОМ */
+        .qty-ctrl {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg); padding: 4px; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .qty-btn {
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            background: var(--block); border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+        .qty-btn:active { background: #ddd; }
+        .qty-val { font-weight: bold; min-width: 16px; text-align: center; font-size: 14px; }
+
         /* МОДАЛКА */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg); z-index: 100; overflow-y: auto;
-            /* Анимация открытия */
         }
-        .modal-active { display: block !important; animation: modalZoom 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-
-        .modal-img { height: 300px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+        .modal-active { display: block !important; animation: slideIn 0.2s; }
+        .modal-img { height: 280px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 100px; }
         .modal-content { padding: 20px; }
         .close-btn {
             position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
             background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 24px;
-            cursor: pointer; transition: transform 0.2s;
         }
-        .close-btn:active { transform: scale(0.8); }
-
         .big-btn {
             width: 100%; padding: 15px; background: var(--accent); color: white;
             border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 20px;
-            transition: transform 0.1s;
         }
-        .big-btn:active { transform: scale(0.97); }
 
         /* МЕНЮ */
         nav {
@@ -158,27 +142,21 @@
         .nav-item {
             display: flex; flex-direction: column; align-items: center;
             font-size: 10px; color: #999; background: none; border: none;
-            transition: color 0.2s, transform 0.1s;
+            transition: 0.2s;
         }
-        .nav-item:active { transform: scale(0.9); }
-        .nav-item.active { color: var(--accent); }
+        .nav-item.active { color: var(--accent); transform: scale(1.1); }
         .nav-icon { font-size: 20px; margin-bottom: 3px; }
         .badge {
             position: absolute; top: 5px; margin-left: 15px; background: red; color: white;
             font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;
-            animation: heartPop 0.3s; /* Анимация при обновлении счетчика */
+            animation: pop 0.3s;
         }
 
         /* СТРАНИЦЫ */
         .page { display: none; }
-        .page.active { display: block; animation: fadeInUp 0.3s; }
+        .page.active { display: block; }
         
-        .cart-row { 
-            display: flex; align-items: center; gap: 10px; 
-            background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 10px; 
-            animation: fadeInUp 0.3s; /* Анимация появления элементов корзины */
-        }
-        .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .empty-state { text-align: center; color: #999; margin-top: 50px; }
 
     </style>
 </head>
@@ -192,28 +170,37 @@
     <!-- 1. ГЛАВНАЯ -->
     <div id="p-home" class="page active">
         <div class="search-wrap">
-            <input type="text" class="search-input" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
+            <input type="text" class="search-input" placeholder="Найти букет..." oninput="doSearch(this.value)">
         </div>
         <div class="grid" id="grid"></div>
     </div>
 
     <!-- 2. КОРЗИНА -->
     <div id="p-cart" class="page">
-        <h2 style="padding: 0 15px;">Корзина</h2>
-        <div id="cart-items"></div>
-        <div style="padding: 15px; text-align: right; font-weight: bold; font-size: 18px;">
-            Итого: <span id="total-price">0</span> ₽
+        <div class="head-row">
+            <h2 class="head-title">Корзина</h2>
+            <button class="clear-btn" onclick="clearCart()">🗑 Очистить</button>
         </div>
-        <div style="padding: 15px;">
+        
+        <div id="cart-items"></div>
+        <div class="empty-state" id="cart-empty" style="display:none">Корзина пуста 🍃</div>
+
+        <div id="cart-footer" style="padding: 15px;">
+            <div style="text-align: right; font-weight: bold; font-size: 18px; margin-bottom: 15px;">
+                Итого: <span id="total-price">0</span> ₽
+            </div>
             <button class="big-btn" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
     <!-- 3. ИЗБРАННОЕ -->
     <div id="p-fav" class="page">
-        <h2 style="padding: 0 15px;">Избранное ❤️</h2>
+        <div class="head-row">
+            <h2 class="head-title">Избранное</h2>
+            <button class="clear-btn" onclick="clearFav()">🗑 Очистить</button>
+        </div>
         <div class="grid" id="fav-grid"></div>
-        <p id="fav-empty" style="text-align:center; color:#999; display:none">Пусто</p>
+        <div class="empty-state" id="fav-empty" style="display:none">Нет любимых товаров 💔</div>
     </div>
 
     <!-- 4. ПРОФИЛЬ -->
@@ -266,23 +253,23 @@
             { id: 8, name: "Сакура", price: 4000, desc: "Ветка цветущей вишни.", icon: "🌸", bg: "linear-gradient(to top, #dad4ec 0%, #dad4ec 1%, #f3e7e9 100%)" }
         ];
 
-        let cart = JSON.parse(localStorage.getItem('cart_v2')) || [];
-        let favs = JSON.parse(localStorage.getItem('favs_v2')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart_v3')) || [];
+        let favs = JSON.parse(localStorage.getItem('favs_v3')) || [];
         let currentId = null;
 
+        // --- КАТАЛОГ ---
         function drawCard(p) {
             const isFav = favs.includes(p.id) ? 'active' : '';
             const heart = isFav ? '❤️' : '🤍';
-            const heartClass = isFav ? 'popping' : ''; // Добавляем класс анимации
             return `
                 <div class="card">
-                    <div class="fav-btn ${heartClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">${heart}</div>
+                    <div class="fav-btn ${isFav}" onclick="toggleFav(${p.id}, event)">${heart}</div>
                     <div class="img-placeholder" style="background: ${p.bg}" onclick="openModal(${p.id})">${p.icon}</div>
                     <div class="info">
                         <div class="name" onclick="openModal(${p.id})">${p.name}</div>
                         <div class="price">${p.price} ₽</div>
                     </div>
-                    <div class="cart-btn" id="cart-btn-${p.id}" onclick="add(${p.id}, event)">+</div>
+                    <div class="cart-btn" onclick="addOne(${p.id}, event)">+</div>
                 </div>
             `;
         }
@@ -296,6 +283,7 @@
             render(found);
         }
 
+        // --- МОДАЛКА ---
         function openModal(id) {
             currentId = id;
             const p = db.find(x => x.id === id);
@@ -304,84 +292,93 @@
             document.getElementById('m-title').innerText = p.name;
             document.getElementById('m-price').innerText = p.price + ' ₽';
             document.getElementById('m-desc').innerText = p.desc;
-            
-            const modal = document.getElementById('modal');
-            modal.classList.add('modal-active'); // Класс для анимации
+            document.getElementById('modal').classList.add('modal-active');
         }
-        
-        function closeModal() { 
-            const modal = document.getElementById('modal');
-            modal.classList.remove('modal-active');
-        }
-        
-        function addCurrentToCart() { add(currentId); closeModal(); }
+        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
+        function addCurrentToCart() { addOne(currentId); closeModal(); }
 
-        function add(id, e) {
+        // --- КОРЗИНА (ЛОГИКА СТЕКА) ---
+        function addOne(id, e) {
             if(e) e.stopPropagation();
-            
-            // Анимация кнопки
-            const btn = document.getElementById(`cart-btn-${id}`);
-            if(btn) {
-                btn.classList.add('bouncing');
-                setTimeout(() => btn.classList.remove('bouncing'), 500); // Убираем класс через 0.5с
-            }
-
-            cart.push(db.find(x => x.id === id));
-            save(); updateUI();
-            tg.HapticFeedback.impactOccurred('medium'); // Вибрация сильнее
+            cart.push(id);
+            save(); updateCartUI();
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        function updateUI() {
+        function removeOne(id) {
+            const idx = cart.indexOf(id);
+            if (idx > -1) {
+                cart.splice(idx, 1);
+                save(); updateCartUI();
+            }
+        }
+
+        function clearCart() {
+            if(cart.length === 0) return;
+            if(confirm('Очистить корзину полностью?')) {
+                cart = [];
+                save(); updateCartUI();
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        function updateCartUI() {
             const badge = document.getElementById('badge');
             badge.style.display = cart.length ? 'block' : 'none';
             badge.innerText = cart.length;
+
+            // Группируем товары: { id: 1, count: 3, ... }
+            const grouped = {};
+            cart.forEach(id => {
+                grouped[id] = (grouped[id] || 0) + 1;
+            });
+
+            // Считаем сумму
+            let total = 0;
+            const uniqueIds = Object.keys(grouped);
             
-            // Запускаем анимацию на бейджике при изменении
-            badge.style.animation = 'none';
-            badge.offsetHeight; /* trigger reflow */
-            badge.style.animation = 'heartPop 0.3s';
+            if (uniqueIds.length === 0) {
+                document.getElementById('cart-items').innerHTML = '';
+                document.getElementById('cart-empty').style.display = 'block';
+                document.getElementById('cart-footer').style.display = 'none';
+                return;
+            }
 
-            const total = cart.reduce((a,b) => a + b.price, 0);
+            document.getElementById('cart-empty').style.display = 'none';
+            document.getElementById('cart-footer').style.display = 'block';
+
+            const html = uniqueIds.map(id => {
+                const p = db.find(x => x.id == id);
+                const count = grouped[id];
+                total += p.price * count;
+                return `
+                    <div class="cart-row">
+                        <div class="cart-img-mini" style="background:${p.bg}">${p.icon}</div>
+                        <div style="flex:1">
+                            <div style="font-weight:600; font-size:14px;">${p.name}</div>
+                            <div style="color:#888; font-size:13px;">${p.price} ₽</div>
+                        </div>
+                        <div class="qty-ctrl">
+                            <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
+                            <div class="qty-val">${count}</div>
+                            <div class="qty-btn" onclick="addOne(${p.id})">+</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cart-items').innerHTML = html;
             document.getElementById('total-price').innerText = total;
-            document.getElementById('cart-items').innerHTML = cart.map((p, i) => `
-                <div class="cart-row">
-                    <div class="cart-img-mini" style="background:${p.bg}">${p.icon}</div>
-                    <div style="flex:1"><b>${p.name}</b><br>${p.price} ₽</div>
-                    <div onclick="del(${i})" style="color:red; font-weight:bold; padding:5px; cursor:pointer">✕</div>
-                </div>
-            `).join('');
         }
 
-        function del(i) { cart.splice(i, 1); save(); updateUI(); }
-        function save() { 
-            localStorage.setItem('cart_v2', JSON.stringify(cart)); 
-            localStorage.setItem('favs_v2', JSON.stringify(favs));
-        }
-
+        // --- ИЗБРАННОЕ ---
         function toggleFav(id, e) {
             e.stopPropagation();
             const idx = favs.indexOf(id);
-            const btn = document.getElementById(`fav-btn-${id}`);
-            
-            if(idx < 0) {
-                favs.push(id);
-                // Анимация лайка
-                if(btn) {
-                    btn.classList.add('popping');
-                    btn.innerText = '❤️';
-                    tg.HapticFeedback.impactOccurred('medium');
-                }
-            } else {
-                favs.splice(idx, 1);
-                if(btn) {
-                    btn.classList.remove('popping');
-                    btn.innerText = '🤍';
-                    tg.HapticFeedback.impactOccurred('light');
-                }
-            }
+            if(idx < 0) favs.push(id); else favs.splice(idx, 1);
             save();
-            // Если мы во вкладке избранного - обновляем
-            if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
+            render(); // Обновить сердца на главной
+            renderFavs(); // Обновить вкладку избранного
         }
 
         function renderFavs() {
@@ -390,18 +387,44 @@
             document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
         }
 
+        function clearFav() {
+            if(favs.length === 0) return;
+            if(confirm('Удалить всё из избранного?')) {
+                favs = [];
+                save(); render(); renderFavs();
+            }
+        }
+
+        // --- СИСТЕМА ---
+        function save() { 
+            localStorage.setItem('cart_v3', JSON.stringify(cart)); 
+            localStorage.setItem('favs_v3', JSON.stringify(favs));
+        }
+
         function go(id, btn) {
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             btn.classList.add('active');
             if(id === 'fav') renderFavs();
+            if(id === 'cart') updateCartUI();
         }
 
         function checkout() {
             if(!cart.length) return;
-            const total = cart.reduce((a,b) => a + b.price, 0);
-            tg.sendData(JSON.stringify({ total, items: cart.map(x => x.name) }));
+            
+            // Формируем красивый чек для бота: "Роза x3, Тюльпан x1"
+            const grouped = {};
+            cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            
+            const itemsText = Object.keys(grouped).map(id => {
+                const p = db.find(x => x.id == id);
+                return `${p.name} x${grouped[id]}`;
+            }).join(', ');
+
+            const total = cart.reduce((sum, id) => sum + db.find(x => x.id == id).price, 0);
+            
+            tg.sendData(JSON.stringify({ total: total, items: [itemsText] }));
         }
 
         if(tg.initDataUnsafe?.user) {
@@ -411,7 +434,7 @@
         }
 
         render();
-        updateUI();
+        updateCartUI();
     </script>
 </body>
 </html>
