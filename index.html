@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop Yandex</title>
+    <title>Flower Shop Protected</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -20,15 +20,25 @@
             font-family: system-ui, -apple-system, sans-serif;
             margin: 0; padding: 0; padding-bottom: 80px;
             -webkit-tap-highlight-color: transparent;
+            /* Отключаем выделение текста по всему приложению */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* --- ЗАЩИТА КАРТИНОК ОТ ДОЛГОГО НАЖАТИЯ --- */
+        img {
+            -webkit-touch-callout: none; /* Самое важное для iOS: отключает меню */
+            -webkit-user-drag: none;     /* Запрещает перетаскивание картинки */
+            user-select: none;           /* Запрещает выделение */
+            pointer-events: auto;        /* Но клики по ним работают! */
         }
 
         /* АНИМАЦИИ */
         @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ШАПКА */
         header {
-            position: sticky; top: 0; background: var(--bg); z-index: 10;
+            position: sticky; top: 0; background: var(--bg); z-index: 20;
             padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; align-items: center; gap: 10px;
         }
@@ -51,7 +61,6 @@
             background: var(--block); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box;
         }
 
-        /* СЕТКА */
         .grid { 
             display: grid; gap: 12px; padding: 0 15px;
             grid-template-columns: 1fr 1fr;
@@ -67,8 +76,7 @@
         }
         .card:active { transform: scale(0.98); }
 
-        /* СЛАЙДЕР */
-        .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
+        .slider-wrapper { position: relative; width: 100%; height: 180px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .slider::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
@@ -77,14 +85,13 @@
         .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
         .dot { width: 5px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-        /* КНОПКИ */
         .fav-btn {
             position: absolute; top: 8px; right: 8px;
             width: 32px; height: 32px; background: rgba(255,255,255,0.9);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 18px; transition: 0.2s; cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 5;
+            z-index: 10;
         }
         .fav-btn.active-anim { animation: pop 0.3s ease; color: red !important; }
         .fav-btn.is-active { color: red; }
@@ -94,7 +101,7 @@
             width: 36px; height: 36px; background: var(--accent); color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 20px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
-            cursor: pointer; z-index: 5;
+            cursor: pointer; z-index: 10;
         }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
@@ -102,28 +109,14 @@
         .name { font-weight: 600; font-size: 14px; margin-bottom: 5px; height: 36px; overflow: hidden; line-height: 1.3;}
         .price { font-weight: 800; font-size: 16px; }
 
-        .cart-row { 
-            display: flex; align-items: center; gap: 10px; 
-            background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 12px; 
-            animation: slideIn 0.2s;
-        }
+        .cart-row { display: flex; align-items: center; gap: 10px; background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 12px; animation: slideIn 0.2s; }
         .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
         
-        .qty-ctrl {
-            display: flex; align-items: center; gap: 8px;
-            background: var(--bg); padding: 4px; border-radius: 8px;
-        }
-        .qty-btn {
-            width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-            background: var(--block); border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
+        .qty-ctrl { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 4px; border-radius: 8px; }
+        .qty-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: var(--block); border-radius: 6px; font-weight: bold; cursor: pointer; }
         .qty-val { font-weight: bold; min-width: 20px; text-align: center; }
 
-        /* МОДАЛКА */
-        #modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 100; overflow-y: auto;
-        }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
         .modal-active { display: block !important; animation: slideIn 0.2s; }
         
         .modal-slider-wrap { width: 100%; height: 350px; overflow: hidden; position: relative; }
@@ -132,41 +125,18 @@
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .modal-content { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .close-btn {
-            position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
-            background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 20;
-        }
+        .close-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 20; }
 
-        .fav-text-btn {
-            width: 100%; padding: 12px; background: transparent; border: 2px solid #ddd;
-            color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; 
-            margin-top: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.2s;
-        }
+        .fav-text-btn { width: 100%; padding: 12px; background: transparent; border: 2px solid #ddd; color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(233, 30, 99, 0.05); }
 
-        .big-btn {
-            width: 100%; padding: 15px; background: var(--accent); color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer;
-        }
+        .big-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer; }
 
-        nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
-            background: var(--bg); border-top: 1px solid #eee;
-            display: flex; justify-content: space-around; align-items: center; z-index: 50;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 10px; color: #999; background: none; border: none; cursor: pointer;
-        }
+        nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: var(--bg); border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #999; background: none; border: none; cursor: pointer; }
         .nav-item.active { color: var(--accent); transform: scale(1.1); transition: 0.2s;}
         .nav-icon { font-size: 22px; margin-bottom: 3px; }
-        .badge {
-            position: absolute; top: 5px; margin-left: 15px; background: red; color: white;
-            font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;
-            animation: pop 0.3s;
-        }
+        .badge { position: absolute; top: 5px; margin-left: 15px; background: red; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none; animation: pop 0.3s; }
 
         .page { display: none; }
         .page.active { display: block; }
@@ -230,21 +200,14 @@
     <!-- МОДАЛКА -->
     <div id="modal">
         <div class="close-btn" onclick="closeModal()">×</div>
-        
-        <!-- СЛАЙДЕР В МОДАЛКЕ -->
         <div class="modal-slider-wrap">
             <div class="modal-slider" id="m-slider"></div>
         </div>
-
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 10px 0;"></div>
             <p id="m-desc" style="line-height: 1.5; color: #555; margin-bottom: 20px;"></p>
-            
-            <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">
-                🤍 В избранное
-            </button>
-
+            <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
             <button class="big-btn" onclick="addCurrentToCart()">В корзину</button>
         </div>
     </div>
@@ -263,17 +226,23 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ----------------------------------------------------
-        // БАЗА ДАННЫХ С КАРТИНКАМИ
-        // Сюда вставляй ссылки из Яндекса (Правя кнопка -> Копировать URL картинки)
-        // ----------------------------------------------------
+        // ------------------------------------------------------------------
+        // JS ДЛЯ ОТКЛЮЧЕНИЯ КОНТЕКСТНОГО МЕНЮ НА КАРТИНКАХ (ЗАЩИТА)
+        // ------------------------------------------------------------------
+        document.addEventListener('contextmenu', event => {
+            if (event.target.tagName === 'IMG') {
+                event.preventDefault(); // Запрещаем меню по правой кнопке/долгому тапу
+            }
+        });
+
+        // БАЗА ТОВАРОВ
         const db = [
             { 
                 id: 1, name: "Нежный букет", price: 3500, desc: "Кустовая роза и эвкалипт. Очень стойкие.", 
                 images: [
-                    "https://avatars.mds.yandex.net/get-shedevrum/18113826/img_07a98381e30311f0aaf38a639498c946/orig",
-                    "https://avatars.mds.yandex.net/get-shedevrum/13936135/img_031f183a118911f0905676232a015dfe/orig",
-                    "https://avatars.mds.yandex.net/get-shedevrum/16150120/img_07e1b4777dfd11f0b0a63e2f0e65f5d3/orig"
+                    "https://avatars.mds.yandex.net/i?id=84dbd50839c3d640ebfc0de20994c30d_l-5287869-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=a5a676b70777c0528022820875e58729_l-5232392-images-thumbs&n=13",
+                    "https://avatars.mds.yandex.net/i?id=2a0000017a06d13e75e6b48d82761882c76e-4366632-images-thumbs&n=13"
                 ] 
             },
             { 
@@ -322,7 +291,6 @@
             const heart = isFav ? '❤️' : '🤍';
             const activeClass = isFav ? 'is-active' : '';
             
-            // Слайдер (3 фото)
             let slidesHtml = p.images.map(url => 
                 `<div class="slide"><img src="${url}" loading="lazy"></div>`
             ).join('');
@@ -330,14 +298,10 @@
             return `
                 <div class="card" onclick="openModal(${p.id})">
                     <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">${heart}</div>
-                    
                     <div class="slider-wrapper">
-                        <div class="slider">
-                            ${slidesHtml}
-                        </div>
+                        <div class="slider">${slidesHtml}</div>
                         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
                     </div>
-
                     <div class="info">
                         <div class="name">${p.name}</div>
                         <div class="price">${p.price} ₽</div>
@@ -360,7 +324,6 @@
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
             const btn = document.getElementById(`fav-btn-${id}`);
-            
             if(idx < 0) {
                 favs.push(id);
                 if(btn) { btn.innerText = '❤️'; btn.classList.add('is-active', 'active-anim'); setTimeout(()=>btn.classList.remove('active-anim'), 300); }
@@ -485,7 +448,6 @@
             document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             btn.classList.add('active');
-            
             if(id === 'fav') renderFavs();
             if(id === 'cart') updateCartUI();
         }
