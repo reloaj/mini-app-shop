@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop v8</title>
+    <title>Flower Shop Stable</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -47,7 +47,6 @@
             color: #999; font-size: 14px; background: none; border: none;
             display: flex; align-items: center; gap: 5px; cursor: pointer;
         }
-        .clear-btn:active { color: var(--red); }
 
         .search-wrap { padding: 10px 15px; }
         .search-input {
@@ -57,10 +56,8 @@
 
         /* СЕТКА */
         .grid { 
-            display: grid; 
-            gap: 12px; 
-            padding: 0 15px;
-            grid-template-columns: 1fr 1fr; /* Мобильный: 2 колонки */
+            display: grid; gap: 12px; padding: 0 15px;
+            grid-template-columns: 1fr 1fr; /* 2 колонки на телефоне */
         }
         @media (min-width: 600px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -68,8 +65,7 @@
         
         .card { 
             background: var(--block); border-radius: 12px; overflow: hidden; position: relative; 
-            animation: slideIn 0.3s backwards;
-            transition: transform 0.1s;
+            animation: slideIn 0.3s backwards; transition: transform 0.1s;
             cursor: pointer;
         }
         .card:active { transform: scale(0.98); }
@@ -80,6 +76,7 @@
             font-size: 60px;
         }
 
+        /* СЕРДЕЧКО НА КАРТОЧКЕ */
         .fav-btn {
             position: absolute; top: 8px; right: 8px;
             width: 32px; height: 32px; background: rgba(255,255,255,0.9);
@@ -96,8 +93,7 @@
             width: 36px; height: 36px; background: var(--accent); color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 20px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
-            cursor: pointer;
-            z-index: 5;
+            cursor: pointer; z-index: 5;
         }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
@@ -128,36 +124,36 @@
             background: var(--bg); z-index: 100; overflow-y: auto;
         }
         .modal-active { display: block !important; animation: slideIn 0.2s; }
+        .modal-img { height: 300px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+        .modal-content { padding: 20px; max-width: 600px; margin: 0 auto; }
         
-        .modal-img { 
-            height: 320px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 120px; 
-            position: relative; /* ВАЖНО для позиционирования сердечка */
-        }
-        
-        /* СТИЛЬ НОВОГО СЕРДЕЧКА В МОДАЛКЕ */
-        .modal-fav-btn {
-            position: absolute; 
-            bottom: -25px; right: 20px; /* Висит на границе фото и текста */
-            width: 54px; height: 54px; 
-            background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-        .modal-fav-btn:active { transform: scale(0.9); }
-        .modal-fav-btn.is-active { color: red; }
-        .modal-fav-btn.active-anim { animation: pop 0.3s ease; }
-
-        .modal-content { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
         .close-btn {
             position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
             background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 10;
         }
+
+        /* КНОПКА ЛАЙКА В МОДАЛКЕ */
+        .fav-text-btn {
+            width: 100%; padding: 12px; 
+            background: transparent; 
+            border: 2px solid #ddd;
+            color: var(--text);
+            border-radius: 12px; 
+            font-size: 15px; font-weight: 600; 
+            margin-top: 15px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .fav-text-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(233, 30, 99, 0.05);
+        }
+
         .big-btn {
             width: 100%; padding: 15px; background: var(--accent); color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer;
         }
 
         nav {
@@ -239,14 +235,17 @@
     <!-- МОДАЛКА -->
     <div id="modal">
         <div class="close-btn" onclick="closeModal()">×</div>
-        <div class="modal-img" id="m-img">
-            <!-- ВОТ ОНО - БОЛЬШОЕ СЕРДЕЧКО -->
-            <div class="modal-fav-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍</div>
-        </div>
+        <div class="modal-img" id="m-img"></div>
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 10px 0;"></div>
-            <p id="m-desc" style="line-height: 1.5; color: #555;"></p>
+            <p id="m-desc" style="line-height: 1.5; color: #555; margin-bottom: 20px;"></p>
+            
+            <!-- НОВАЯ КНОПКА В ИЗБРАННОЕ -->
+            <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">
+                🤍 В избранное
+            </button>
+
             <button class="big-btn" onclick="addCurrentToCart()">В корзину</button>
         </div>
     </div>
@@ -306,47 +305,43 @@
             render(found);
         }
 
-        // Логика Избранного (Синхронизация)
+        // --- ЛОГИКА ИЗБРАННОГО ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
-            const btn = document.getElementById(`fav-btn-${id}`); // Кнопка в каталоге
+            const btn = document.getElementById(`fav-btn-${id}`);
             
             if(idx < 0) {
                 favs.push(id);
-                // Обновляем кнопку в каталоге
                 if(btn) { btn.innerText = '❤️'; btn.classList.add('is-active', 'active-anim'); setTimeout(()=>btn.classList.remove('active-anim'), 300); }
                 tg.HapticFeedback.impactOccurred('medium');
             } else {
                 favs.splice(idx, 1);
-                // Обновляем кнопку в каталоге
                 if(btn) { btn.innerText = '🤍'; btn.classList.remove('is-active'); }
                 tg.HapticFeedback.impactOccurred('light');
             }
             save();
             
-            // Если открыта модалка с этим товаром, обновляем и её
+            // Если открыто модальное окно, обновляем кнопку внутри
             if(currentId === id) updateModalFavBtn();
-            // Если открыта вкладка избранного, обновляем список
+            // Если открыта вкладка "Избранное", обновляем список
             if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
         }
 
-        // Клик по сердцу ВНУТРИ модалки
         function toggleModalFav() {
+            // Лайк из модалки
             toggleFav(currentId, { stopPropagation: ()=>{} });
         }
 
-        // Обновить внешний вид сердца в модалке
         function updateModalFavBtn() {
             const isFav = favs.includes(currentId);
             const btn = document.getElementById('m-fav-btn');
             if(isFav) {
-                btn.innerText = '❤️';
-                btn.classList.add('is-active', 'active-anim');
-                setTimeout(()=>btn.classList.remove('active-anim'), 300);
+                btn.innerHTML = '❤️ В избранном';
+                btn.classList.add('active');
             } else {
-                btn.innerText = '🤍';
-                btn.classList.remove('is-active');
+                btn.innerHTML = '🤍 В избранное';
+                btn.classList.remove('active');
             }
         }
 
@@ -361,6 +356,7 @@
             if(confirm("Удалить всё?")) { favs = []; save(); render(); renderFavs(); }
         }
 
+        // --- КОРЗИНА ---
         function addOne(id, e) {
             if(e) e.stopPropagation();
             cart.push(id);
@@ -420,6 +416,7 @@
             document.getElementById('total-price').innerText = total;
         }
 
+        // --- МОДАЛКА ---
         function openModal(id) {
             currentId = id;
             const p = db.find(x => x.id === id);
@@ -429,13 +426,13 @@
             document.getElementById('m-price').innerText = p.price + ' ₽';
             document.getElementById('m-desc').innerText = p.desc;
             
-            updateModalFavBtn(); // Ставим правильное сердечко при открытии
-            
+            updateModalFavBtn(); // Обновляем состояние кнопки лайка
             document.getElementById('modal').classList.add('modal-active');
         }
         function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
+        // --- НАВИГАЦИЯ ---
         function go(id, btn) {
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
