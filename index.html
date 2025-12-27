@@ -1,93 +1,322 @@
-<!doctype html>
-<html lang="en" translate="no" class="notranslate">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Telegram</title>
-    <meta name="title" content="Telegram" />
-    <meta
-      name="description"
-      content="Telegram is a cloud-based mobile and desktop messaging app with a focus on security and speed."
-    />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,shrink-to-fit=no,viewport-fit=cover"
-    />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-title" content="Telegram" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Telegram" />
-    <meta name="application-name" content="Telegram" />
-    <meta name="msapplication-TileColor" content="#2b5797" />
-    <meta name="msapplication-config" content="./browserconfig.xml" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="google" content="notranslate" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; connect-src 'self' wss://*.web.telegram.org blob: http: https: ; script-src 'self' 'wasm-unsafe-eval' https://t.me/_websync_ https://telegram.me/_websync_ 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://ss3.4sqi.net/img/categories_v2/; media-src 'self' blob: data:; object-src 'none'; frame-src http: https: bitkeep: bnc: bybitapp: echooo: imtokenv2: mytonwallet-tc: nicegram-tc: safepal-tc: tonkeeper-pro-tc: tonkeeper-tc:; base-uri 'none'; form-action 'none';"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://web.telegram.org/a" />
-    <meta property="og:title" content="Telegram" />
-    <meta
-      property="og:description"
-      content="Telegram is a cloud-based mobile and desktop messaging app with a focus on security and speed."
-    />
-    <meta property="og:image" content="./icon-192x192.png" />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://web.telegram.org/a" />
-    <meta property="twitter:title" content="Telegram" />
-    <meta
-      property="twitter:description"
-      content="Telegram is a cloud-based mobile and desktop messaging app with a focus on security and speed."
-    />
-    <meta property="twitter:image" content="./icon-192x192.png" />
-    <link rel="canonical" href="https://web.telegram.org/" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="./apple-touch-icon.png"
-    />
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="./favicon-16x16.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="./favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="./icon-192x192.png"
-    />
-    <link rel="alternate icon" href="./favicon.ico" type="image/x-icon" />
-    <link
-      rel="manifest"
-      id="the-manifest-placeholder"
-      href="./site.webmanifest"
-    />
-    
-    <!-- ORIGINAL FILES (MISSING IN PROJECT) -->
-    <!-- <script src="./redirect.js"></script> -->
-    <!-- <script defer="defer" src="main.62d835d6543cfe28a116.js"></script> -->
-    <!-- <link href="main.23a20861940d7af5800a.css" rel="stylesheet"> -->
-    <!-- VITE ENTRY POINT (ADDED TO MAKE APP WORK) -->
-    <script type="module" src="/src/main.tsx"></script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flower Fast</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  </head>
-  <body id="root">
-    <noscript>
-      <!-- <video src="./nojs.mp4" class="nojs-video" muted loop autoplay playsinline disablepictureinpicture></video> -->
-      <h1>Telegram Web</h1>
-      <p>Please, enable JavaScript to open the app.</p>
-    </noscript>
-    <div id="portals"></div>
-    <!-- <script src="./compatTest.js"></script> -->
-  </body>
+    <style>
+        :root {
+            --bg: var(--tg-theme-bg-color, #fff);
+            --text: var(--tg-theme-text-color, #000);
+            --block: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            --accent: #e91e63; /* Розовый */
+            --green: #4caf50;
+            --nav-h: 60px;
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0; padding-bottom: 80px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ШАПКА */
+        header {
+            position: sticky; top: 0; background: var(--bg); z-index: 10;
+            padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo-circle {
+            width: 35px; height: 35px; background: var(--accent);
+            border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .brand { font-weight: 800; font-size: 18px; }
+
+        /* ПОИСК */
+        .search-wrap { padding: 10px 15px; }
+        .search-input {
+            width: 100%; padding: 10px; border-radius: 10px; border: none;
+            background: var(--block); color: var(--text); font-size: 16px; outline: none;
+        }
+
+        /* СЕТКА */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        .card { background: var(--block); border-radius: 12px; overflow: hidden; position: relative; }
+
+        /* ОФЛАЙН КАРТИНКА (ГРАДИЕНТ) */
+        .img-placeholder {
+            height: 140px; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 60px;
+        }
+
+        /* КНОПКИ НА КАРТОЧКЕ */
+        .fav-btn {
+            position: absolute; top: 8px; right: 8px;
+            width: 30px; height: 30px; background: rgba(255,255,255,0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .cart-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            width: 36px; height: 36px; background: var(--accent); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 3px 8px rgba(233, 30, 99, 0.4);
+        }
+
+        .info { padding: 10px; }
+        .name { font-weight: 600; font-size: 14px; margin-bottom: 5px; height: 34px; overflow: hidden; }
+        .price { font-weight: 800; font-size: 15px; }
+
+        /* МОДАЛКА */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 100; overflow-y: auto;
+        }
+        .modal-img { height: 300px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+        .modal-content { padding: 20px; }
+        .close-btn {
+            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
+            background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .big-btn {
+            width: 100%; padding: 15px; background: var(--accent); color: white;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 20px;
+        }
+
+        /* МЕНЮ */
+        nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+            background: var(--bg); border-top: 1px solid #eee;
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; color: #999; background: none; border: none;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; margin-bottom: 3px; }
+        .badge {
+            position: absolute; top: 5px; margin-left: 15px; background: red; color: white;
+            font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;
+        }
+
+        /* СТРАНИЦЫ */
+        .page { display: none; animation: fade 0.2s; }
+        .page.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* КОРЗИНА СПИСОК */
+        .cart-row { display: flex; align-items: center; gap: 10px; background: var(--block); padding: 10px; margin: 10px 15px; border-radius: 10px; }
+        .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-circle">🌸</div>
+        <div class="brand">Flower Shop</div>
+    </header>
+
+    <!-- 1. ГЛАВНАЯ -->
+    <div id="p-home" class="page active">
+        <div class="search-wrap">
+            <input type="text" class="search-input" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
+        </div>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- 2. КОРЗИНА -->
+    <div id="p-cart" class="page">
+        <h2 style="padding: 0 15px;">Корзина</h2>
+        <div id="cart-items"></div>
+        <div style="padding: 15px; text-align: right; font-weight: bold; font-size: 18px;">
+            Итого: <span id="total-price">0</span> ₽
+        </div>
+        <div style="padding: 15px;">
+            <button class="big-btn" onclick="checkout()">ОФОРМИТЬ</button>
+        </div>
+    </div>
+
+    <!-- 3. ИЗБРАННОЕ -->
+    <div id="p-fav" class="page">
+        <h2 style="padding: 0 15px;">Избранное ❤️</h2>
+        <div class="grid" id="fav-grid"></div>
+        <p id="fav-empty" style="text-align:center; color:#999; display:none">Пусто</p>
+    </div>
+
+    <!-- 4. ПРОФИЛЬ -->
+    <div id="p-prof" class="page">
+        <div style="text-align: center; padding: 30px;">
+            <div style="width: 80px; height: 80px; background: #eee; border-radius: 50%; margin: 0 auto; display:flex; align-items:center; justify-content:center; font-size:40px;" id="u-ava">👤</div>
+            <h2 id="u-name" style="margin-top: 10px;">Гость</h2>
+        </div>
+        <div style="padding: 0 15px;">
+            <div class="cart-row">📞 Поддержка</div>
+            <div class="cart-row">⚙️ Настройки</div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА -->
+    <div id="modal">
+        <div class="close-btn" onclick="closeModal()">×</div>
+        <div class="modal-img" id="m-img"></div>
+        <div class="modal-content">
+            <h1 id="m-title" style="margin: 0;"></h1>
+            <div id="m-price" style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 10px 0;"></div>
+            <p id="m-desc" style="line-height: 1.5; color: #555;"></p>
+            <button class="big-btn" onclick="addCurrentToCart()">В корзину</button>
+        </div>
+    </div>
+
+    <!-- МЕНЮ -->
+    <nav>
+        <button class="nav-item active" onclick="go('home', this)"><span class="nav-icon">🏠</span>Каталог</button>
+        <button class="nav-item" style="position:relative" onclick="go('cart', this)">
+            <span class="badge" id="badge">0</span>
+            <span class="nav-icon">🛒</span>Корзина
+        </button>
+        <button class="nav-item" onclick="go('fav', this)"><span class="nav-icon">❤️</span>Избранное</button>
+        <button class="nav-item" onclick="go('prof', this)"><span class="nav-icon">👤</span>Профиль</button>
+    </nav>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // --- БЫСТРАЯ БАЗА (ОФЛАЙН КАРТИНКИ - CSS ГРАДИЕНТЫ) ---
+        // bg: цвет фона карточки
+        // icon: эмодзи цветка
+        const db = [
+            { id: 1, name: "Букет 'Нежность'", price: 3500, desc: "Розы и эвкалипт. Очень стойкие.", icon: "💐", bg: "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)" },
+            { id: 2, name: "101 Роза", price: 15000, desc: "Огромный букет красных роз.", icon: "🌹", bg: "linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)" },
+            { id: 3, name: "Тюльпаны Микс", price: 2500, desc: "Яркие весенние цветы.", icon: "🌷", bg: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)" },
+            { id: 4, name: "Пионы", price: 4500, desc: "Крупные розовые пионы.", icon: "🌺", bg: "linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)" },
+            { id: 5, name: "Подсолнухи", price: 3000, desc: "Солнечное настроение.", icon: "🌻", bg: "linear-gradient(to top, #fdcbf1 0%, #e6dee9 100%)" },
+            { id: 6, name: "Лаванда", price: 1500, desc: "Ароматный сухоцвет.", icon: "🌾", bg: "linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)" },
+            { id: 7, name: "Ромашки", price: 2000, desc: "Полевые цветы.", icon: "🌼", bg: "linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)" },
+            { id: 8, name: "Сакура", price: 4000, desc: "Ветка цветущей вишни.", icon: "🌸", bg: "linear-gradient(to top, #dad4ec 0%, #dad4ec 1%, #f3e7e9 100%)" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart_v2')) || [];
+        let favs = JSON.parse(localStorage.getItem('favs_v2')) || [];
+        let currentId = null;
+
+        // ОТРИСОВКА КАРТОЧКИ
+        function drawCard(p) {
+            const isFav = favs.includes(p.id) ? 'active' : '';
+            const heart = isFav ? '❤️' : '🤍';
+            return `
+                <div class="card">
+                    <div class="fav-btn" onclick="toggleFav(${p.id}, event)">${heart}</div>
+                    <div class="img-placeholder" style="background: ${p.bg}" onclick="openModal(${p.id})">${p.icon}</div>
+                    <div class="info">
+                        <div class="name" onclick="openModal(${p.id})">${p.name}</div>
+                        <div class="price">${p.price} ₽</div>
+                    </div>
+                    <div class="cart-btn" onclick="add(${p.id}, event)">+</div>
+                </div>
+            `;
+        }
+
+        // ГЛАВНАЯ ОТРИСОВКА
+        function render(list = db, containerId = 'grid') {
+            document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join('');
+        }
+
+        // ПОИСК
+        function doSearch(val) {
+            const found = db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()));
+            render(found);
+        }
+
+        // МОДАЛКА
+        function openModal(id) {
+            currentId = id;
+            const p = db.find(x => x.id === id);
+            document.getElementById('m-img').innerText = p.icon;
+            document.getElementById('m-img').style.background = p.bg;
+            document.getElementById('m-title').innerText = p.name;
+            document.getElementById('m-price').innerText = p.price + ' ₽';
+            document.getElementById('m-desc').innerText = p.desc;
+            document.getElementById('modal').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function addCurrentToCart() { add(currentId); closeModal(); }
+
+        // КОРЗИНА
+        function add(id, e) {
+            if(e) e.stopPropagation();
+            cart.push(db.find(x => x.id === id));
+            save(); updateUI();
+            tg.HapticFeedback.impactOccurred('light');
+        }
+        function updateUI() {
+            document.getElementById('badge').style.display = cart.length ? 'block' : 'none';
+            document.getElementById('badge').innerText = cart.length;
+            
+            // Рендер корзины
+            const total = cart.reduce((a,b) => a + b.price, 0);
+            document.getElementById('total-price').innerText = total;
+            document.getElementById('cart-items').innerHTML = cart.map((p, i) => `
+                <div class="cart-row">
+                    <div class="cart-img-mini" style="background:${p.bg}">${p.icon}</div>
+                    <div style="flex:1"><b>${p.name}</b><br>${p.price} ₽</div>
+                    <div onclick="del(${i})" style="color:red; font-weight:bold; padding:5px">✕</div>
+                </div>
+            `).join('');
+        }
+        function del(i) { cart.splice(i, 1); save(); updateUI(); }
+        function save() { 
+            localStorage.setItem('cart_v2', JSON.stringify(cart)); 
+            localStorage.setItem('favs_v2', JSON.stringify(favs));
+        }
+
+        // ИЗБРАННОЕ
+        function toggleFav(id, e) {
+            e.stopPropagation();
+            const idx = favs.indexOf(id);
+            if(idx < 0) favs.push(id); else favs.splice(idx, 1);
+            save();
+            render(); // Обновить сердца на главной
+            renderFavs(); // Обновить вкладку избранного
+        }
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            render(list, 'fav-grid');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+        }
+
+        // НАВИГАЦИЯ
+        function go(id, btn) {
+            document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            btn.classList.add('active');
+            if(id === 'fav') renderFavs();
+        }
+
+        // ОФОРМЛЕНИЕ
+        function checkout() {
+            if(!cart.length) return;
+            const total = cart.reduce((a,b) => a + b.price, 0);
+            tg.sendData(JSON.stringify({ total, items: cart.map(x => x.name) }));
+        }
+
+        // ПРОФИЛЬ
+        if(tg.initDataUnsafe?.user) {
+            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+            if(tg.initDataUnsafe.user.photo_url)
+                document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
+        }
+
+        // START
+        render();
+        updateUI();
+    </script>
+</body>
 </html>
