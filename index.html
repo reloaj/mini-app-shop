@@ -3,20 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cotton Dark</title>
+    <title>Cotton Profile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            /* --- ТЕМНАЯ ТЕМА (DARK MODE) --- */
-            --bg: #000000;           /* Идеально черный фон */
-            --block: #1C1C1E;        /* Темно-серые карточки (iOS style) */
-            --text: #FFFFFF;         /* Белый текст */
-            --text-sec: #8E8E93;     /* Серый текст для второстепенного */
-            --input-bg: #2C2C2E;     /* Фон поиска */
-            
-            --accent: #E75A7C;       /* Пыльная роза (Акцент) */
+            /* Переменные для смены темы */
+            --bg: #000000;
+            --block: #1C1C1E;
+            --text: #FFFFFF;
+            --text-sec: #8E8E93;
+            --input-bg: #2C2C2E;
+            --accent: #E75A7C;
             --green: #32D74B;
             --red: #FF453A;
+            --nav-bg: rgba(28, 28, 30, 0.95);
+            --border: rgba(255,255,255,0.1);
+        }
+
+        /* Светлая тема (активируется классом .light-theme) */
+        body.light-theme {
+            --bg: #F2F2F7;
+            --block: #FFFFFF;
+            --text: #000000;
+            --text-sec: #8E8E93;
+            --input-bg: #E5E5EA;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --border: rgba(0,0,0,0.1);
         }
 
         body {
@@ -25,51 +37,39 @@
             margin: 0; padding: 0; padding-bottom: 85px;
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
+            transition: background 0.3s, color 0.3s; /* Плавная смена темы */
         }
 
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
 
-        /* АНИМАЦИИ */
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* --- ШАПКА --- */
         header {
-            position: sticky; top: 0; background: rgba(0,0,0,0.8); /* Полупрозрачный черный */
-            backdrop-filter: blur(20px); /* Сильное размытие */
-            z-index: 20; padding: 12px 16px;
+            position: sticky; top: 0; background: var(--nav-bg);
+            backdrop-filter: blur(20px); z-index: 20; padding: 12px 16px;
             display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
         }
-        
-        /* Логотип ХЛОПОК (SVG) */
-        .logo-icon {
-            width: 32px; height: 32px;
-            fill: var(--accent);
-        }
-        .brand { font-weight: 700; font-size: 19px; letter-spacing: 0.5px; color: white; }
+        .logo-icon { width: 32px; height: 32px; fill: var(--accent); }
+        .brand { font-weight: 700; font-size: 19px; letter-spacing: 0.5px; color: var(--text); }
 
-        /* --- ПОИСК --- */
         .search-wrap { padding: 12px 16px; }
         .search-input {
             width: 100%; padding: 10px 12px; border-radius: 10px; border: none;
             background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
             box-sizing: border-box; transition: 0.2s;
         }
-        .search-input::placeholder { color: #636366; }
-        .search-input:focus { background: #3A3A3C; }
+        .search-input:focus { background: var(--block); }
 
-        /* --- СЕТКА ТОВАРОВ --- */
-        .grid { 
-            display: grid; gap: 12px; padding: 0 16px;
-            grid-template-columns: 1fr 1fr;
-        }
+        .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
         .card { 
             background: var(--block); border-radius: 14px; overflow: hidden; position: relative; 
             animation: fadeUp 0.4s backwards; transition: transform 0.1s; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Глубокая тень */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .card:active { transform: scale(0.97); }
 
@@ -78,135 +78,95 @@
         .slider::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        
         .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
         .dot { width: 4px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 
-        /* КНОПКИ НА КАРТОЧКЕ */
         .fav-btn {
-            position: absolute; top: 8px; right: 8px;
-            width: 30px; height: 30px;
-            background: rgba(30, 30, 30, 0.6); /* Темная подложка */
-            backdrop-filter: blur(5px);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 5;
-            transition: 0.2s;
+            position: absolute; top: 8px; right: 8px; width: 30px; height: 30px;
+            background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(5px);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 5; transition: 0.2s;
         }
+        .light-theme .fav-btn { background: rgba(255,255,255,0.8); } /* Светлая кнопка для светлой темы */
+        
         .fav-icon-svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+        .light-theme .fav-icon-svg { stroke: #333; }
+        
         .fav-btn.is-active .fav-icon-svg { fill: var(--red); stroke: var(--red); }
         .fav-btn.active-anim { animation: pop 0.3s ease; }
 
         .cart-btn {
-            position: absolute; bottom: 10px; right: 10px;
-            width: 34px; height: 34px;
-            background: var(--accent); color: white;
-            border-radius: 10px;
+            position: absolute; bottom: 10px; right: 10px; width: 34px; height: 34px;
+            background: var(--accent); color: white; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 5;
-            box-shadow: 0 4px 10px rgba(231, 90, 124, 0.4);
+            cursor: pointer; z-index: 5; box-shadow: 0 4px 10px rgba(231, 90, 124, 0.4);
         }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
         .cart-icon-svg { width: 18px; height: 18px; fill: white; }
 
         .info { padding: 10px; padding-right: 45px; }
-        .name { 
-            font-weight: 500; font-size: 13px; margin-bottom: 4px; 
-            height: 32px; line-height: 1.25; overflow: hidden; 
-            color: var(--text);
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-        }
+        .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
 
-        /* --- НИЖНЕЕ МЕНЮ (DARK) --- */
         nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: 56px;
-            background: rgba(28, 28, 30, 0.95); /* Почти черный */
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background: var(--nav-bg); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
+            transition: background 0.3s;
         }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 10px; color: #636366; background: none; border: none; cursor: pointer;
-            width: 25%; height: 100%;
-            transition: color 0.2s;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #636366; background: none; border: none; cursor: pointer; width: 25%; height: 100%; transition: color 0.2s; }
         .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; fill: #636366; transition: fill 0.2s; }
-        
         .nav-item.active { color: var(--accent); }
         .nav-item.active .nav-icon { fill: var(--accent); }
-        
-        .badge {
-            position: absolute; top: 4px; margin-left: 14px;
-            background: var(--red); color: white;
-            font-size: 9px; font-weight: bold;
-            padding: 1px 5px; border-radius: 8px; display: none;
-            animation: pop 0.3s;
-        }
+        .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
-        /* --- КОРЗИНА СПИСОК --- */
-        .cart-row { 
-            display: flex; align-items: center; gap: 12px; 
-            background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; 
-        }
+        .cart-row { display: flex; align-items: center; gap: 12px; background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; }
         .cart-img-mini { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
-        .qty-ctrl { 
-            display: flex; align-items: center; gap: 10px; 
-            background: #2C2C2E; padding: 4px; border-radius: 8px; 
-        }
-        .qty-btn { 
-            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; 
-            background: #3A3A3C; color: white; border-radius: 6px; font-weight: bold; cursor: pointer; 
-        }
-        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: white; }
+        .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; }
+        .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
 
-        /* --- МОДАЛКА (ОБНОВЛЕНАЯ) --- */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; overflow-y: auto; }
+        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: #000; min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
-        
-        /* КНОПКА НАЗАД (СТРЕЛКА) */
-        .back-btn { 
-            position: absolute; top: 15px; left: 15px; /* СЛЕВА! */
-            width: 40px; height: 40px; 
-            background: rgba(0,0,0,0.3); /* Темная полупрозрачная */
-            backdrop-filter: blur(10px);
-            color: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; z-index: 20; 
-        }
+        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
+        .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         .back-icon-svg { width: 24px; height: 24px; fill: white; }
-
-        .fav-text-btn { 
-            width: 100%; padding: 14px; background: #1C1C1E; 
-            border: 1px solid #333; color: white; border-radius: 12px; 
-            font-size: 15px; font-weight: 600; margin-top: 5px; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; 
-        }
-        .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
         
-        .big-btn { 
-            width: 100%; padding: 16px; background: var(--accent); color: white; 
-            border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; 
-            cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); 
-        }
+        .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
+        .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); }
+
+        /* ПРОФИЛЬ КНОПКИ */
+        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--block); margin-bottom: 1px; cursor: pointer; }
+        .settings-item:first-child { border-radius: 14px 14px 0 0; }
+        .settings-item:last-child { border-radius: 0 0 14px 14px; }
+        .settings-item:active { background: var(--input-bg); }
+        .settings-icon { margin-right: 10px; font-size: 18px; }
+        .settings-arrow { color: var(--text-sec); font-size: 14px; }
+
+        /* ПЕРЕКЛЮЧАТЕЛЬ (TOGGLE) */
+        .toggle-switch { position: relative; width: 50px; height: 30px; }
+        .toggle-input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #39393D; transition: .4s; border-radius: 34px; }
+        .light-theme .toggle-slider { background-color: #E9E9EA; }
+        .toggle-slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-input:checked + .toggle-slider { background-color: var(--green); }
+        .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
         .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
         .head-title { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .clear-btn { color: var(--text-sec); font-size: 13px; background: none; border: none; cursor: pointer; }
-
         .page { display: none; }
         .page.active { display: block; }
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
-        
         #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); }
-        .ptr-icon { width: 20px; height: 20px; border: 2px solid #333; border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
@@ -215,7 +175,6 @@
 
     <div class="app-container">
         <header>
-            <!-- SVG ЛОГОТИП ХЛОПКА -->
             <svg class="logo-icon" viewBox="0 0 512 512">
                 <path d="M256 64c-50 0-94 28-118 70 0 0-14 0-14 0 -50 0-90 40-90 90 0 45 33 82 76 89 5 42 42 75 86 75 24 0 46-9 62-25 16 16 38 25 62 25 44 0 81-33 86-75 43-7 76-44 76-89 0-50-40-90-90-90 0 0-14 0-14 0C350 92 306 64 256 64z" />
             </svg>
@@ -226,7 +185,7 @@
         <div id="p-home" class="page active">
             <div id="ptr-spinner"><div class="ptr-icon"></div></div>
             <div class="search-wrap">
-                <input type="text" class="search-input" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
+                <input type="text" class="search-input" placeholder="Поиск..." oninput="doSearch(this.value)">
             </div>
             <div class="grid" id="grid"></div>
         </div>
@@ -260,50 +219,91 @@
         <!-- 4. ПРОФИЛЬ -->
         <div id="p-prof" class="page">
             <div style="text-align: center; padding: 40px 20px;">
-                <div style="width: 80px; height: 80px; background: #1C1C1E; border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:40px; border: 2px solid #333;" id="u-ava">👤</div>
+                <div style="width: 80px; height: 80px; background: var(--block); border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:40px; border: 2px solid var(--border);" id="u-ava">👤</div>
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Гость</h2>
             </div>
             <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
-                <div class="cart-row">📞 Поддержка</div>
-                <div class="cart-row">⚙️ Настройки</div>
+                
+                <!-- КНОПКА ПОДДЕРЖКИ -->
+                <div class="settings-item" onclick="openSupport()">
+                    <div style="display:flex; align-items:center"><span class="settings-icon">💬</span> Поддержка</div>
+                    <div class="settings-arrow">ᐳ</div>
+                </div>
+                
+                <!-- КНОПКА НАСТРОЙКИ -->
+                <div class="settings-item" onclick="openSettings()">
+                    <div style="display:flex; align-items:center"><span class="settings-icon">⚙️</span> Настройки</div>
+                    <div class="settings-arrow">ᐳ</div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛКА -->
+    <!-- МОДАЛКА ТОВАРА -->
     <div id="modal">
-        <!-- КНОПКА НАЗАД (СТРЕЛКА ВЛЕВО) -->
         <div class="back-btn" onclick="closeModal()">
             <svg class="back-icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </div>
-
         <div class="modal-slider-wrap"><div class="modal-slider" id="m-slider"></div></div>
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-            <p id="m-desc" style="line-height: 1.6; color: #aaa; margin-bottom: 25px; font-size: 15px;"></p>
+            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
             <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА НАСТРОЕК -->
+    <div id="settings-modal">
+        <div style="padding: 20px;">
+            <div style="display:flex; align-items:center; margin-bottom: 20px;">
+                <div class="back-btn" style="position:static; margin-right:15px; background:var(--block);" onclick="closeSettings()">
+                    <svg class="back-icon-svg" style="fill:var(--text)" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </div>
+                <h2 style="margin:0">Настройки</h2>
+            </div>
+
+            <div style="background: var(--block); border-radius: 14px; overflow:hidden;">
+                <!-- СМЕНА ТЕМЫ -->
+                <div class="settings-item" style="cursor:default">
+                    <div style="display:flex; align-items:center"><span class="settings-icon">🌓</span> Темная тема</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="toggle-input" id="theme-toggle" onchange="toggleTheme()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <!-- СМЕНА ЯЗЫКА (ЗАГЛУШКА) -->
+                <div class="settings-item" style="cursor:default">
+                    <div style="display:flex; align-items:center"><span class="settings-icon">🌐</span> Язык (Language)</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="toggle-input" id="lang-toggle" onchange="toggleLang()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 
     <nav>
         <button class="nav-item active" onclick="go('home', this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span>Каталог</span>
+            <span class="nav-text">Каталог</span>
         </button>
         <button class="nav-item" style="position:relative" onclick="go('cart', this)">
             <span class="badge" id="badge">0</span>
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16.53 11.06L15.45 13H9.55l-1.08-1.94c-.16-.28-.25-.61-.25-.96 0-1.1.9-2 2-2h3.58l-3.5-6.06L12 1.34l4.23 7.37C16.66 9.08 16.75 9.53 16.53 11.06zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM4.05 13h15.9l-.94 2H5.21l-1.16-2z"/></svg>
-            <span>Корзина</span>
+            <span class="nav-text">Корзина</span>
         </button>
         <button class="nav-item" onclick="go('fav', this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-            <span>Избранное</span>
+            <span class="nav-text">Избранное</span>
         </button>
         <button class="nav-item" onclick="go('prof', this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            <span>Профиль</span>
+            <span class="nav-text">Профиль</span>
         </button>
     </nav>
 
@@ -312,7 +312,10 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // БАЗА ДАННЫХ
+        // ---------------- ЗАМЕНИ 'DUROV' НА СВОЙ НИК (БЕЗ @) ----------------
+        const SUPPORT_USERNAME = 'DUROV'; 
+        // --------------------------------------------------------------------
+
         const db = [
             { id: 1, name: "Гелихризум со стабилизированной розой", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
             { id: 2, name: "Корзиночка с ароматным нобилисом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Лист декоративный - 1 шт. Корзина трикотажная - 1 шт. Белка декоративная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
@@ -326,27 +329,53 @@
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
         let currentId = null;
 
-        // --- ЛОГИКА PULL TO REFRESH ---
-        let startY = 0;
-        const homePage = document.getElementById('p-home');
-        const spinner = document.getElementById('ptr-spinner');
+        // --- ЛОГИКА ТЕМЫ ---
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+        
+        // Загрузка темы
+        if(localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-toggle').checked = true; // Выключаем (так как toggle включен = светлая)
+        } else {
+            document.getElementById('theme-toggle').checked = false; // По умолчанию темная
+        }
 
-        homePage.addEventListener('touchstart', e => { if(homePage.scrollTop === 0) startY = e.touches[0].clientY; });
-        homePage.addEventListener('touchmove', e => {
-            const y = e.touches[0].clientY;
-            const diff = y - startY;
-            if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
-        });
-        homePage.addEventListener('touchend', e => {
-            if(parseInt(spinner.style.height) > 60) {
-                tg.HapticFeedback.impactOccurred('medium');
-                setTimeout(() => { render(); spinner.style.height = '0px'; }, 500);
-            } else { spinner.style.height = '0px'; }
-        });
+        // --- СМЕНА ЯЗЫКА (ДЕМО) ---
+        function toggleLang() {
+            const isEng = document.getElementById('lang-toggle').checked;
+            const titles = document.querySelectorAll('.nav-text');
+            if(isEng) {
+                titles[0].innerText = 'Catalog';
+                titles[1].innerText = 'Cart';
+                titles[2].innerText = 'Saved';
+                titles[3].innerText = 'Profile';
+                document.querySelector('.brand').innerText = 'Cotton Flowers';
+            } else {
+                titles[0].innerText = 'Каталог';
+                titles[1].innerText = 'Корзина';
+                titles[2].innerText = 'Избранное';
+                titles[3].innerText = 'Профиль';
+                document.querySelector('.brand').innerText = 'Cotton Flowers';
+            }
+        }
 
-        // --- ФУНКЦИИ ---
-        document.addEventListener('contextmenu', e => { if(e.target.tagName==='IMG') e.preventDefault(); });
+        // --- ОТКРЫТИЕ ПОДДЕРЖКИ ---
+        function openSupport() {
+            tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`);
+        }
 
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('modal-active');
+        }
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('modal-active');
+        }
+
+        // --- СТАНДАРТНЫЕ ФУНКЦИИ ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -358,55 +387,29 @@
                         <svg class="fav-icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     </div>
                     <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-                    <div class="info">
-                        <div class="name">${p.name}</div>
-                        <div class="price">${p.price} ₽</div>
-                    </div>
-                    <div class="cart-btn" onclick="addOne(${p.id}, event)">
-                        <svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M4.05 13h15.9l-.94 2H5.21l-1.16-2zM20 6h-3.17l-4-5.2c-.22-.29-.63-.29-.86 0L8 6H4.83c-.37 0-.62.4-.44.73l3.61 6.27h8l3.61-6.27c.18-.33-.07-.73-.44-.73zM12 2.8L14.46 6H9.54L12 2.8zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                    </div>
+                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
+                    <div class="cart-btn" onclick="addOne(${p.id}, event)"><svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M4.05 13h15.9l-.94 2H5.21l-1.16-2zM20 6h-3.17l-4-5.2c-.22-.29-.63-.29-.86 0L8 6H4.83c-.37 0-.62.4-.44.73l3.61 6.27h8l3.61-6.27c.18-.33-.07-.73-.44-.73zM12 2.8L14.46 6H9.54L12 2.8zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg></div>
                 </div>`;
         }
 
-        function render(list = db, containerId = 'grid') {
-            document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join('');
-        }
-
-        function doSearch(val) {
-            render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase())));
-        }
+        function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
+        function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
             const btn = document.getElementById(`fav-btn-${id}`);
-            if(idx < 0) {
-                favs.push(id);
-                if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); }
-                tg.HapticFeedback.impactOccurred('medium');
-            } else {
-                favs.splice(idx, 1);
-                if(btn) { btn.classList.remove('is-active'); }
-                tg.HapticFeedback.impactOccurred('light');
-            }
-            save();
-            if(currentId === id) updateModalFavBtn();
-            if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
+            if(idx < 0) { favs.push(id); if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } tg.HapticFeedback.impactOccurred('medium'); }
+            else { favs.splice(idx, 1); if(btn) { btn.classList.remove('is-active'); } tg.HapticFeedback.impactOccurred('light'); }
+            save(); if(currentId === id) updateModalFavBtn(); if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
         }
-
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
-
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
             if(favs.includes(currentId)) { btn.innerHTML='❤️ В избранном'; btn.classList.add('active'); }
             else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
         }
-
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            render(list, 'fav-grid');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-        }
+        function renderFavs() { render(db.filter(p => favs.includes(p.id)), 'fav-grid'); document.getElementById('fav-empty').style.display = favs.length ? 'none' : 'block'; }
         function clearFav() { if(confirm("Удалить всё?")) { favs = []; save(); render(); renderFavs(); } }
 
         function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
@@ -415,56 +418,34 @@
 
         function updateCartUI() {
             const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none';
-            badge.innerText = cart.length;
-            badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
-
+            badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            let total = 0;
-            const ids = Object.keys(grouped);
-            
-            if (!ids.length) {
-                document.getElementById('cart-items').innerHTML = '';
-                document.getElementById('cart-empty').style.display = 'block';
-                document.getElementById('cart-footer').style.display = 'none';
-                document.getElementById('total-price').innerText = 0;
-                return;
-            }
-            document.getElementById('cart-empty').style.display = 'none';
-            document.getElementById('cart-footer').style.display = 'block';
-
+            let total = 0; const ids = Object.keys(grouped);
+            if (!ids.length) { document.getElementById('cart-items').innerHTML = ''; document.getElementById('cart-empty').style.display = 'block'; document.getElementById('cart-footer').style.display = 'none'; document.getElementById('total-price').innerText = 0; return; }
+            document.getElementById('cart-empty').style.display = 'none'; document.getElementById('cart-footer').style.display = 'block';
             document.getElementById('cart-items').innerHTML = ids.map(id => {
-                const p = db.find(x => x.id == id);
-                total += p.price * grouped[id];
-                return `<div class="cart-row"><img src="${p.images[0]}" class="cart-img-mini"><div style="flex:1"><div style="font-weight:600;font-size:13px;">${p.name}</div><div style="color:#888;font-size:13px;">${p.price} ₽</div></div><div class="qty-ctrl"><div class="qty-btn" onclick="removeOne(${p.id})">−</div><div class="qty-val">${grouped[id]}</div><div class="qty-btn" onclick="addOne(${p.id})">+</div></div></div>`;
+                const p = db.find(x => x.id == id); total += p.price * grouped[id];
+                return `<div class="cart-row"><img src="${p.images[0]}" class="cart-img-mini"><div style="flex:1"><div style="font-weight:500;font-size:13px;">${p.name}</div><div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div></div><div class="qty-ctrl"><div class="qty-btn" onclick="removeOne(${p.id})">−</div><div class="qty-val">${grouped[id]}</div><div class="qty-btn" onclick="addOne(${p.id})">+</div></div></div>`;
             }).join('');
             document.getElementById('total-price').innerText = total;
         }
 
         function openModal(id) {
-            currentId = id;
-            const p = db.find(x => x.id === id);
+            currentId = id; const p = db.find(x => x.id === id);
             document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
-            document.getElementById('m-title').innerText = p.name;
-            document.getElementById('m-price').innerText = p.price + ' ₽';
-            document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn();
-            document.getElementById('modal').classList.add('modal-active');
+            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
+            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
         }
         function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
         function go(id, btn) {
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-            btn.classList.add('active');
-            if(id === 'fav') renderFavs();
-            if(id === 'cart') updateCartUI();
+            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
+            if(id === 'fav') renderFavs(); if(id === 'cart') updateCartUI();
         }
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
-
         function checkout() {
             if(!cart.length) return;
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
@@ -477,6 +458,19 @@
             document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
+
+        // --- PULL TO REFRESH ---
+        let startY = 0;
+        const homePage = document.getElementById('p-home');
+        const spinner = document.getElementById('ptr-spinner');
+        homePage.addEventListener('touchstart', e => { if(homePage.scrollTop === 0) startY = e.touches[0].clientY; });
+        homePage.addEventListener('touchmove', e => {
+            const diff = e.touches[0].clientY - startY;
+            if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
+        });
+        homePage.addEventListener('touchend', e => {
+            if(parseInt(spinner.style.height) > 60) { tg.HapticFeedback.impactOccurred('medium'); setTimeout(() => { render(); spinner.style.height = '0px'; }, 500); } else { spinner.style.height = '0px'; }
+        });
 
         render();
         updateCartUI();
