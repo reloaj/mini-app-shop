@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop Christmas</title>
+    <title>Flower Shop New Year</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -18,9 +18,57 @@
         body {
             background: var(--bg); color: var(--text);
             font-family: system-ui, -apple-system, sans-serif;
-            margin: 0; padding: 0; padding-bottom: 90px; /* Чуть больше места снизу */
+            margin: 0; padding: 0; padding-bottom: 90px;
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
+        }
+
+        /* --- НОВОГОДНЯЯ ГИРЛЯНДА NOBILIS (ВЕРХ) --- */
+        .garland-wrap {
+            position: fixed; top: -15px; left: 0; width: 100%; height: 80px;
+            z-index: 999; pointer-events: none; /* Пропускает клики сквозь себя */
+            display: flex; justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Ветка Нобилиса (Картинка) */
+        .nobilis-branch {
+            width: 110%; /* Чуть шире экрана */
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+
+        /* Огоньки */
+        .lights-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: space-around; padding-top: 35px;
+        }
+
+        .light {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            position: relative;
+            animation: flash 2s infinite alternate;
+        }
+
+        /* Свечение */
+        .light::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            border-radius: 50%; filter: blur(5px); opacity: 0.6;
+            background: inherit;
+        }
+
+        /* Цвета огоньков */
+        .l-red { background: #ff3b30; box-shadow: 0 0 10px #ff3b30; animation-delay: 0s; }
+        .l-gold { background: #ffcc00; box-shadow: 0 0 10px #ffcc00; animation-delay: 0.5s; }
+        .l-blue { background: #2481cc; box-shadow: 0 0 10px #2481cc; animation-delay: 1s; }
+        .l-green { background: #4caf50; box-shadow: 0 0 10px #4caf50; animation-delay: 1.5s; }
+
+        @keyframes flash {
+            0% { opacity: 0.4; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.2); }
         }
 
         /* ЗАЩИТА КАРТИНОК */
@@ -29,23 +77,17 @@
         /* АНИМАЦИИ */
         @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* МЕРЦАНИЕ ГИРЛЯНДЫ */
-        @keyframes twinkle {
-            0% { opacity: 0.6; filter: brightness(1); }
-            100% { opacity: 1; filter: brightness(1.3); }
-        }
 
         /* ШАПКА */
         header {
             position: sticky; top: 0; background: var(--bg); z-index: 20;
             padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; align-items: center; gap: 10px;
+            padding-top: 25px; /* Отступ под гирлянду */
         }
         .logo-circle { width: 35px; height: 35px; background: var(--accent); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .brand { font-weight: 800; font-size: 18px; }
 
-        /* ЭЛЕМЕНТЫ UI */
         .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-top: 15px; margin-bottom: 10px; }
         .head-title { font-size: 22px; font-weight: 800; margin: 0; }
         .clear-btn { color: #999; font-size: 14px; background: none; border: none; cursor: pointer; }
@@ -96,67 +138,42 @@
         .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(233, 30, 99, 0.05); }
         .big-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer; }
 
-        /* --- НОВОГОДНЕЕ МЕНЮ --- */
+        /* МЕНЮ (ЧИСТОЕ, БЕЗ СТАРОЙ ГИРЛЯНДЫ) */
         nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; /* Чуть выше */
-            background: var(--bg);
-            /* Современная тень вместо рамки */
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+            background: var(--bg); border-top: 1px solid #eee;
             display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
         }
-
-        /* --- ГИРЛЯНДА --- */
-        /* Провод */
-        nav::before {
-            content: ''; position: absolute; top: -2px; left: 0; width: 100%; height: 3px;
-            background: #444; z-index: 51;
-        }
-        /* Огоньки (рисуем через градиенты) */
-        nav::after {
-            content: ''; position: absolute; top: 0px; left: 0; width: 100%; height: 12px;
-            z-index: 52;
-            background-image: 
-                radial-gradient(circle at 50% 0, #ff3b30 4px, transparent 5px), /* Красный */
-                radial-gradient(circle at 50% 0, #4caf50 4px, transparent 5px), /* Зеленый */
-                radial-gradient(circle at 50% 0, #ffcc00 4px, transparent 5px), /* Золотой */
-                radial-gradient(circle at 50% 0, #2481cc 4px, transparent 5px); /* Синий */
-            background-size: 40px 15px; /* Повторяем каждые 40px */
-            background-position: 0 0, 10px 0, 20px 0, 30px 0; /* Сдвигаем цвета */
-            animation: twinkle 1.5s infinite alternate; /* Мигание */
-        }
-
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 10px; color: #bbb; background: none; border: none; cursor: pointer;
-            width: 25%; height: 100%;
-            transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; color: #999; background: none; border: none; cursor: pointer;
+            transition: 0.2s;
         }
+        .nav-item.active { color: var(--accent); transform: scale(1.1); }
+        .nav-icon { width: 24px; height: 24px; margin-bottom: 3px; fill: #999; transition: 0.2s; }
+        .nav-item.active .nav-icon { fill: var(--accent); }
         
-        /* Иконки SVG */
-        .nav-icon {
-            width: 24px; height: 24px; margin-bottom: 4px;
-            fill: #bbb; /* Серый цвет по умолчанию */
-            transition: 0.3s;
-        }
-
-        /* Активное состояние */
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active .nav-icon { 
-            fill: var(--accent); 
-            transform: translateY(-2px); /* Легкий подскок */
-            filter: drop-shadow(0 4px 6px rgba(233, 30, 99, 0.3)); /* Свечение */
-        }
-
-        .badge { position: absolute; top: 8px; margin-left: 18px; background: red; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none; animation: pop 0.3s; z-index: 60;}
-
-        .page { display: none; }
-        .page.active { display: block; }
+        .badge { position: absolute; top: 5px; margin-left: 15px; background: red; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none; animation: pop 0.3s; z-index: 60;}
         .empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px;}
 
     </style>
 </head>
 <body>
+
+    <!-- НОВОГОДНЯЯ ГИРЛЯНДА СВЕРХУ -->
+    <div class="garland-wrap">
+        <!-- Ссылка на ветку Нобилиса (прозрачный PNG) -->
+        <img src="https://png.pngtree.com/png-clipart/20220910/original/pngtree-christmas-border-with-pine-branches-png-image_8524677.png" class="nobilis-branch">
+        <div class="lights-container">
+            <div class="light l-red"></div>
+            <div class="light l-gold"></div>
+            <div class="light l-blue"></div>
+            <div class="light l-green"></div>
+            <div class="light l-red"></div>
+            <div class="light l-gold"></div>
+        </div>
+    </div>
 
     <header>
         <div class="logo-circle">🌿</div>
@@ -224,29 +241,22 @@
         </div>
     </div>
 
-    <!-- МЕНЮ С ГИРЛЯНДОЙ И SVG ИКОНКАМИ -->
+    <!-- МЕНЮ С SVG ИКОНКАМИ -->
     <nav>
         <button class="nav-item active" onclick="go('home', this)">
-            <!-- SVG HOME -->
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             Каталог
         </button>
-        
         <button class="nav-item" style="position:relative" onclick="go('cart', this)">
             <span class="badge" id="badge">0</span>
-            <!-- SVG CART -->
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
             Корзина
         </button>
-        
         <button class="nav-item" onclick="go('fav', this)">
-            <!-- SVG HEART -->
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             Избранное
         </button>
-        
         <button class="nav-item" onclick="go('prof', this)">
-            <!-- SVG PROFILE -->
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             Профиль
         </button>
@@ -270,6 +280,9 @@
         let cart = JSON.parse(localStorage.getItem('cart_v6')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v6')) || [];
         let currentId = null;
+
+        // --- БАЗОВЫЕ ФУНКЦИИ ---
+        document.addEventListener('contextmenu', e => { if(e.target.tagName==='IMG') e.preventDefault(); });
 
         function drawCard(p) {
             const isFav = favs.includes(p.id);
