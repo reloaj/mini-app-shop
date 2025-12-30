@@ -66,6 +66,10 @@
             font-size: 13px; font-weight: 600; display: none;
             align-items: center; gap: 5px; cursor: pointer;
         }
+        /* Кнопка "Удалить все" для Избранного */
+        .del-all-fav-btn {
+            color: var(--red); font-size: 14px; background: none; border: none; cursor: pointer;
+        }
 
         /* АНИМАЦИИ */
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -130,13 +134,30 @@
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
 
-        /* СТРОКА ТОВАРА (КОРЗИНА/ИЗБРАННОЕ) */
+        /* СТРОКА ТОВАРА (КОРЗИНА) */
         .list-row { 
             display: flex; align-items: center; gap: 12px; 
             background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; 
             animation: fadeUp 0.3s;
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        
+        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.3;
+            overflow: hidden;
+            /* Ограничиваем имя 2 строками, чтобы строка не была слишком высокой */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
+        }
+        .cart-item-price {
+            color: var(--text-sec);
+            font-size: 13px;
+            margin-top: 2px;
+        }
         
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
@@ -156,94 +177,12 @@
         .nav-item.active .nav-icon { fill: var(--accent); }
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
-        /* МОДАЛКИ (ОБЩИЕ СТИЛИ) */
-        #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
-        .modal-active { display: block !important; }
-
-        /* -------------------------------------- */
-        /* СТИЛИ ДЛЯ BOTTOM SHEET (ШТОРКИ) */
-        /* -------------------------------------- */
-        #modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 100;
-            transition: background 0.3s;
-        }
-        .light-theme #modal { background: rgba(0, 0, 0, 0.2); }
-        
-        /* Контейнер самой шторки, который выезжает снизу */
-        .sheet-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            max-height: 95vh; 
-            background: var(--bg);
-            border-radius: 20px 20px 0 0;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.4, 1);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-        }
-        #modal.modal-active .sheet-container { transform: translateY(0); }
-
-        /* Прокручиваемая область контента */
-        .modal-scroll-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            /* УДАЛЕНО: overscroll-behavior-y: contain (используем JS фикс) */
-            -webkit-overflow-scrolling: touch; 
-        }
-
-        /* Контент внутри прокручиваемой области */
-        .modal-content { 
-            padding: 0 20px; 
-            max-width: 600px; 
-            margin: 0 auto;
-            background: var(--bg);
-            min-height: 300px;
-            /* !!! КЛЮЧЕВОЙ ФИКС ДЛЯ ПРОБЛЕМЫ С ТЕКСТОМ ПОД КНОПКАМИ !!! */
-            padding-bottom: 100px; 
-        }
-
-        /* Фиксированный футер с кнопками */
-        .modal-sticky-footer {
-            position: sticky;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--bg);
-            padding: 12px 20px;
-            border-top: 1px solid var(--border);
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            flex-shrink: 0;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* Учет iOS bottom bar */
-        }
-        
-        .modal-slider-wrap {
-            width: 100%; 
-            height: 380px; 
-            overflow: hidden; 
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        .back-btn { 
-            position: absolute; top: 15px; left: 15px; 
-            width: 40px; height: 40px; 
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); 
-            color: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; 
-            z-index: 101; 
-        }
+        /* МОДАЛКИ */
+        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
+        .modal-active { display: block !important; animation: fadeUp 0.3s; }
+        .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
+        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
+        .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         .back-icon-svg { width: 24px; height: 24px; fill: white; }
         
         .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
@@ -316,11 +255,10 @@
             <div class="head-row">
                 <h2 class="head-title">Избранное</h2>
                 <div style="display:flex; gap:15px">
-                    <button class="del-selected-btn" id="fav-del-btn" onclick="deleteSelectedFav()">🗑 Удалить</button>
-                    <button class="sel-all-btn" onclick="toggleAllFav()">Выбрать все</button>
+                    <button class="del-all-fav-btn" onclick="clearFav()">🗑 Удалить всё</button>
                 </div>
             </div>
-            <div id="fav-items"></div>
+            <div class="grid" id="fav-items"></div>
             <div class="empty-state" id="fav-empty" style="display:none">Нет любимых товаров 💔</div>
         </div>
 
@@ -342,27 +280,17 @@
         </div>
     </div>
 
-    <div id="modal" onclick="closeModal()">
-        <div class="back-btn" onclick="closeModal(event)">
+    <div id="modal">
+        <div class="back-btn" onclick="closeModal()">
             <svg class="back-icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </div>
-        
-        <div class="sheet-container" onclick="event.stopPropagation()">
-            
-            <div class="modal-slider-wrap"><div class="modal-slider" id="m-slider"></div></div>
-            
-            <div class="modal-scroll-content">
-                <div class="modal-content">
-                    <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2; padding-top: 20px;"></h1>
-                    <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-                    <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
-                    </div>
-            </div>
-
-            <div class="modal-sticky-footer">
-                <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
-                <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
-            </div>
+        <div class="modal-slider-wrap"><div class="modal-slider" id="m-slider"></div></div>
+        <div class="modal-content">
+            <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
+            <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
+            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
+            <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
+            <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
         </div>
     </div>
 
@@ -421,19 +349,17 @@
         const SUPPORT_USERNAME = 'DUROV'; 
 
         const db = [
-            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт. Гелихризум со стабилизированной розой Каппучино – это изысканная композиция, сочетающая нежность и долговечность. Стабилизированная роза сохраняет свой внешний вид надолго, а сухоцветы придают букету уникальную текстуру и аромат. Идеальный подарок, который будет радовать глаз многие месяцы.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
-            { id: 2, name: "Корзиночка с ароматным нобилисом и аспарагусом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Лист декоративный - 1 шт. Корзина трикотажная - 1 шт. Белка декоративная - 1 шт. Эта маленькая корзиночка наполнена новогодним настроением! Ароматный нобилис (датская ель) создаст ощущение праздника, а елочные игрушки и декор добавят уюта. Прекрасный элемент декора для дома или офиса.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
-            { id: 3, name: "Сиреневая корзинка со стабилизированной розой и хлопком", price: 2900, desc: "Роза стабилизированная - 1 шт. Лаванда сухоцвет - 3 шт. Лагурус (сухоцвет) - 7 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Мискантус - 1 шт. Корзина трикотажная - 1 шт. Кортадерия (сухоцвет) - 2 шт. Нежная композиция в сиреневых тонах. Стабилизированная роза сохранит свою красоту надолго, а лаванда добавит приятный, расслабляющий аромат. Идеально для украшения спальни или гостиной.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/10/1764221989_49879210.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/46/1764221999_81902046.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/74/1764222021_89252974.jpg"] },
-            { id: 4, name: "Корзина со стабилизированными розами и мискантусом", price: 3799, desc: "Роза стабилизированная - 2 шт. Губка флористическая - 1 шт. Лимониум сухоцвет - 1 шт. Роза стабилизированная пионовидная - 1 шт. Кортадерия сухоцвет - 2 шт. Пампасная трава - 2 шт. Корзина трикотажная - 1 шт. Насыщенная и объемная композиция. Стабилизированные пионовидные розы являются центром внимания, а пампасная трава и мискантус создают воздушный, современный фон. Эффектный подарок для ценителей.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/31/1763281452_32652531.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/35/1763281462_98317735.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/05/1763281484_77855005.jpg"] },
-            { id: 5, name: "Нежный мини букет с хлопком и ароматной лавандой", price: 1500, desc: "Упаковка дизайнерская - 1 шт. Хлопок (сухоцвет) - 3 шт. Лаванда пучок (сухоцвет) - 1 шт. Миниатюрный букет, который подарит тепло и уют. Мягкий хлопок и ароматная лаванда делают его идеальным для небольшого, но трогательного подарка. Не требует ухода и будет радовать долгое время.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/61/1725257322_91107361.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/95/1725257322_98564295.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/88/1725257323_96342188.jpg"] },
-            { id: 6, name: "Корзина с подсолнухом и хлопок", price: 3800, desc: "Краспедия желтая - 2 шт. Хлопок (сухоцвет) - 2 шт. Эвкалипт стабилизированный - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 2 шт. Гелихризум - 3 шт. Корзина хлопок - 1 шт. Яркая и солнечная композиция. Подсолнух привлекает внимание, а сочетание сухоцветов создает богатую текстуру. Приносит летнее настроение в любое время года.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/13/1744103681_29991113.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/13/1744103681_78106913.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1744103681_60463898.jpg"] }
+            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
+            { id: 2, name: "Корзиночка с ароматным нобилисом и аспарагусом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Лист декоративный - 1 шт. Корзина трикотажная - 1 шт. Белка декоративная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
+            { id: 3, name: "Сиреневая корзинка со стабилизированной розой и хлопком", price: 2900, desc: "Роза стабилизированная - 1 шт. Лаванда сухоцвет - 3 шт. Лагурус (сухоцвет) - 7 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Мискантус - 1 шт. Корзина трикотажная - 1 шт. Кортадерия (сухоцвет) - 2 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/10/1764221989_49879210.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/46/1764221999_81902046.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/74/1764222021_89252974.jpg"] },
+            { id: 4, name: "Корзина со стабилизированными розами и мискантусом", price: 3799, desc: "Роза стабилизированная - 2 шт. Губка флористическая - 1 шт. Лимониум сухоцвет - 1 шт. Роза стабилизированная пионовидная - 1 шт. Кортадерия сухоцвет - 2 шт. Пампасная трава - 2 шт. Корзина трикотажная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/31/1763281452_32652531.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/35/1763281462_98317735.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/05/1763281484_77855005.jpg"] },
+            { id: 5, name: "Нежный мини букет с хлопком и ароматной лавандой", price: 1500, desc: "Упаковка дизайнерская - 1 шт. Хлопок (сухоцвет) - 3 шт. Лаванда пучок (сухоцвет) - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/61/1725257322_91107361.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/95/1725257322_98564295.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/88/1725257323_96342188.jpg"] },
+            { id: 6, name: "Корзина с подсолнухом и хлопок", price: 3800, desc: "Краспедия желтая - 2 шт. Хлопок (сухоцвет) - 2 шт. Эвкалипт стабилизированный - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 2 шт. Гелихризум - 3 шт. Корзина хлопок - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/13/1744103681_29991113.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/13/1744103681_78106913.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1744103681_60463898.jpg"] }
         ];
 
         let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
-        // Новые переменные для выбранных товаров
         let selectedCart = new Set();
-        let selectedFav = new Set();
         let currentId = null;
 
         // --- ЛОГИКА ТЕМЫ ---
@@ -455,6 +381,7 @@
         tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
         tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
 
+
         function toggleLang() {
             const isEng = document.getElementById('lang-toggle').checked;
             const titles = document.querySelectorAll('.nav-text');
@@ -473,7 +400,7 @@
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
-        // --- КАТАЛОГ ---
+        // --- КАТАЛОГ (КАРТОЧКИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -493,14 +420,59 @@
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
+        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
-            const btn = document.getElementById(`fav-btn-${id}`);
-            if(idx < 0) { favs.push(id); if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } tg.HapticFeedback.impactOccurred('medium'); }
-            else { favs.splice(idx, 1); if(btn) { btn.classList.remove('is-active'); } tg.HapticFeedback.impactOccurred('light'); }
-            save(); if(currentId === id) updateModalFavBtn(); if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
+            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
+            const onFavPage = document.getElementById('p-fav').classList.contains('active');
+            
+            if(idx < 0) { 
+                // ДОБАВЛЕНИЕ (если кликнули на главной): добавляем, анимируем, на странице избранного (если мы там) - перерисовываем
+                favs.push(id); 
+                if(homeBtn) { 
+                    homeBtn.classList.add('is-active','active-anim'); 
+                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
+                } 
+                if(onFavPage) {
+                    // При добавлении на страницу избранного, проще всего перерисовать, чтобы соблюсти порядок сетки.
+                    renderFavs();
+                }
+
+                tg.HapticFeedback.impactOccurred('medium'); 
+            } else { 
+                // УДАЛЕНИЕ: удаляем из массива
+                favs.splice(idx, 1); 
+                tg.HapticFeedback.impactOccurred('light'); 
+                
+                if(onFavPage) {
+                    // ГЛАВНОЕ: УДАЛЕНИЕ БЕЗ МЕРЦАНИЯ на странице "Избранное"
+                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.8)';
+                        
+                        // Удаляем элемент после завершения анимации
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            // Обновляем состояние пустого списка
+                            if (favs.length === 0) {
+                                document.getElementById('fav-empty').style.display = 'block';
+                            }
+                        }, 300);
+                    }
+                } 
+                
+                // Обновляем сердечко на главной странице (если мы не на странице Избранного)
+                if(homeBtn) {
+                    homeBtn.classList.remove('is-active');
+                }
+            }
+            save(); 
+            if(currentId === id) updateModalFavBtn(); 
         }
+
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
@@ -511,32 +483,76 @@
         function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
         function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
         
+        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
+        function updateTotalAndButtons() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+            
+            let selectedTotal = 0;
+            ids.forEach(id => {
+                if(selectedCart.has(id)) {
+                    const product = db.find(x => x.id == id);
+                    if (product) {
+                        selectedTotal += product.price * grouped[id];
+                    }
+                }
+            });
+
+            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
+            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
+            document.getElementById('total-price').innerText = selectedTotal;
+        }
+        
         // --- УМНАЯ КОРЗИНА И ВЫБОР ---
         
         function toggleCartSelect(id) {
-            if(selectedCart.has(id)) selectedCart.delete(id);
-            else selectedCart.add(id);
-            updateCartUI();
+            const itemElement = document.getElementById('cart-item-' + id);
+            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+
+            if(selectedCart.has(id)) {
+                selectedCart.delete(id);
+                if (circle) circle.classList.remove('checked');
+            } else {
+                selectedCart.add(id);
+                if (circle) circle.classList.add('checked');
+            }
+            updateTotalAndButtons();
         }
 
         function toggleAllCart() {
-            // Если выбраны все - снимаем, иначе выбираем все
-            const uniqueIds = [...new Set(cart)];
-            if(selectedCart.size === uniqueIds.length) selectedCart.clear();
-            else uniqueIds.forEach(id => selectedCart.add(id));
-            updateCartUI();
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const uniqueIds = Object.keys(grouped).map(Number);
+            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
+
+            if(shouldSelectAll) {
+                uniqueIds.forEach(id => selectedCart.add(id));
+            } else {
+                selectedCart.clear();
+            }
+            
+            uniqueIds.forEach(id => {
+                const itemElement = document.getElementById('cart-item-' + id);
+                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+                if (circle) {
+                    if (shouldSelectAll) {
+                        circle.classList.add('checked');
+                    } else {
+                        circle.classList.remove('checked');
+                    }
+                }
+            });
+
+            updateTotalAndButtons();
         }
 
         function deleteSelectedCart() {
             if(selectedCart.size === 0) return;
             if(confirm("Удалить выбранные?")) {
-                cart = cart.filter(id => !selectedCart.has(id)); // Оставляем только то, что НЕ выбрано
+                cart = cart.filter(id => !selectedCart.has(id)); 
                 selectedCart.clear();
-                save(); updateCartUI();
+                save(); updateCartUI(); 
             }
         }
-
-        function clearCart() { if(confirm("Очистить полностью?")) { cart = []; selectedCart.clear(); save(); updateCartUI(); } }
 
         function updateCartUI() {
             const badge = document.getElementById('badge');
@@ -545,166 +561,94 @@
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
             
-            // Считаем тотал ТОЛЬКО выбранных
-            let selectedTotal = 0;
-            ids.forEach(id => {
-                if(selectedCart.has(id)) {
-                    selectedTotal += db.find(x => x.id == id).price * grouped[id];
-                }
-            });
-
-            // Показываем кнопку удаления если что-то выбрано
-            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
-            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
-            
             if (!ids.length) {
                 document.getElementById('cart-items').innerHTML = '';
                 document.getElementById('cart-empty').style.display = 'block';
                 document.getElementById('cart-footer').style.display = 'none';
-                return;
-            }
-            document.getElementById('cart-empty').style.display = 'none';
-            document.getElementById('cart-footer').style.display = 'block';
+                selectedCart.clear();
+            } else {
+                document.getElementById('cart-empty').style.display = 'none';
+                document.getElementById('cart-footer').style.display = 'block';
 
-            document.getElementById('cart-items').innerHTML = ids.map(id => {
-                const p = db.find(x => x.id == id);
-                const isChecked = selectedCart.has(id) ? 'checked' : '';
-                
-                return `
-                    <div class="list-row" id="cart-item-${id}">
-                        <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
-                        <img src="${p.images[0]}" class="list-img">
-                        <div style="flex:1">
-                            <div style="font-weight:500;font-size:13px; line-height: 1.3;">${p.name}</div>
-                            <div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div>
+                document.getElementById('cart-items').innerHTML = ids.map(id => {
+                    const p = db.find(x => x.id == id);
+                    const isChecked = selectedCart.has(id) ? 'checked' : '';
+                    
+                    return `
+                        <div class="list-row" id="cart-item-${id}">
+                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
+                            <img src="${p.images[0]}" class="list-img">
+                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
+                                <div class="cart-item-name">${p.name}</div>
+                                <div class="cart-item-price">${p.price} ₽</div>
+                            </div>
+                            <div class="qty-ctrl">
+                                <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
+                                <div class="qty-val">${grouped[id]}</div>
+                                <div class="qty-btn" onclick="addOne(${p.id})">+</div>
+                            </div>
                         </div>
-                        <div class="qty-ctrl">
-                            <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                            <div class="qty-val">${grouped[id]}</div>
-                            <div class="qty-btn" onclick="addOne(${p.id})">+</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('total-price').innerText = selectedTotal;
+                    `;
+                }).join('');
+            }
+            
+            updateTotalAndButtons();
         }
 
-        // --- УМНОЕ ИЗБРАННОЕ ---
+        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
+        function checkout() {
+            if(selectedCart.size === 0) return;
+            
+            const grouped = {}; 
+            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            
+            const itemsText = Object.keys(grouped).map(id => {
+                const product = db.find(x => x.id == id);
+                return `${product.name} x${grouped[id]}`;
+            }).join(', ');
+            
+            let total = 0;
+            Object.keys(grouped).map(Number).forEach(id => {
+                const product = db.find(x => x.id == id);
+                total += product.price * grouped[id];
+            });
+
+            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
+            cart = cart.filter(id => !selectedCart.has(id)); 
+            selectedCart.clear();
+            save();
+            updateCartUI(); 
+
+            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+        }
         
-        function toggleFavSelect(id) {
-            if(selectedFav.has(id)) selectedFav.delete(id);
-            else selectedFav.add(id);
-            renderFavs();
-        }
-
-        function toggleAllFav() {
-            if(selectedFav.size === favs.length) selectedFav.clear();
-            else favs.forEach(id => selectedFav.add(id));
-            renderFavs();
-        }
-
-        function deleteSelectedFav() {
-            if(selectedFav.size === 0) return;
-            if(confirm("Удалить из избранного?")) {
-                favs = favs.filter(id => !selectedFav.has(id));
-                selectedFav.clear();
-                save(); render(); renderFavs();
-            }
+        // --- ИЗБРАННОЕ (СЕТКА) ---
+        
+        function clearFav() { 
+            if(confirm("Удалить все товары из избранного?")) { 
+                favs = []; 
+                save(); 
+                render(); // Обновляем сердечки на главной
+                renderFavs(); 
+            } 
         }
 
         function renderFavs() {
             const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items'); 
+            const container = document.getElementById('fav-items');
             document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-            document.getElementById('fav-del-btn').style.display = selectedFav.size > 0 ? 'flex' : 'none';
-
-            container.innerHTML = list.map(p => {
-                const isChecked = selectedFav.has(p.id) ? 'checked' : '';
-                return `
-                <div class="list-row" style="margin: 10px 16px;">
-                    <div class="check-circle ${isChecked}" onclick="toggleFavSelect(${p.id})"></div>
-                    <img src="${p.images[0]}" class="list-img">
-                    <div style="flex:1">
-                        <div style="font-weight:500;font-size:13px;">${p.name}</div>
-                        <div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div>
-                    </div>
-                    <div class="qty-btn" onclick="addOne(${p.id}, event)" style="margin-left:auto">+</div>
-                </div>`;
-            }).join('');
+            
+            // Используем ту же функцию drawCard, что и для каталога
+            container.innerHTML = list.map(p => drawCard(p)).join('');
         }
         
-        function clearFav() { if(confirm("Удалить всё?")) { favs = []; selectedFav.clear(); save(); render(); renderFavs(); } }
-
-        // --- ФУНКЦИИ МОДАЛЬНОГО ОКНА (BOTTOM SHEET) ---
-        // ИСПОЛЬЗУЕМ JS-ФИКС ДЛЯ iOS
-
-        let touchStartY = 0;
-        const scrollContainer = document.querySelector('.modal-scroll-content');
-
-        // КЛЮЧЕВЫЕ ФУНКЦИИ ФИКСА СВОРАЧИВАНИЯ НА IOS
-        function onTouchStart(e) {
-            touchStartY = e.touches[0].clientY;
-        }
-
-        function onTouchMove(e) {
-            if (!scrollContainer) return;
-
-            const currentY = e.touches[0].clientY;
-            const scrollDelta = currentY - touchStartY;
-            const scrollTop = scrollContainer.scrollTop;
-            const scrollHeight = scrollContainer.scrollHeight;
-            const containerHeight = scrollContainer.clientHeight;
-
-            // Блокируем свайп ВНИЗ, если скролл находится на вершине (scrollTop === 0)
-            if (scrollDelta > 0 && scrollTop === 0) {
-                // !!! КЛЮЧЕВОЙ МОМЕНТ: БЛОКИРУЕМ НАТИВНОЕ ДЕЙСТВИЕ !!!
-                e.preventDefault(); 
-                return;
-            }
-
-            // Блокируем свайп ВВЕРХ, если скролл находится внизу
-            if (scrollDelta < 0 && (scrollTop + containerHeight >= scrollHeight - 1)) {
-                 e.preventDefault(); 
-                 return;
-            }
-
-            touchStartY = currentY;
-        }
-
-        function initIOSSwipeFix() {
-            if (!scrollContainer) return;
-            
-            // Сначала удаляем, чтобы избежать дублирования
-            scrollContainer.removeEventListener('touchstart', onTouchStart);
-            scrollContainer.removeEventListener('touchmove', onTouchMove);
-
-            // Добавляем обработчики (passive: false обязательно для preventDefault)
-            scrollContainer.addEventListener('touchstart', onTouchStart, { passive: false });
-            scrollContainer.addEventListener('touchmove', onTouchMove, { passive: false });
-        }
-
-
         function openModal(id) {
             currentId = id; const p = db.find(x => x.id === id);
             document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
-            document.getElementById('m-title').innerText = p.name; 
-            document.getElementById('m-price').innerText = p.price + ' ₽'; 
-            document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); 
-            document.getElementById('modal').classList.add('modal-active');
-            
-            const scrollContent = document.querySelector('.modal-scroll-content');
-            if (scrollContent) scrollContent.scrollTop = 0;
-            
-            // АКТИВИРУЕМ БЛОКИРОВКУ СВАЙПА
-            initIOSSwipeFix(); 
+            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
+            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
         }
-
-        function closeModal(e) { 
-            if (e) e.stopPropagation();
-            document.getElementById('modal').classList.remove('modal-active'); 
-        }
-
+        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
         function go(id, btn) {
@@ -712,31 +656,7 @@
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); 
             if(id === 'cart') updateCartUI();
-            if(id === 'home') render();
-        }
-
-        
-        // --- ОПЛАТА ВЫБРАННОГО ---
-        function checkout() {
-            if(selectedCart.size === 0) return;
-            
-            const grouped = {}; 
-            // Считаем только выбранные
-            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            
-            const itemsText = Object.keys(grouped).map(id => `${db.find(x=>x.id==id).name} x${grouped[id]}`).join(', ');
-            
-            const total = cart
-                .filter(id => selectedCart.has(id))
-                .reduce((sum, id) => sum + db.find(x => x.id == id).price, 0);
-            
-            // Удаляем купленное из корзины
-            cart = cart.filter(id => !selectedCart.has(id));
-            selectedCart.clear();
-            save();
-            updateCartUI(); // Обновляем UI (купленное исчезнет)
-
-            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+            if(id === 'home') render(); // При переходе на "Каталог" перерисовываем, чтобы обновить состояние сердечек
         }
 
         if(tg.initDataUnsafe?.user) {
@@ -753,7 +673,16 @@
             if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
         });
         homePage.addEventListener('touchend', e => {
-            if(parseInt(spinner.style.height) > 60) { tg.HapticFeedback.impactOccurred('medium'); setTimeout(() => { render(); spinner.style.height = '0px'; }, 500); } else { spinner.style.height = '0px'; }
+            if(parseInt(spinner.style.height) > 60) { 
+                tg.HapticFeedback.impactOccurred('medium'); 
+                // Имитация обновления данных
+                setTimeout(() => { 
+                    render(); // Перерисовать каталог (на случай если что-то изменилось)
+                    spinner.style.height = '0px'; 
+                }, 500); 
+            } else { 
+                spinner.style.height = '0px'; 
+            }
         });
 
         render();
