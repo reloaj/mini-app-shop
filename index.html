@@ -30,10 +30,34 @@
             --border: rgba(0,0,0,0.1);
         }
 
+        /* --- 🔥 ГЛАВНЫЙ ФИКС СКРОЛЛА (НЕ ТРОГАТЬ) 🔥 --- */
+        html, body {
+            height: 100%;
+            margin: 0; padding: 0;
+            overflow: hidden; /* Запрещает скролл всего окна (чтобы не сворачивалось) */
+        }
+        .app-container {
+            display: flex; flex-direction: column; height: 100%;
+        }
+        /* Шапка и Меню не скроллятся */
+        header, nav { flex-shrink: 0; }
+        /* Контент скроллится внутри этого блока */
+        .page {
+            display: none;
+            flex-grow: 1;
+            overflow-y: auto; /* Скролл только здесь */
+            padding-bottom: 85px; /* Компенсация высоты nav */
+            /* Магия, запрещающая передавать скролл Телеграму */
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        .page.active { display: block; }
+        /* ----------------------------------------------- */
+
         body {
             background: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; padding-bottom: 85px;
+            margin: 0; padding: 0; /* padding-bottom: 85px; удален отсюда, т.к. перенесен в .page */
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
             transition: background 0.3s;
@@ -208,15 +232,10 @@
         .toggle-input:checked + .toggle-slider { background-color: var(--green); }
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        .page { display: none; }
-        .page.active { display: block; }
+        /* .page { display: none; } - Удалены и заменены новым .page правилом в фиксе */
+        /* .page.active { display: block; } - Удалены и заменены новым .page.active правилом в фиксе */
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
-        #ptr-spinner { 
-            height: 0; overflow: hidden; display: flex; align-items: center; 
-            justify-content: center; transition: height 0.2s; background: var(--bg); 
-            width: 100%; /* Добавлено для корректного отображения */
-            position: relative; /* Добавлено для корректного отображения */
-        }
+        #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -230,9 +249,8 @@
             <div class="brand">Cotton Flowers</div>
         </header>
 
-        <div id="ptr-spinner"><div class="ptr-icon"></div></div>
-
         <div id="p-home" class="page active">
+            <div id="ptr-spinner"><div class="ptr-icon"></div></div>
             <div class="search-wrap">
                 <input type="text" class="search-input" placeholder="Поиск..." oninput="doSearch(this.value)">
             </div>
@@ -294,8 +312,7 @@
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;">
-        </div>
+            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
             <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
         </div>
@@ -671,64 +688,26 @@
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
 
-        // --- НОВАЯ УНИВЕРСАЛЬНАЯ ЛОГИКА PULL-TO-REFRESH ---
         let startY = 0;
-        // Используем основной контейнер для отслеживания жестов
-        const appContainer = document.querySelector('.app-container');
+        const homePage = document.getElementById('p-home');
         const spinner = document.getElementById('ptr-spinner');
-
-        appContainer.addEventListener('touchstart', e => { 
-            // Проверяем, что прокрутка находится в самой верхней точке документа
-            if(window.scrollY === 0) { 
-                startY = e.touches[0].clientY;
-            } else {
-                startY = -1; // Если не вверху, игнорируем всю последовательность касания
-            }
-        });
-        
-        appContainer.addEventListener('touchmove', e => {
-            if(startY === -1) return; // Игнорировать, если не начали с верха
-
+        homePage.addEventListener('touchstart', e => { if(homePage.scrollTop === 0) startY = e.touches[0].clientY; });
+        homePage.addEventListener('touchmove', e => {
             const diff = e.touches[0].clientY - startY;
-            
-            // Если тянем вниз и прокрутка вверху
-            if(diff > 0 && window.scrollY === 0) { 
-                e.preventDefault(); // Предотвратить прокрутку страницы
-                if(diff < 80) spinner.style.height = diff + 'px'; 
-            }
+            if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
         });
-
-        appContainer.addEventListener('touchend', e => {
-            if(startY === -1) return;
-            startY = 0; // Сброс
-            
+        homePage.addEventListener('touchend', e => {
             if(parseInt(spinner.style.height) > 60) { 
                 tg.HapticFeedback.impactOccurred('medium'); 
-                
-                // Определяем активную страницу для вызова нужной функции обновления
-                const activePageElement = document.querySelector('.page.active');
-                const activePageId = activePageElement ? activePageElement.id : null;
-                let refreshFunction = render; // По умолчанию для 'home'
-
-                if (activePageId === 'p-cart') {
-                    refreshFunction = updateCartUI; // Обновление для Корзины
-                } else if (activePageId === 'p-fav') {
-                    refreshFunction = renderFavs; // Обновление для Избранного
-                } else if (activePageId === 'p-prof') {
-                    // Для Профиля можно просто вызвать render (для обновления общего состояния)
-                    refreshFunction = render; 
-                }
-                
                 // Имитация обновления данных
                 setTimeout(() => { 
-                    refreshFunction(); 
+                    render(); // Перерисовать каталог (на случай если что-то изменилось)
                     spinner.style.height = '0px'; 
                 }, 500); 
             } else { 
                 spinner.style.height = '0px'; 
             }
         });
-        // --- КОНЕЦ НОВОЙ УНИВЕРСАЛЬНОЙ ЛОГИКИ PULL-TO-REFRESH ---
 
         render();
         updateCartUI();
