@@ -30,10 +30,34 @@
             --border: rgba(0,0,0,0.1);
         }
 
+        /* --- 🔥 ГЛАВНЫЙ ФИКС СКРОЛЛА (НЕ ТРОГАТЬ) 🔥 --- */
+        html, body {
+            height: 100%;
+            margin: 0; padding: 0;
+            overflow: hidden; /* Запрещает скролл всего окна (чтобы не сворачивалось) */
+        }
+        .app-container {
+            display: flex; flex-direction: column; height: 100%;
+        }
+        /* Шапка и Меню не скроллятся */
+        header, nav { flex-shrink: 0; }
+        /* Контент скроллится внутри этого блока */
+        .page {
+            display: none;
+            flex-grow: 1;
+            overflow-y: auto; /* Скролл только здесь */
+            padding-bottom: 85px; /* Компенсация высоты nav */
+            /* Магия, запрещающая передавать скролл Телеграму */
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        .page.active { display: block; }
+        /* ----------------------------------------------- */
+
         body {
             background: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; padding-bottom: 85px;
+            margin: 0; padding: 0; /* padding-bottom: 85px; удален отсюда, т.к. перенесен в .page */
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
             transition: background 0.3s;
@@ -142,11 +166,13 @@
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         
+        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
         .cart-item-name {
             font-weight: 500;
             font-size: 13px;
             line-height: 1.3;
             overflow: hidden;
+            /* Ограничиваем имя 2 строками, чтобы строка не была слишком высокой */
             display: -webkit-box;
             -webkit-line-clamp: 2; 
             -webkit-box-orient: vertical;
@@ -159,43 +185,7 @@
         
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); transition: transform 0.1s; } /* Убрал лишние transition */
-
-        /* --- ФОРМА ЗАКАЗА --- */
-        .order-form {
-            padding: 0 16px;
-            margin-top: 15px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .order-label {
-            font-size: 13px;
-            color: var(--text-sec);
-            margin-bottom: 6px;
-            display: block;
-            margin-left: 4px;
-        }
-        .order-input {
-            width: 100%;
-            padding: 12px;
-            background: var(--block);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 15px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-        .order-input:focus {
-            border-color: var(--accent);
-        }
-        textarea.order-input {
-            resize: none;
-            height: 60px;
-        }
+        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
 
         /* МЕНЮ */
         nav {
@@ -242,8 +232,8 @@
         .toggle-input:checked + .toggle-slider { background-color: var(--green); }
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        .page { display: none; }
-        .page.active { display: block; }
+        /* .page { display: none; } - Удалены и заменены новым .page правилом в фиксе */
+        /* .page.active { display: block; } - Удалены и заменены новым .page.active правилом в фиксе */
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
         #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -275,18 +265,8 @@
                     <button class="sel-all-btn" onclick="toggleAllCart()">Выбрать все</button>
                 </div>
             </div>
-            
             <div id="cart-items"></div>
             <div class="empty-state" id="cart-empty" style="display:none">Корзина пуста 🍃</div>
-
-            <div class="order-form" id="order-form-block" style="display:none">
-                <label class="order-label">Ваш телефон (обязательно):</label>
-                <input type="tel" class="order-input" id="u-phone" placeholder="+7 (999) 000-00-00">
-                
-                <label class="order-label" style="margin-top:12px">Комментарий к заказу:</label>
-                <textarea class="order-input" id="u-comment" placeholder="Например: Позвонить за час..."></textarea>
-            </div>
-
             <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto;">
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
                     Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
@@ -406,15 +386,17 @@
         let selectedCart = new Set();
         let currentId = null;
 
-        // --- ЛОГИКА ТЕМЫ И НАВИГАЦИЯ ---
+        // --- ЛОГИКА ТЕМЫ ---
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            // Обновляем цвета Telegram UI
             tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
             tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
 
+        // Инициализация темы и цветов Telegram UI
         const isLightOnLoad = localStorage.getItem('theme') === 'light';
         if(isLightOnLoad) {
             document.body.classList.add('light-theme');
@@ -442,7 +424,7 @@
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
-        // --- КАТАЛОГ И ПОИСК ---
+        // --- КАТАЛОГ (КАРТОЧКИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -462,7 +444,7 @@
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
-        // --- ЛОГИКА ИЗБРАННОГО ---
+        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
@@ -470,124 +452,64 @@
             const onFavPage = document.getElementById('p-fav').classList.contains('active');
             
             if(idx < 0) { 
+                // ДОБАВЛЕНИЕ (если кликнули на главной): добавляем, анимируем, на странице избранного (если мы там) - перерисовываем
                 favs.push(id); 
-                if(homeBtn) { homeBtn.classList.add('is-active','active-anim'); setTimeout(()=>homeBtn.classList.remove('active-anim'),300); } 
-                if(onFavPage) { renderFavs(); }
+                if(homeBtn) { 
+                    homeBtn.classList.add('is-active','active-anim'); 
+                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
+                } 
+                if(onFavPage) {
+                    // При добавлении на страницу избранного, проще всего перерисовать, чтобы соблюсти порядок сетки.
+                    renderFavs();
+                }
+
                 tg.HapticFeedback.impactOccurred('medium'); 
             } else { 
+                // УДАЛЕНИЕ: удаляем из массива
                 favs.splice(idx, 1); 
                 tg.HapticFeedback.impactOccurred('light'); 
                 
                 if(onFavPage) {
+                    // ГЛАВНОЕ: УДАЛЕНИЕ БЕЗ МЕРЦАНИЯ на странице "Избранное"
                     const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
                     if (cardToRemove) {
                         cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
                         cardToRemove.style.opacity = '0';
                         cardToRemove.style.transform = 'scale(0.8)';
-                        setTimeout(() => { cardToRemove.remove(); if (favs.length === 0) { document.getElementById('fav-empty').style.display = 'block'; } }, 300);
+                        
+                        // Удаляем элемент после завершения анимации
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            // Обновляем состояние пустого списка
+                            if (favs.length === 0) {
+                                document.getElementById('fav-empty').style.display = 'block';
+                            }
+                        }, 300);
                     }
                 } 
                 
-                if(homeBtn) { homeBtn.classList.remove('is-active'); }
+                // Обновляем сердечко на главной странице (если мы не на странице Избранного)
+                if(homeBtn) {
+                    homeBtn.classList.remove('is-active');
+                }
             }
             save(); 
             if(currentId === id) updateModalFavBtn(); 
         }
+
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
             if(favs.includes(currentId)) { btn.innerHTML='❤️ В избранном'; btn.classList.add('active'); }
             else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
         }
-        function clearFav() { 
-            if(confirm("Удалить все товары из избранного?")) { 
-                favs = []; 
-                save(); 
-                render(); 
-                renderFavs(); 
-            } 
-        }
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-            container.innerHTML = list.map(p => drawCard(p)).join('');
-        }
+
+        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
+        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
         
-        // --- ЛОГИКА КОРЗИНЫ (БЕЗ МЕРЦАНИЯ) ---
-
-        function getGroupedCart() {
-            const grouped = {}; 
-            cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            return grouped;
-        }
-
-        function updateBadge() {
-            const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none'; 
-            badge.innerText = cart.length; 
-            if(cart.length > 0) {
-                 badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
-            }
-        }
-
-        // НОВАЯ ФУНКЦИЯ: Обновляет только счетчик и итог, без перерисовки всей корзины
-        function updateItemQuantityDisplay(id, count) {
-            const qtyElement = document.getElementById(`qty-val-${id}`);
-            if (qtyElement) {
-                qtyElement.innerText = count;
-                // Анимация для "живого" ощущения
-                qtyElement.style.animation = 'none';
-                qtyElement.offsetHeight; 
-                qtyElement.style.animation = 'pop 0.2s';
-            }
-            updateTotalAndButtons();
-            updateBadge();
-        }
-
-        // Обновленная функция добавления
-        function addOne(id, e) { 
-            if(e) e.stopPropagation(); 
-            const wasEmpty = cart.length === 0;
-            const wasNotInCart = !cart.includes(id);
-
-            cart.push(id); 
-            save(); 
-            
-            if (wasEmpty || wasNotInCart) {
-                // Если корзина была пуста или товара не было, перерисовываем структуру
-                updateCartUI(true);
-            } else {
-                // Иначе просто обновляем счетчик
-                const grouped = getGroupedCart();
-                updateItemQuantityDisplay(id, grouped[id]);
-            }
-            
-            tg.HapticFeedback.impactOccurred('light'); 
-        }
-
-        // Обновленная функция удаления
-        function removeOne(id) { 
-            const idx = cart.indexOf(id); 
-            if (idx > -1) { 
-                cart.splice(idx, 1); 
-                save(); 
-                
-                const grouped = getGroupedCart();
-                const newCount = grouped[id] || 0;
-
-                if (newCount === 0) {
-                    // Если товар удален полностью, перерисовываем структуру (удаляем его из DOM)
-                    updateCartUI(true); 
-                } else {
-                    // Иначе просто обновляем счетчик
-                    updateItemQuantityDisplay(id, newCount);
-                }
-            }
-        }
-        
+        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
         function updateTotalAndButtons() {
-            const grouped = getGroupedCart();
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
             
             let selectedTotal = 0;
@@ -605,6 +527,8 @@
             document.getElementById('total-price').innerText = selectedTotal;
         }
         
+        // --- УМНАЯ КОРЗИНА И ВЫБОР ---
+        
         function toggleCartSelect(id) {
             const itemElement = document.getElementById('cart-item-' + id);
             const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
@@ -620,7 +544,7 @@
         }
 
         function toggleAllCart() {
-            const grouped = getGroupedCart();
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const uniqueIds = Object.keys(grouped).map(Number);
             let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
 
@@ -650,31 +574,27 @@
             if(confirm("Удалить выбранные?")) {
                 cart = cart.filter(id => !selectedCart.has(id)); 
                 selectedCart.clear();
-                save(); 
-                // При удалении группы нужно всегда перерисовать
-                updateCartUI(true); 
+                save(); updateCartUI(); 
             }
         }
 
-        // Обновленная функция отрисовки (теперь вызывается только при необходимости)
-        function updateCartUI(forceRender = false) {
-            const grouped = getGroupedCart();
+        function updateCartUI() {
+            const badge = document.getElementById('badge');
+            badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
+            
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
             
-            const cartItemsContainer = document.getElementById('cart-items');
-            const isEmpty = !ids.length;
-
-            document.getElementById('cart-empty').style.display = isEmpty ? 'block' : 'none';
-            document.getElementById('cart-footer').style.display = isEmpty ? 'none' : 'block';
-            document.getElementById('order-form-block').style.display = isEmpty ? 'none' : 'block';
-            
-            if (isEmpty) {
-                cartItemsContainer.innerHTML = '';
+            if (!ids.length) {
+                document.getElementById('cart-items').innerHTML = '';
+                document.getElementById('cart-empty').style.display = 'block';
+                document.getElementById('cart-footer').style.display = 'none';
                 selectedCart.clear();
-            } else if (forceRender || cartItemsContainer.children.length !== ids.length) { 
-                // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Отрисовываем заново только если forceRender=true 
-                // ИЛИ количество уникальных товаров в DOM не совпадает с количеством в корзине
-                cartItemsContainer.innerHTML = ids.map(id => {
+            } else {
+                document.getElementById('cart-empty').style.display = 'none';
+                document.getElementById('cart-footer').style.display = 'block';
+
+                document.getElementById('cart-items').innerHTML = ids.map(id => {
                     const p = db.find(x => x.id == id);
                     const isChecked = selectedCart.has(id) ? 'checked' : '';
                     
@@ -688,7 +608,7 @@
                             </div>
                             <div class="qty-ctrl">
                                 <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                                <div class="qty-val" id="qty-val-${p.id}">${grouped[id]}</div>
+                                <div class="qty-val">${grouped[id]}</div>
                                 <div class="qty-btn" onclick="addOne(${p.id})">+</div>
                             </div>
                         </div>
@@ -697,24 +617,11 @@
             }
             
             updateTotalAndButtons();
-            updateBadge();
         }
 
-        // --- ОПЛАТА И МОДАЛКИ ---
+        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
         function checkout() {
             if(selectedCart.size === 0) return;
-
-            const phoneInput = document.getElementById('u-phone');
-            const commentInput = document.getElementById('u-comment');
-            const phoneVal = phoneInput.value.trim();
-            const commentVal = commentInput.value.trim();
-
-            if(phoneVal.length < 5) {
-                tg.showAlert("Пожалуйста, укажите корректный номер телефона, чтобы мы могли связаться с вами!");
-                phoneInput.focus();
-                phoneInput.style.borderColor = "#FF453A"; 
-                return;
-            }
             
             const grouped = {}; 
             cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
@@ -730,20 +637,33 @@
                 total += product.price * grouped[id];
             });
 
+            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
             cart = cart.filter(id => !selectedCart.has(id)); 
             selectedCart.clear();
             save();
-            updateCartUI(true); // При оформлении заказа очищаем корзину, поэтому полная перерисовка нужна
+            updateCartUI(); 
 
-            phoneInput.value = '';
-            commentInput.value = '';
+            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+        }
+        
+        // --- ИЗБРАННОЕ (СЕТКА) ---
+        
+        function clearFav() { 
+            if(confirm("Удалить все товары из избранного?")) { 
+                favs = []; 
+                save(); 
+                render(); // Обновляем сердечки на главной
+                renderFavs(); 
+            } 
+        }
 
-            tg.sendData(JSON.stringify({ 
-                total, 
-                items: [itemsText],
-                phone: phoneVal,
-                comment: commentVal
-            }));
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            const container = document.getElementById('fav-items');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+            
+            // Используем ту же функцию drawCard, что и для каталога
+            container.innerHTML = list.map(p => drawCard(p)).join('');
         }
         
         function openModal(id) {
@@ -759,8 +679,8 @@
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); 
-            if(id === 'cart') updateCartUI(); // Теперь без forceRender, если нет изменений, не мерцает
-            if(id === 'home') render(); 
+            if(id === 'cart') updateCartUI();
+            if(id === 'home') render(); // При переходе на "Каталог" перерисовываем, чтобы обновить состояние сердечек
         }
 
         if(tg.initDataUnsafe?.user) {
@@ -779,8 +699,9 @@
         homePage.addEventListener('touchend', e => {
             if(parseInt(spinner.style.height) > 60) { 
                 tg.HapticFeedback.impactOccurred('medium'); 
+                // Имитация обновления данных
                 setTimeout(() => { 
-                    render(); 
+                    render(); // Перерисовать каталог (на случай если что-то изменилось)
                     spinner.style.height = '0px'; 
                 }, 500); 
             } else { 
