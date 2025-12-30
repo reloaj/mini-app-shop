@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cotton Stable</title>
+    <title>Flower Smart Select</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
+            /* --- ТЕМНАЯ ТЕМА --- */
             --bg: #000000;
             --block: #1C1C1E;
             --text: #FFFFFF;
@@ -20,64 +21,77 @@
         }
 
         body.light-theme {
-            --bg: #F2F2F7; --block: #FFFFFF; --text: #000000; --text-sec: #8E8E93; --input-bg: #E5E5EA; --nav-bg: rgba(255, 255, 255, 0.95); --border: rgba(0,0,0,0.1);
+            --bg: #F2F2F7;
+            --block: #FFFFFF;
+            --text: #000000;
+            --text-sec: #8E8E93;
+            --input-bg: #E5E5EA;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --border: rgba(0,0,0,0.1);
         }
 
-        /* --- 🔥 ГЛАВНЫЙ ФИКС СКРОЛЛА (НЕ ТРОГАТЬ) 🔥 --- */
-        html, body {
-            height: 100%;
-            margin: 0; padding: 0;
-            overflow: hidden; /* Запрещает скролл всего окна (чтобы не сворачивалось) */
+        body {
             background: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; padding-bottom: 85px;
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
+            transition: background 0.3s;
         }
 
-        .app-container {
-            display: flex; flex-direction: column; height: 100%;
+        img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
+
+        /* ЧЕКБОКС (КРУЖОК ВЫБОРА) */
+        .check-circle {
+            width: 22px; height: 22px;
+            border: 2px solid var(--text-sec);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; flex-shrink: 0;
+            cursor: pointer;
         }
-
-        /* Шапка и Меню не скроллятся */
-        header, nav { flex-shrink: 0; }
-
-        /* Контент скроллится внутри этого блока */
-        .page {
-            display: none;
-            flex-grow: 1;
-            overflow-y: auto; /* Скролл только здесь */
-            padding-bottom: 20px;
-            
-            /* Магия, запрещающая передавать скролл Телеграму */
-            overscroll-behavior-y: contain; 
-            -webkit-overflow-scrolling: touch;
+        .check-circle.checked {
+            background: var(--accent);
+            border-color: var(--accent);
         }
-        .page.active { display: block; }
-        /* ----------------------------------------------- */
+        .check-circle::after {
+            content: '✔'; color: white; font-size: 14px; opacity: 0; transform: scale(0.5); transition: 0.2s;
+        }
+        .check-circle.checked::after { opacity: 1; transform: scale(1); }
 
-        img { pointer-events: none; }
+        /* КНОПКА УДАЛЕНИЯ ВЫБРАННОГО */
+        .del-selected-btn {
+            background: rgba(255, 69, 58, 0.1); color: var(--red);
+            border: 1px solid var(--red); padding: 8px 15px; border-radius: 20px;
+            font-size: 13px; font-weight: 600; display: none;
+            align-items: center; gap: 5px; cursor: pointer;
+        }
+        /* Кнопка "Удалить все" для Избранного */
+        .del-all-fav-btn {
+            color: var(--red); font-size: 14px; background: none; border: none; cursor: pointer;
+        }
 
         /* АНИМАЦИИ */
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* HEADER */
+        /* ШАПКА */
         header {
-            background: var(--nav-bg); backdrop-filter: blur(20px); z-index: 20; padding: 12px 16px;
-            display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; background: var(--nav-bg);
+            backdrop-filter: blur(20px); z-index: 20; padding: 12px 16px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid var(--border);
         }
         .logo-icon { width: 32px; height: 32px; fill: var(--accent); }
         .brand { font-weight: 700; font-size: 19px; letter-spacing: 0.5px; color: var(--text); }
 
-        /* ПОИСК */
+        /* СЕТКА ТОВАРОВ */
         .search-wrap { padding: 12px 16px; }
         .search-input {
             width: 100%; padding: 10px 12px; border-radius: 10px; border: none;
             background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
             box-sizing: border-box;
         }
-
-        /* СЕТКА */
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -89,6 +103,7 @@
 
         .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
+        .slider::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
@@ -119,41 +134,76 @@
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
 
-        /* СПИСОК (КОРЗИНА/ИЗБРАННОЕ) */
-        .list-item { 
+        /* СТРОКА ТОВАРА (КОРЗИНА) */
+        .list-row { 
             display: flex; align-items: center; gap: 12px; 
-            background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 14px; 
+            background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; 
             animation: fadeUp 0.3s;
         }
-        .list-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-        .list-info { flex-grow: 1; min-width: 0; }
-        .list-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-price { color: var(--text-sec); font-size: 13px; }
-
-        .check-circle {
-            width: 22px; height: 22px; border: 2px solid var(--text-sec); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+        .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.3;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
         }
-        .check-circle.checked { background: var(--accent); border-color: var(--accent); }
-        .check-circle::after { content: '✔'; color: white; font-size: 12px; opacity: 0; transform: scale(0.5); transition: 0.2s; }
-        .check-circle.checked::after { opacity: 1; transform: scale(1); }
-
+        .cart-item-price {
+            color: var(--text-sec);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
         .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
-        
-        .add-btn-small { width: 32px; height: 32px; background: var(--accent); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
 
-        .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
-        .head-title { font-size: 20px; font-weight: 800; margin: 0; }
-        .del-selected-btn { color: var(--red); font-size: 13px; background: rgba(255,69,58,0.1); padding: 5px 10px; border-radius: 12px; border: none; cursor: pointer; display: none; }
-        .sel-all-btn { color: var(--accent); font-size: 13px; background: none; border: none; cursor: pointer; }
+        /* --- ФОРМА ЗАКАЗА (НОВОЕ) --- */
+        .order-form {
+            padding: 0 16px;
+            margin-top: 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .order-label {
+            font-size: 13px;
+            color: var(--text-sec);
+            margin-bottom: 6px;
+            display: block;
+            margin-left: 4px;
+        }
+        .order-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--block);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .order-input:focus {
+            border-color: var(--accent);
+        }
+        textarea.order-input {
+            resize: none;
+            height: 60px;
+        }
 
         /* МЕНЮ */
         nav {
-            background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--border);
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 56px;
+            background: var(--nav-bg); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 50;
-            padding-bottom: env(safe-area-inset-bottom); height: 56px;
+            padding-bottom: env(safe-area-inset-bottom);
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #636366; background: none; border: none; cursor: pointer; width: 25%; height: 100%; transition: color 0.2s; }
         .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; fill: #636366; transition: fill 0.2s; }
@@ -174,6 +224,11 @@
         .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); }
         .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; }
 
+        /* ЗАГОЛОВКИ ВКЛАДОК */
+        .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
+        .head-title { font-size: 20px; font-weight: 800; margin: 0; }
+        .sel-all-btn { color: var(--accent); font-size: 14px; background: none; border: none; cursor: pointer; }
+
         .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--block); margin-bottom: 1px; cursor: pointer; }
         .settings-item:first-child { border-radius: 14px 14px 0 0; }
         .settings-item:last-child { border-radius: 0 0 14px 14px; }
@@ -187,6 +242,8 @@
         .toggle-input:checked + .toggle-slider { background-color: var(--green); }
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
+        .page { display: none; }
+        .page.active { display: block; }
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
         #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -202,7 +259,6 @@
             <div class="brand">Cotton Flowers</div>
         </header>
 
-        <!-- 1. КАТАЛОГ -->
         <div id="p-home" class="page active">
             <div id="ptr-spinner"><div class="ptr-icon"></div></div>
             <div class="search-wrap">
@@ -211,17 +267,25 @@
             <div class="grid" id="grid"></div>
         </div>
 
-        <!-- 2. КОРЗИНА -->
         <div id="p-cart" class="page">
             <div class="head-row">
                 <h2 class="head-title">Корзина</h2>
-                <div style="display:flex; gap:10px">
-                    <button class="del-selected-btn" id="cart-del-btn" onclick="deleteSelectedCart()">Удалить</button>
+                <div style="display:flex; gap:15px">
+                    <button class="del-selected-btn" id="cart-del-btn" onclick="deleteSelectedCart()">🗑 Удалить</button>
                     <button class="sel-all-btn" onclick="toggleAllCart()">Выбрать все</button>
                 </div>
             </div>
+            
             <div id="cart-items"></div>
             <div class="empty-state" id="cart-empty" style="display:none">Корзина пуста 🍃</div>
+
+            <div class="order-form" id="order-form-block" style="display:none">
+                <label class="order-label">Ваш телефон (обязательно):</label>
+                <input type="tel" class="order-input" id="u-phone" placeholder="+7 (999) 000-00-00">
+                
+                <label class="order-label" style="margin-top:12px">Комментарий к заказу:</label>
+                <textarea class="order-input" id="u-comment" placeholder="Например: Позвонить за час..."></textarea>
+            </div>
             <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto;">
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
                     Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
@@ -230,20 +294,17 @@
             </div>
         </div>
 
-        <!-- 3. ИЗБРАННОЕ -->
         <div id="p-fav" class="page">
             <div class="head-row">
                 <h2 class="head-title">Избранное</h2>
-                <div style="display:flex; gap:10px">
-                    <button class="del-selected-btn" id="fav-del-btn" onclick="deleteSelectedFav()">Удалить</button>
-                    <button class="sel-all-btn" onclick="toggleAllFav()">Выбрать все</button>
+                <div style="display:flex; gap:15px">
+                    <button class="del-all-fav-btn" onclick="clearFav()">🗑 Удалить всё</button>
                 </div>
             </div>
-            <div id="fav-items"></div>
+            <div class="grid" id="fav-items"></div>
             <div class="empty-state" id="fav-empty" style="display:none">Нет любимых товаров 💔</div>
         </div>
 
-        <!-- 4. ПРОФИЛЬ -->
         <div id="p-prof" class="page">
             <div style="text-align: center; padding: 40px 20px;">
                 <div style="width: 80px; height: 80px; background: var(--block); border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:40px; border: 2px solid var(--border);" id="u-ava">👤</div>
@@ -262,7 +323,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ТОВАРА -->
     <div id="modal">
         <div class="back-btn" onclick="closeModal()">
             <svg class="back-icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -277,7 +337,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА НАСТРОЕК -->
     <div id="settings-modal">
         <div style="padding: 20px;">
             <div style="display:flex; align-items:center; margin-bottom: 20px;">
@@ -330,9 +389,7 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // ---------------- ЗАМЕНИ 'DUROV' НА СВОЙ НИК ----------------
         const SUPPORT_USERNAME = 'DUROV'; 
-        // ------------------------------------------------------------
 
         const db = [
             { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
@@ -345,9 +402,7 @@
 
         let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
-        // Новые переменные для выбранных товаров
         let selectedCart = new Set();
-        let selectedFav = new Set();
         let currentId = null;
 
         // --- ЛОГИКА ТЕМЫ ---
@@ -355,16 +410,21 @@
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        }
-        
-        if(localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-theme');
-            document.getElementById('theme-toggle').checked = true;
-        } else {
-            document.getElementById('theme-toggle').checked = false;
+            // Обновляем цвета Telegram UI
+            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
+            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
 
-        // --- СМЕНА ЯЗЫКА (ДЕМО) ---
+        // Инициализация темы и цветов Telegram UI
+        const isLightOnLoad = localStorage.getItem('theme') === 'light';
+        if(isLightOnLoad) {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-toggle').checked = true;
+        }
+        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
+        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
+
+
         function toggleLang() {
             const isEng = document.getElementById('lang-toggle').checked;
             const titles = document.querySelectorAll('.nav-text');
@@ -381,7 +441,9 @@
         function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
 
-        // --- КАТАЛОГ ---
+        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
+        
+        // --- КАТАЛОГ (КАРТОЧКИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -401,14 +463,54 @@
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
+        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
-            const btn = document.getElementById(`fav-btn-${id}`);
-            if(idx < 0) { favs.push(id); if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } tg.HapticFeedback.impactOccurred('medium'); }
-            else { favs.splice(idx, 1); if(btn) { btn.classList.remove('is-active'); } tg.HapticFeedback.impactOccurred('light'); }
-            save(); if(currentId === id) updateModalFavBtn(); if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
+            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
+            const onFavPage = document.getElementById('p-fav').classList.contains('active');
+            
+            if(idx < 0) { 
+                // ДОБАВЛЕНИЕ
+                favs.push(id); 
+                if(homeBtn) { 
+                    homeBtn.classList.add('is-active','active-anim'); 
+                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
+                } 
+                if(onFavPage) {
+                    renderFavs();
+                }
+
+                tg.HapticFeedback.impactOccurred('medium'); 
+            } else { 
+                // УДАЛЕНИЕ
+                favs.splice(idx, 1); 
+                tg.HapticFeedback.impactOccurred('light'); 
+                
+                if(onFavPage) {
+                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.8)';
+                        
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            if (favs.length === 0) {
+                                document.getElementById('fav-empty').style.display = 'block';
+                            }
+                        }, 300);
+                    }
+                } 
+                
+                if(homeBtn) {
+                    homeBtn.classList.remove('is-active');
+                }
+            }
+            save(); 
+            if(currentId === id) updateModalFavBtn(); 
         }
+
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
@@ -419,22 +521,73 @@
         function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
         function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
         
+        function updateTotalAndButtons() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+            
+            let selectedTotal = 0;
+            ids.forEach(id => {
+                if(selectedCart.has(id)) {
+                    const product = db.find(x => x.id == id);
+                    if (product) {
+                        selectedTotal += product.price * grouped[id];
+                    }
+                }
+            });
+
+            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
+            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
+            document.getElementById('total-price').innerText = selectedTotal;
+        }
+        
         function toggleCartSelect(id) {
-            if(selectedCart.has(id)) selectedCart.delete(id);
-            else selectedCart.add(id);
-            updateCartUI();
+            const itemElement = document.getElementById('cart-item-' + id);
+            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+
+            if(selectedCart.has(id)) {
+                selectedCart.delete(id);
+                if (circle) circle.classList.remove('checked');
+            } else {
+                selectedCart.add(id);
+                if (circle) circle.classList.add('checked');
+            }
+            updateTotalAndButtons();
         }
+
         function toggleAllCart() {
-            const uniqueIds = [...new Set(cart)];
-            if(selectedCart.size === uniqueIds.length) selectedCart.clear();
-            else uniqueIds.forEach(id => selectedCart.add(id));
-            updateCartUI();
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const uniqueIds = Object.keys(grouped).map(Number);
+            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
+
+            if(shouldSelectAll) {
+                uniqueIds.forEach(id => selectedCart.add(id));
+            } else {
+                selectedCart.clear();
+            }
+            
+            uniqueIds.forEach(id => {
+                const itemElement = document.getElementById('cart-item-' + id);
+                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+                if (circle) {
+                    if (shouldSelectAll) {
+                        circle.classList.add('checked');
+                    } else {
+                        circle.classList.remove('checked');
+                    }
+                }
+            });
+
+            updateTotalAndButtons();
         }
+
         function deleteSelectedCart() {
             if(selectedCart.size === 0) return;
-            if(confirm("Удалить выбранные?")) { cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); updateCartUI(); }
+            if(confirm("Удалить выбранные?")) {
+                cart = cart.filter(id => !selectedCart.has(id)); 
+                selectedCart.clear();
+                save(); updateCartUI(); 
+            }
         }
-        function clearCart() { if(confirm("Очистить полностью?")) { cart = []; selectedCart.clear(); save(); updateCartUI(); } }
 
         function updateCartUI() {
             const badge = document.getElementById('badge');
@@ -443,73 +596,115 @@
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
             
-            let selectedTotal = 0;
-            ids.forEach(id => { if(selectedCart.has(id)) selectedTotal += db.find(x => x.id == id).price * grouped[id]; });
+            if (!ids.length) {
+                document.getElementById('cart-items').innerHTML = '';
+                document.getElementById('cart-empty').style.display = 'block';
+                document.getElementById('cart-footer').style.display = 'none';
+                
+                // 👇 СКРЫВАЕМ ФОРМУ ЕСЛИ ПУСТО
+                document.getElementById('order-form-block').style.display = 'none';
+                
+                selectedCart.clear();
+            } else {
+                document.getElementById('cart-empty').style.display = 'none';
+                document.getElementById('cart-footer').style.display = 'block';
 
-            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
-            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
+                // 👇 ПОКАЗЫВАЕМ ФОРМУ
+                document.getElementById('order-form-block').style.display = 'block';
+
+                document.getElementById('cart-items').innerHTML = ids.map(id => {
+                    const p = db.find(x => x.id == id);
+                    const isChecked = selectedCart.has(id) ? 'checked' : '';
+                    
+                    return `
+                        <div class="list-row" id="cart-item-${id}">
+                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
+                            <img src="${p.images[0]}" class="list-img">
+                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
+                                <div class="cart-item-name">${p.name}</div>
+                                <div class="cart-item-price">${p.price} ₽</div>
+                            </div>
+                            <div class="qty-ctrl">
+                                <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
+                                <div class="qty-val">${grouped[id]}</div>
+                                <div class="qty-btn" onclick="addOne(${p.id})">+</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
             
-            if (!ids.length) { document.getElementById('cart-items').innerHTML = ''; document.getElementById('cart-empty').style.display = 'block'; document.getElementById('cart-footer').style.display = 'none'; return; }
-            document.getElementById('cart-empty').style.display = 'none'; document.getElementById('cart-footer').style.display = 'block';
-
-            document.getElementById('cart-items').innerHTML = ids.map(id => {
-                const p = db.find(x => x.id == id);
-                const isChecked = selectedCart.has(id) ? 'checked' : '';
-                return `
-                    <div class="list-item">
-                        <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
-                        <img src="${p.images[0]}" class="list-img">
-                        <div class="list-info">
-                            <div class="list-name">${p.name}</div>
-                            <div class="list-price">${p.price} ₽</div>
-                        </div>
-                        <div class="qty-ctrl">
-                            <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                            <div class="qty-val">${grouped[id]}</div>
-                            <div class="qty-btn" onclick="addOne(${p.id})">+</div>
-                        </div>
-                    </div>`;
-            }).join('');
-            document.getElementById('total-price').innerText = selectedTotal;
+            updateTotalAndButtons();
         }
 
-        // --- УМНОЕ ИЗБРАННОЕ ---
-        function toggleFavSelect(id) {
-            if(selectedFav.has(id)) selectedFav.delete(id);
-            else selectedFav.add(id);
-            renderFavs();
+        // --- ОПЛАТА ВЫБРАННОГО (С ВАЛИДАЦИЕЙ) ---
+        function checkout() {
+            if(selectedCart.size === 0) return;
+
+            // 👇 ВАЛИДАЦИЯ ТЕЛЕФОНА
+            const phoneInput = document.getElementById('u-phone');
+            const commentInput = document.getElementById('u-comment');
+            const phoneVal = phoneInput.value.trim();
+            const commentVal = commentInput.value.trim();
+
+            if(phoneVal.length < 5) {
+                tg.showAlert("Пожалуйста, укажите корректный номер телефона, чтобы мы могли связаться с вами!");
+                phoneInput.focus();
+                phoneInput.style.borderColor = "#FF453A"; // Подсветим красным
+                return;
+            }
+            // 👆 КОНЕЦ ВАЛИДАЦИИ
+            
+            const grouped = {}; 
+            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            
+            const itemsText = Object.keys(grouped).map(id => {
+                const product = db.find(x => x.id == id);
+                return `${product.name} x${grouped[id]}`;
+            }).join(', ');
+            
+            let total = 0;
+            Object.keys(grouped).map(Number).forEach(id => {
+                const product = db.find(x => x.id == id);
+                total += product.price * grouped[id];
+            });
+
+            // ОЧИСТКА КОРЗИНЫ
+            cart = cart.filter(id => !selectedCart.has(id)); 
+            selectedCart.clear();
+            save();
+            updateCartUI(); 
+
+            // Сброс полей ввода
+            phoneInput.value = '';
+            commentInput.value = '';
+
+            // 👇 ОТПРАВЛЯЕМ ТЕПЕРЬ ТЕЛЕФОН И КОММЕНТАРИЙ
+            tg.sendData(JSON.stringify({ 
+                total, 
+                items: [itemsText],
+                phone: phoneVal,
+                comment: commentVal
+            }));
         }
-        function toggleAllFav() {
-            if(selectedFav.size === favs.length) selectedFav.clear();
-            else favs.forEach(id => selectedFav.add(id));
-            renderFavs();
+        
+        // --- ИЗБРАННОЕ (СЕТКА) ---
+        function clearFav() { 
+            if(confirm("Удалить все товары из избранного?")) { 
+                favs = []; 
+                save(); 
+                render(); 
+                renderFavs(); 
+            } 
         }
-        function deleteSelectedFav() {
-            if(selectedFav.size === 0) return;
-            if(confirm("Удалить?")) { favs = favs.filter(id => !selectedFav.has(id)); selectedFav.clear(); save(); render(); renderFavs(); }
-        }
+
         function renderFavs() {
             const list = db.filter(p => favs.includes(p.id));
             const container = document.getElementById('fav-items');
             document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-            document.getElementById('fav-del-btn').style.display = selectedFav.size > 0 ? 'flex' : 'none';
-
-            container.innerHTML = list.map(p => {
-                const isChecked = selectedFav.has(p.id) ? 'checked' : '';
-                return `
-                <div class="list-item">
-                    <div class="check-circle ${isChecked}" onclick="toggleFavSelect(${p.id})"></div>
-                    <img src="${p.images[0]}" class="list-img">
-                    <div class="list-info">
-                        <div class="list-name">${p.name}</div>
-                        <div class="list-price">${p.price} ₽</div>
-                    </div>
-                    <div class="add-btn-small" onclick="addOne(${p.id}, event)">+</div>
-                </div>`;
-            }).join('');
+            container.innerHTML = list.map(p => drawCard(p)).join('');
         }
-        function clearFav() { if(confirm("Удалить всё?")) { favs = []; selectedFav.clear(); save(); render(); renderFavs(); } }
-
+        
         function openModal(id) {
             currentId = id; const p = db.find(x => x.id === id);
             document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
@@ -522,26 +717,9 @@
         function go(id, btn) {
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
-            if(id === 'fav') renderFavs(); if(id === 'cart') updateCartUI();
-        }
-
-        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
-        
-        // --- ОПЛАТА С ОЧИСТКОЙ ---
-        function checkout() {
-            if(selectedCart.size === 0) return;
-            const grouped = {}; 
-            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const itemsText = Object.keys(grouped).map(id => `${db.find(x=>x.id==id).name} x${grouped[id]}`).join(', ');
-            const total = cart.filter(id => selectedCart.has(id)).reduce((sum, id) => sum + db.find(x => x.id == id).price, 0);
-            
-            // Удаляем оплаченное из корзины ПЕРЕД отправкой
-            cart = cart.filter(id => !selectedCart.has(id));
-            selectedCart.clear();
-            save();
-            updateCartUI();
-
-            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+            if(id === 'fav') renderFavs(); 
+            if(id === 'cart') updateCartUI();
+            if(id === 'home') render(); 
         }
 
         if(tg.initDataUnsafe?.user) {
@@ -549,11 +727,25 @@
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
 
-        // SCROLL FIX
-        let startY = 0; const homePage = document.getElementById('p-home'); const spinner = document.getElementById('ptr-spinner');
+        let startY = 0;
+        const homePage = document.getElementById('p-home');
+        const spinner = document.getElementById('ptr-spinner');
         homePage.addEventListener('touchstart', e => { if(homePage.scrollTop === 0) startY = e.touches[0].clientY; });
-        homePage.addEventListener('touchmove', e => { const diff = e.touches[0].clientY - startY; if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; } });
-        homePage.addEventListener('touchend', e => { if(parseInt(spinner.style.height) > 60) { tg.HapticFeedback.impactOccurred('medium'); setTimeout(() => { render(); spinner.style.height = '0px'; }, 500); } else { spinner.style.height = '0px'; } });
+        homePage.addEventListener('touchmove', e => {
+            const diff = e.touches[0].clientY - startY;
+            if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
+        });
+        homePage.addEventListener('touchend', e => {
+            if(parseInt(spinner.style.height) > 60) { 
+                tg.HapticFeedback.impactOccurred('medium'); 
+                setTimeout(() => { 
+                    render(); 
+                    spinner.style.height = '0px'; 
+                }, 500); 
+            } else { 
+                spinner.style.height = '0px'; 
+            }
+        });
 
         render();
         updateCartUI();
