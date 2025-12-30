@@ -715,8 +715,7 @@
                 } else if (activePageId === 'p-fav') {
                     refreshFunction = renderFavs; // Обновление для Избранного
                 } else if (activePageId === 'p-prof') {
-                    // Для Профиля можно просто вызвать render, но так как контент статичен,
-                    // лучше просто вызвать render (для обновления общего состояния)
+                    // Для Профиля можно просто вызвать render (для обновления общего состояния)
                     refreshFunction = render; 
                 }
                 
