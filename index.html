@@ -561,7 +561,7 @@
                         <div class="list-row" id="cart-item-${id}">
                             <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
                             <img src="${p.images[0]}" class="list-img">
-                            <div style="flex:1" onclick="openModal(${id})">
+                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
                                 <div style="font-weight:500;font-size:13px;">${p.name}</div>
                                 <div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div>
                             </div>
