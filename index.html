@@ -142,6 +142,23 @@
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         
+        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.3;
+            overflow: hidden;
+            /* Ограничиваем имя 2 строками, чтобы строка не была слишком высокой */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
+        }
+        .cart-item-price {
+            color: var(--text-sec);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
         .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
@@ -562,8 +579,8 @@
                             <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
                             <img src="${p.images[0]}" class="list-img">
                             <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
-                                <div style="font-weight:500;font-size:13px;">${p.name}</div>
-                                <div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div>
+                                <div class="cart-item-name">${p.name}</div>
+                                <div class="cart-item-price">${p.price} ₽</div>
                             </div>
                             <div class="qty-ctrl">
                                 <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
