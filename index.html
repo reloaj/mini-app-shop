@@ -159,9 +159,9 @@
         
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
+        .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); transition: transform 0.1s; } /* Убрал лишние transition */
 
-        /* --- ФОРМА ЗАКАЗА (НОВОЕ) --- */
+        /* --- ФОРМА ЗАКАЗА --- */
         .order-form {
             padding: 0 16px;
             margin-top: 15px;
@@ -286,6 +286,7 @@
                 <label class="order-label" style="margin-top:12px">Комментарий к заказу:</label>
                 <textarea class="order-input" id="u-comment" placeholder="Например: Позвонить за час..."></textarea>
             </div>
+
             <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto;">
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
                     Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
@@ -405,17 +406,15 @@
         let selectedCart = new Set();
         let currentId = null;
 
-        // --- ЛОГИКА ТЕМЫ ---
+        // --- ЛОГИКА ТЕМЫ И НАВИГАЦИЯ ---
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            // Обновляем цвета Telegram UI
             tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
             tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
 
-        // Инициализация темы и цветов Telegram UI
         const isLightOnLoad = localStorage.getItem('theme') === 'light';
         if(isLightOnLoad) {
             document.body.classList.add('light-theme');
@@ -443,7 +442,7 @@
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
-        // --- КАТАЛОГ (КАРТОЧКИ) ---
+        // --- КАТАЛОГ И ПОИСК ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -463,7 +462,7 @@
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
-        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
+        // --- ЛОГИКА ИЗБРАННОГО ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
@@ -471,19 +470,11 @@
             const onFavPage = document.getElementById('p-fav').classList.contains('active');
             
             if(idx < 0) { 
-                // ДОБАВЛЕНИЕ
                 favs.push(id); 
-                if(homeBtn) { 
-                    homeBtn.classList.add('is-active','active-anim'); 
-                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
-                } 
-                if(onFavPage) {
-                    renderFavs();
-                }
-
+                if(homeBtn) { homeBtn.classList.add('is-active','active-anim'); setTimeout(()=>homeBtn.classList.remove('active-anim'),300); } 
+                if(onFavPage) { renderFavs(); }
                 tg.HapticFeedback.impactOccurred('medium'); 
             } else { 
-                // УДАЛЕНИЕ
                 favs.splice(idx, 1); 
                 tg.HapticFeedback.impactOccurred('light'); 
                 
@@ -493,36 +484,110 @@
                         cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
                         cardToRemove.style.opacity = '0';
                         cardToRemove.style.transform = 'scale(0.8)';
-                        
-                        setTimeout(() => {
-                            cardToRemove.remove();
-                            if (favs.length === 0) {
-                                document.getElementById('fav-empty').style.display = 'block';
-                            }
-                        }, 300);
+                        setTimeout(() => { cardToRemove.remove(); if (favs.length === 0) { document.getElementById('fav-empty').style.display = 'block'; } }, 300);
                     }
                 } 
                 
-                if(homeBtn) {
-                    homeBtn.classList.remove('is-active');
-                }
+                if(homeBtn) { homeBtn.classList.remove('is-active'); }
             }
             save(); 
             if(currentId === id) updateModalFavBtn(); 
         }
-
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
             if(favs.includes(currentId)) { btn.innerHTML='❤️ В избранном'; btn.classList.add('active'); }
             else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
         }
+        function clearFav() { 
+            if(confirm("Удалить все товары из избранного?")) { 
+                favs = []; 
+                save(); 
+                render(); 
+                renderFavs(); 
+            } 
+        }
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            const container = document.getElementById('fav-items');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+            container.innerHTML = list.map(p => drawCard(p)).join('');
+        }
+        
+        // --- ЛОГИКА КОРЗИНЫ (БЕЗ МЕРЦАНИЯ) ---
 
-        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
-        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
+        function getGroupedCart() {
+            const grouped = {}; 
+            cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            return grouped;
+        }
+
+        function updateBadge() {
+            const badge = document.getElementById('badge');
+            badge.style.display = cart.length ? 'block' : 'none'; 
+            badge.innerText = cart.length; 
+            if(cart.length > 0) {
+                 badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
+            }
+        }
+
+        // НОВАЯ ФУНКЦИЯ: Обновляет только счетчик и итог, без перерисовки всей корзины
+        function updateItemQuantityDisplay(id, count) {
+            const qtyElement = document.getElementById(`qty-val-${id}`);
+            if (qtyElement) {
+                qtyElement.innerText = count;
+                // Анимация для "живого" ощущения
+                qtyElement.style.animation = 'none';
+                qtyElement.offsetHeight; 
+                qtyElement.style.animation = 'pop 0.2s';
+            }
+            updateTotalAndButtons();
+            updateBadge();
+        }
+
+        // Обновленная функция добавления
+        function addOne(id, e) { 
+            if(e) e.stopPropagation(); 
+            const wasEmpty = cart.length === 0;
+            const wasNotInCart = !cart.includes(id);
+
+            cart.push(id); 
+            save(); 
+            
+            if (wasEmpty || wasNotInCart) {
+                // Если корзина была пуста или товара не было, перерисовываем структуру
+                updateCartUI(true);
+            } else {
+                // Иначе просто обновляем счетчик
+                const grouped = getGroupedCart();
+                updateItemQuantityDisplay(id, grouped[id]);
+            }
+            
+            tg.HapticFeedback.impactOccurred('light'); 
+        }
+
+        // Обновленная функция удаления
+        function removeOne(id) { 
+            const idx = cart.indexOf(id); 
+            if (idx > -1) { 
+                cart.splice(idx, 1); 
+                save(); 
+                
+                const grouped = getGroupedCart();
+                const newCount = grouped[id] || 0;
+
+                if (newCount === 0) {
+                    // Если товар удален полностью, перерисовываем структуру (удаляем его из DOM)
+                    updateCartUI(true); 
+                } else {
+                    // Иначе просто обновляем счетчик
+                    updateItemQuantityDisplay(id, newCount);
+                }
+            }
+        }
         
         function updateTotalAndButtons() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const grouped = getGroupedCart();
             const ids = Object.keys(grouped).map(Number);
             
             let selectedTotal = 0;
@@ -555,7 +620,7 @@
         }
 
         function toggleAllCart() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const grouped = getGroupedCart();
             const uniqueIds = Object.keys(grouped).map(Number);
             let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
 
@@ -585,34 +650,31 @@
             if(confirm("Удалить выбранные?")) {
                 cart = cart.filter(id => !selectedCart.has(id)); 
                 selectedCart.clear();
-                save(); updateCartUI(); 
+                save(); 
+                // При удалении группы нужно всегда перерисовать
+                updateCartUI(true); 
             }
         }
 
-        function updateCartUI() {
-            const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
-            
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+        // Обновленная функция отрисовки (теперь вызывается только при необходимости)
+        function updateCartUI(forceRender = false) {
+            const grouped = getGroupedCart();
             const ids = Object.keys(grouped).map(Number);
             
-            if (!ids.length) {
-                document.getElementById('cart-items').innerHTML = '';
-                document.getElementById('cart-empty').style.display = 'block';
-                document.getElementById('cart-footer').style.display = 'none';
-                
-                // 👇 СКРЫВАЕМ ФОРМУ ЕСЛИ ПУСТО
-                document.getElementById('order-form-block').style.display = 'none';
-                
+            const cartItemsContainer = document.getElementById('cart-items');
+            const isEmpty = !ids.length;
+
+            document.getElementById('cart-empty').style.display = isEmpty ? 'block' : 'none';
+            document.getElementById('cart-footer').style.display = isEmpty ? 'none' : 'block';
+            document.getElementById('order-form-block').style.display = isEmpty ? 'none' : 'block';
+            
+            if (isEmpty) {
+                cartItemsContainer.innerHTML = '';
                 selectedCart.clear();
-            } else {
-                document.getElementById('cart-empty').style.display = 'none';
-                document.getElementById('cart-footer').style.display = 'block';
-
-                // 👇 ПОКАЗЫВАЕМ ФОРМУ
-                document.getElementById('order-form-block').style.display = 'block';
-
-                document.getElementById('cart-items').innerHTML = ids.map(id => {
+            } else if (forceRender || cartItemsContainer.children.length !== ids.length) { 
+                // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Отрисовываем заново только если forceRender=true 
+                // ИЛИ количество уникальных товаров в DOM не совпадает с количеством в корзине
+                cartItemsContainer.innerHTML = ids.map(id => {
                     const p = db.find(x => x.id == id);
                     const isChecked = selectedCart.has(id) ? 'checked' : '';
                     
@@ -626,7 +688,7 @@
                             </div>
                             <div class="qty-ctrl">
                                 <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                                <div class="qty-val">${grouped[id]}</div>
+                                <div class="qty-val" id="qty-val-${p.id}">${grouped[id]}</div>
                                 <div class="qty-btn" onclick="addOne(${p.id})">+</div>
                             </div>
                         </div>
@@ -635,13 +697,13 @@
             }
             
             updateTotalAndButtons();
+            updateBadge();
         }
 
-        // --- ОПЛАТА ВЫБРАННОГО (С ВАЛИДАЦИЕЙ) ---
+        // --- ОПЛАТА И МОДАЛКИ ---
         function checkout() {
             if(selectedCart.size === 0) return;
 
-            // 👇 ВАЛИДАЦИЯ ТЕЛЕФОНА
             const phoneInput = document.getElementById('u-phone');
             const commentInput = document.getElementById('u-comment');
             const phoneVal = phoneInput.value.trim();
@@ -650,10 +712,9 @@
             if(phoneVal.length < 5) {
                 tg.showAlert("Пожалуйста, укажите корректный номер телефона, чтобы мы могли связаться с вами!");
                 phoneInput.focus();
-                phoneInput.style.borderColor = "#FF453A"; // Подсветим красным
+                phoneInput.style.borderColor = "#FF453A"; 
                 return;
             }
-            // 👆 КОНЕЦ ВАЛИДАЦИИ
             
             const grouped = {}; 
             cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
@@ -669,40 +730,20 @@
                 total += product.price * grouped[id];
             });
 
-            // ОЧИСТКА КОРЗИНЫ
             cart = cart.filter(id => !selectedCart.has(id)); 
             selectedCart.clear();
             save();
-            updateCartUI(); 
+            updateCartUI(true); // При оформлении заказа очищаем корзину, поэтому полная перерисовка нужна
 
-            // Сброс полей ввода
             phoneInput.value = '';
             commentInput.value = '';
 
-            // 👇 ОТПРАВЛЯЕМ ТЕПЕРЬ ТЕЛЕФОН И КОММЕНТАРИЙ
             tg.sendData(JSON.stringify({ 
                 total, 
                 items: [itemsText],
                 phone: phoneVal,
                 comment: commentVal
             }));
-        }
-        
-        // --- ИЗБРАННОЕ (СЕТКА) ---
-        function clearFav() { 
-            if(confirm("Удалить все товары из избранного?")) { 
-                favs = []; 
-                save(); 
-                render(); 
-                renderFavs(); 
-            } 
-        }
-
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-            container.innerHTML = list.map(p => drawCard(p)).join('');
         }
         
         function openModal(id) {
@@ -718,7 +759,7 @@
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); 
-            if(id === 'cart') updateCartUI();
+            if(id === 'cart') updateCartUI(); // Теперь без forceRender, если нет изменений, не мерцает
             if(id === 'home') render(); 
         }
 
