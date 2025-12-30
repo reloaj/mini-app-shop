@@ -63,7 +63,7 @@
         .del-selected-btn {
             background: rgba(255, 69, 58, 0.1); color: var(--red);
             border: 1px solid var(--red); padding: 8px 15px; border-radius: 20px;
-            font-size: 13px; font-weight: 600; display: none; /* Скрыта по умолчанию */
+            font-size: 13px; font-weight: 600; display: none;
             align-items: center; gap: 5px; cursor: pointer;
         }
         /* Кнопка "Удалить все" для Избранного */
@@ -343,7 +343,6 @@
         let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
         let selectedCart = new Set();
-        let selectedFav = new Set();
         let currentId = null;
 
         // --- ЛОГИКА ТЕМЫ ---
@@ -387,7 +386,6 @@
         // --- КАТАЛОГ (КАРТОЧКИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
-            // Для избранного всегда активен, для каталога - зависит от favs.
             const activeClass = isFav ? 'is-active' : '';
             let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
 
@@ -405,28 +403,59 @@
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
+        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
-            const btn = document.getElementById(`fav-btn-${id}`);
+            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
+            const onFavPage = document.getElementById('p-fav').classList.contains('active');
             
             if(idx < 0) { 
+                // ДОБАВЛЕНИЕ (если кликнули на главной): добавляем, анимируем, на странице избранного (если мы там) - перерисовываем
                 favs.push(id); 
-                if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } 
+                if(homeBtn) { 
+                    homeBtn.classList.add('is-active','active-anim'); 
+                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
+                } 
+                if(onFavPage) {
+                    // При добавлении на страницу избранного, проще всего перерисовать, чтобы соблюсти порядок сетки.
+                    renderFavs();
+                }
+
                 tg.HapticFeedback.impactOccurred('medium'); 
             } else { 
+                // УДАЛЕНИЕ: удаляем из массива
                 favs.splice(idx, 1); 
-                // Если мы на странице избранного, при удалении нужно обновить/перерисовать список
-                if(document.getElementById('p-fav').classList.contains('active')) {
-                    renderFavs();
-                } else if(btn) {
-                    btn.classList.remove('is-active');
-                }
                 tg.HapticFeedback.impactOccurred('light'); 
+                
+                if(onFavPage) {
+                    // ГЛАВНОЕ: УДАЛЕНИЕ БЕЗ МЕРЦАНИЯ на странице "Избранное"
+                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.8)';
+                        
+                        // Удаляем элемент после завершения анимации
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            // Обновляем состояние пустого списка
+                            if (favs.length === 0) {
+                                document.getElementById('fav-empty').style.display = 'block';
+                            }
+                        }, 300);
+                    }
+                } 
+                
+                // Обновляем сердечко на главной странице (если мы не на странице Избранного)
+                if(homeBtn) {
+                    homeBtn.classList.remove('is-active');
+                }
             }
             save(); 
             if(currentId === id) updateModalFavBtn(); 
         }
+
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
@@ -470,7 +499,6 @@
                 selectedCart.add(id);
                 if (circle) circle.classList.add('checked');
             }
-            // Вызываем только функцию обновления тотала и кнопок, чтобы избежать мерцания
             updateTotalAndButtons();
         }
 
@@ -485,7 +513,6 @@
                 selectedCart.clear();
             }
             
-            // Обновляем состояние чекбоксов в DOM без полной перерисовки
             uniqueIds.forEach(id => {
                 const itemElement = document.getElementById('cart-item-' + id);
                 const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
@@ -504,9 +531,9 @@
         function deleteSelectedCart() {
             if(selectedCart.size === 0) return;
             if(confirm("Удалить выбранные?")) {
-                cart = cart.filter(id => !selectedCart.has(id)); // Оставляем только то, что НЕ выбрано
+                cart = cart.filter(id => !selectedCart.has(id)); 
                 selectedCart.clear();
-                save(); updateCartUI(); // Полная перерисовка нужна, так как изменились ID в массиве cart
+                save(); updateCartUI(); 
             }
         }
 
@@ -528,7 +555,6 @@
 
                 document.getElementById('cart-items').innerHTML = ids.map(id => {
                     const p = db.find(x => x.id == id);
-                    // Проверяем, был ли товар выбран ранее, чтобы сохранить состояние
                     const isChecked = selectedCart.has(id) ? 'checked' : '';
                     
                     return `
@@ -579,7 +605,7 @@
             tg.sendData(JSON.stringify({ total, items: [itemsText] }));
         }
         
-        // --- ИЗБРАННОЕ (ТЕПЕРЬ СЕТКА) ---
+        // --- ИЗБРАННОЕ (СЕТКА) ---
         
         function clearFav() { 
             if(confirm("Удалить все товары из избранного?")) { 
