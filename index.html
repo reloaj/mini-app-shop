@@ -30,13 +30,34 @@
             --border: rgba(0,0,0,0.1);
         }
 
-        body {
-            background: var(--bg); color: var(--text);
+        /* --- 🔥 ГЛАВНЫЙ ФИКС СКРОЛЛА (НЕ ТРОГАТЬ) 🔥 --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Запрещает скролл всего окна (чтобы не сворачивалось) */
+            background: var(--bg);
+            color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; padding-bottom: 85px;
             -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none; user-select: none;
-            transition: background 0.3s;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: background 0.3s; /* Оставляем плавную смену темы */
+        }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        /* Шапка и Меню не скроллятся */
+        header, nav {
+            flex-shrink: 0;
+        }
+        /* ----------------------------------------------- */
+
+        body {
+            /* Сброс старых параметров body, т.к. они перенесены в html, body */
+            margin: 0; padding: 0;
         }
 
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
@@ -77,7 +98,8 @@
 
         /* ШАПКА */
         header {
-            position: sticky; top: 0; background: var(--nav-bg);
+            /* position: sticky; top: 0; удалено */
+            background: var(--nav-bg);
             backdrop-filter: blur(20px); z-index: 20; padding: 12px 16px;
             display: flex; align-items: center; gap: 12px;
             border-bottom: 1px solid var(--border);
@@ -208,15 +230,20 @@
         .toggle-input:checked + .toggle-slider { background-color: var(--green); }
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        .page { display: none; }
-        .page.active { display: block; }
-        .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
-        #ptr-spinner { 
-            height: 0; overflow: hidden; display: flex; align-items: center; 
-            justify-content: center; transition: height 0.2s; background: var(--bg); 
-            width: 100%; /* Добавлено для корректного отображения */
-            position: relative; /* Добавлено для корректного отображения */
+        /* Контент скроллится внутри этого блока */
+        .page {
+            display: none;
+            flex-grow: 1;
+            overflow-y: auto; /* Скролл только здесь */
+            padding-bottom: 85px; /* Увеличено до 85px, чтобы контент не перекрывался нижним меню (nav) */
+            overscroll-behavior-y: contain; /* Магия, запрещающая передавать скролл Телеграму */
+            -webkit-overflow-scrolling: touch;
         }
+        .page.active {
+            display: block;
+        }
+        .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
+        #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -230,9 +257,8 @@
             <div class="brand">Cotton Flowers</div>
         </header>
 
-        <div id="ptr-spinner"><div class="ptr-icon"></div></div>
-
         <div id="p-home" class="page active">
+            <div id="ptr-spinner"><div class="ptr-icon"></div></div>
             <div class="search-wrap">
                 <input type="text" class="search-input" placeholder="Поиск..." oninput="doSearch(this.value)">
             </div>
@@ -294,8 +320,7 @@
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;">
-        </div>
+            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
             <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
         </div>
@@ -347,391 +372,539 @@
             <span class="nav-text">Профиль</span>
         </button>
     </nav>
-
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.enableClosingConfirmation();
 
-        const SUPPORT_USERNAME = 'DUROV'; 
+        const SUPPORT_USERNAME = 'DUROV';
 
         const db = [
-            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
-            { id: 2, name: "Корзиночка с ароматным нобилисом и аспарагусом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Лист декоративный - 1 шт. Корзина трикотажная - 1 шт. Белка декоративная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
-            { id: 3, name: "Сиреневая корзинка со стабилизированной розой и хлопком", price: 2900, desc: "Роза стабилизированная - 1 шт. Лаванда сухоцвет - 3 шт. Лагурус (сухоцвет) - 7 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Мискантус - 1 шт. Корзина трикотажная - 1 шт. Кортадерия (сухоцвет) - 2 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/10/1764221989_49879210.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/46/1764221999_81902046.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/74/1764222021_89252974.jpg"] },
-            { id: 4, name: "Корзина со стабилизированными розами и мискантусом", price: 3799, desc: "Роза стабилизированная - 2 шт. Губка флористическая - 1 шт. Лимониум сухоцвет - 1 шт. Роза стабилизированная пионовидная - 1 шт. Кортадерия сухоцвет - 2 шт. Пампасная трава - 2 шт. Корзина трикотажная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/31/1763281452_32652531.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/35/1763281462_98317735.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/05/1763281484_77855005.jpg"] },
-            { id: 5, name: "Нежный мини букет с хлопком и ароматной лавандой", price: 1500, desc: "Упаковка дизайнерская - 1 шт. Хлопок (сухоцвет) - 3 шт. Лаванда пучок (сухоцвет) - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/61/1725257322_91107361.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/95/1725257322_98564295.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/88/1725257323_96342188.jpg"] },
-            { id: 6, name: "Корзина с подсолнухом и хлопок", price: 3800, desc: "Краспедия желтая - 2 шт. Хлопок (сухоцвет) - 2 шт. Эвкалипт стабилизированный - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 2 шт. Гелихризум - 3 шт. Корзина хлопок - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/13/1744103681_29991113.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/13/1744103681_78106913.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1744103681_60463898.jpg"] }
+            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/28/1759415743_47345328.jpg"], in_stock: true },
+            { id: 2, name: "Букет "Тёплый вечер"", price: 2900, desc: "Состав: Роза кустовая — 3 шт., Гвоздика — 2 шт., Матиолла — 1 шт., Эвкалипт — 2 шт., Упаковка.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/03/1709406040_223403.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/43/1709406086_59669643.jpg"], in_stock: true },
+            { id: 3, name: "Мини-букет с лавандой и пшеницей", price: 950, desc: "Состав: Лаванда сушеная, Пшеница, Декор.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/98/1759415668_59966198.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/25/1759415694_3389425.jpg"], in_stock: true },
+            { id: 4, name: "Композиция "Рассвет"", price: 4200, desc: "Состав: Пион — 5 шт., Роза — 7 шт., Дельфиниум — 3 шт., Упаковка.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/03/1759415494_46777003.jpg"], in_stock: false },
+            { id: 5, name: "101 роза "Ред Наоми"", price: 12500, desc: "Самые красные розы. Высота 60 см.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/26/1759415758_68007026.jpg"], in_stock: true },
         ];
-
-        let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
-        let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
-        let selectedCart = new Set();
-        let currentId = null;
-
-        // --- ЛОГИКА ТЕМЫ ---
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const isLight = document.body.classList.contains('light-theme');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            // Обновляем цвета Telegram UI
-            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
-            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
-        }
-
-        // Инициализация темы и цветов Telegram UI
-        const isLightOnLoad = localStorage.getItem('theme') === 'light';
-        if(isLightOnLoad) {
-            document.body.classList.add('light-theme');
-            document.getElementById('theme-toggle').checked = true;
-        }
-        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
-        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
-
-
-        function toggleLang() {
-            const isEng = document.getElementById('lang-toggle').checked;
-            const titles = document.querySelectorAll('.nav-text');
-            if(isEng) {
-                titles[0].innerText = 'Catalog'; titles[1].innerText = 'Cart'; titles[2].innerText = 'Saved'; titles[3].innerText = 'Profile';
-                document.querySelector('.brand').innerText = 'Cotton Flowers';
-            } else {
-                titles[0].innerText = 'Каталог'; titles[1].innerText = 'Корзина'; titles[2].innerText = 'Избранное'; titles[3].innerText = 'Профиль';
-                document.querySelector('.brand').innerText = 'Cotton Flowers';
-            }
-        }
-
-        function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
-        function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
-
-        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
-        // --- КАТАЛОГ (КАРТОЧКИ) ---
-        function drawCard(p) {
-            const isFav = favs.includes(p.id);
-            const activeClass = isFav ? 'is-active' : '';
-            let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let fav = JSON.parse(localStorage.getItem('fav')) || [];
+        let selectedCartItems = new Set();
+        let currentModalItem = null;
 
-            return `
-                <div class="card" onclick="openModal(${p.id})">
-                    <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
-                        <svg class="fav-icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        // --- ИНИЦИАЛИЗАЦИЯ / ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
+        function go(pageId, sender) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`p-${pageId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (sender) sender.classList.add('active');
+
+            if (pageId === 'cart') renderCart();
+            if (pageId === 'fav') renderFav();
+        }
+
+        // --- МОДАЛЬНОЕ ОКНО ---
+        function openModal(item) {
+            currentModalItem = item;
+            document.getElementById('m-title').innerText = item.name;
+            document.getElementById('m-price').innerText = `${item.price} ₽`;
+            document.getElementById('m-desc').innerText = item.desc;
+            
+            const slider = document.getElementById('m-slider');
+            slider.innerHTML = item.images.map(url => 
+                `<div class="slide"><img src="${url}" alt="${item.name}"></div>`
+            ).join('');
+            
+            updateModalFavBtn(item.id);
+
+            const modal = document.getElementById('modal');
+            modal.classList.add('modal-active');
+            tg.isClosingConfirmationEnabled = false;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('modal-active');
+            currentModalItem = null;
+            tg.isClosingConfirmationEnabled = true;
+        }
+
+        // --- КАТАЛОГ (HOME) ---
+        function createCard(item) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-id', item.id);
+            card.onclick = (e) => {
+                // Если клик не по кнопке/сердечку, открываем модалку
+                if (!e.target.closest('.fav-btn') && !e.target.closest('.cart-btn')) {
+                    openModal(item);
+                }
+            };
+
+            const imagesHtml = item.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+            const isFav = fav.includes(item.id);
+            const favClass = isFav ? 'is-active' : '';
+
+            card.innerHTML = `
+                <div class="slider-wrapper">
+                    <div class="slider" onscroll="updateDots(this)">
+                        ${imagesHtml}
                     </div>
-                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
-                    <div class="cart-btn" onclick="addOne(${p.id}, event)"><svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M4.05 13h15.9l-.94 2H5.21l-1.16-2zM20 6h-3.17l-4-5.2c-.22-.29-.63-.29-.86 0L8 6H4.83c-.37 0-.62.4-.44.73l3.61 6.27h8l3.61-6.27c.18-.33-.07-.73-.44-.73zM12 2.8L14.46 6H9.54L12 2.8zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg></div>
-                </div>`;
+                    <div class="dots">
+                        ${item.images.map((_, index) => `<div class="dot" data-index="${index}"></div>`).join('')}
+                    </div>
+                    <button class="fav-btn ${favClass}" onclick="toggleFav(event, ${item.id})">
+                        <svg class="fav-icon-svg" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/></svg>
+                    </button>
+                </div>
+                <div class="info">
+                    <div class="name">${item.name}</div>
+                    <div class="price">${item.price} ₽</div>
+                    <button class="cart-btn" onclick="addToCart(event, ${item.id})">
+                        <svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM4 10l1.1-2h15.5l-1.9 6H7v2h10v-2l-1.1-2H7l-1-2z"/></svg>
+                    </button>
+                </div>
+            `;
+            setTimeout(() => updateDots(card.querySelector('.slider')), 0); // Обновляем точки после рендеринга
+            return card;
         }
 
-        function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
-        function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
+        function updateDots(slider) {
+            const dotsContainer = slider.parentElement.querySelector('.dots');
+            if (!dotsContainer) return;
+            const totalSlides = slider.children.length;
+            const currentIndex = Math.round(slider.scrollLeft / slider.clientWidth);
 
-        // --- ЛОГИКА ИЗБРАННОГО С НОВЫМ ПРИНЦИПОМ УДАЛЕНИЯ БЕЗ МЕРЦАНИЯ ---
-        function toggleFav(id, e) {
-            if(e) e.stopPropagation();
-            const idx = favs.indexOf(id);
-            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
-            const onFavPage = document.getElementById('p-fav').classList.contains('active');
-            
-            if(idx < 0) { 
-                // ДОБАВЛЕНИЕ (если кликнули на главной): добавляем, анимируем, на странице избранного (если мы там) - перерисовываем
-                favs.push(id); 
-                if(homeBtn) { 
-                    homeBtn.classList.add('is-active','active-anim'); 
-                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
-                } 
-                if(onFavPage) {
-                    // При добавлении на страницу избранного, проще всего перерисовать, чтобы соблюсти порядок сетки.
-                    renderFavs();
+            dotsContainer.innerHTML = Array(totalSlides).fill(0).map((_, index) => 
+                `<div class="dot ${index === currentIndex ? 'active' : ''}"></div>`
+            ).join('');
+        }
+
+        function render(items = db) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            items.forEach(item => grid.appendChild(createCard(item)));
+            updateCartBadge();
+        }
+
+        function doSearch(query) {
+            const filtered = db.filter(item => 
+                item.name.toLowerCase().includes(query.toLowerCase())
+            );
+            render(filtered);
+        }
+
+        // --- КОРЗИНА (CART) ---
+        function createCartItem(item) {
+            const row = document.createElement('div');
+            row.className = 'list-row';
+            row.setAttribute('data-id', item.id);
+            row.setAttribute('data-price', item.price);
+            row.style.setProperty('--animation-delay', '0s'); // Сброс, т.к. используется только для общего появления
+
+            row.onclick = (e) => {
+                if (!e.target.closest('.qty-ctrl')) {
+                    toggleCartSelection(item.id);
                 }
+            };
 
-                tg.HapticFeedback.impactOccurred('medium'); 
-            } else { 
-                // УДАЛЕНИЕ: удаляем из массива
-                favs.splice(idx, 1); 
-                tg.HapticFeedback.impactOccurred('light'); 
-                
-                if(onFavPage) {
-                    // ГЛАВНОЕ: УДАЛЕНИЕ БЕЗ МЕРЦАНИЯ на странице "Избранное"
-                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
-                    if (cardToRemove) {
-                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
-                        cardToRemove.style.opacity = '0';
-                        cardToRemove.style.transform = 'scale(0.8)';
-                        
-                        // Удаляем элемент после завершения анимации
-                        setTimeout(() => {
-                            cardToRemove.remove();
-                            // Обновляем состояние пустого списка
-                            if (favs.length === 0) {
-                                document.getElementById('fav-empty').style.display = 'block';
-                            }
-                        }, 300);
-                    }
-                } 
-                
-                // Обновляем сердечко на главной странице (если мы не на странице Избранного)
-                if(homeBtn) {
-                    homeBtn.classList.remove('is-active');
+            const isSelected = selectedCartItems.has(item.id);
+            const checkClass = isSelected ? 'checked' : '';
+
+            row.innerHTML = `
+                <div class="check-circle ${checkClass}" onclick="toggleCartSelection(${item.id})"></div>
+                <img src="${item.images[0]}" class="list-img">
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">${item.price} ₽</div>
+                </div>
+                <div class="qty-ctrl">
+                    <div class="qty-btn" onclick="changeQuantity(${item.id}, -1)">-</div>
+                    <div class="qty-val" id="qty-${item.id}">${cart[item.id]}</div>
+                    <div class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</div>
+                </div>
+            `;
+            return row;
+        }
+
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = '';
+            
+            const cartList = Object.keys(cart)
+                .map(id => db.find(item => item.id == id))
+                .filter(item => item && cart[item.id] > 0);
+
+            cartList.forEach(item => cartItemsContainer.appendChild(createCartItem(item)));
+
+            const cartEmpty = document.getElementById('cart-empty');
+            const cartFooter = document.getElementById('cart-footer');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            if (cartList.length === 0) {
+                cartEmpty.style.display = 'block';
+                cartFooter.style.display = 'none';
+                document.getElementById('cart-del-btn').style.display = 'none';
+            } else {
+                cartEmpty.style.display = 'none';
+                cartFooter.style.display = 'block';
+            }
+            
+            // Если элементов в корзине больше 0, но ничего не выбрано, выбираем все
+            if (cartList.length > 0 && selectedCartItems.size === 0) {
+                selectedCartItems = new Set(cartList.map(item => item.id));
+                updateCartSelectionUI();
+            }
+
+            updateTotalPrice();
+        }
+
+        function addToCart(event, id) {
+            event.stopPropagation();
+            tg.HapticFeedback.impactOccurred('light');
+
+            if (!cart[id]) {
+                cart[id] = 0;
+            }
+            cart[id]++;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function changeQuantity(id, delta) {
+            tg.HapticFeedback.impactOccurred('light');
+            if (!cart[id]) return;
+
+            const newQty = cart[id] + delta;
+            
+            if (newQty > 0) {
+                cart[id] = newQty;
+                document.getElementById(`qty-${id}`).innerText = newQty;
+            } else {
+                delete cart[id];
+                selectedCartItems.delete(id); // Удаляем из выбранных при удалении из корзины
+                const itemRow = document.querySelector(`.list-row[data-id="${id}"]`);
+                if (itemRow) {
+                    // Анимация исчезновения
+                    itemRow.style.opacity = '0';
+                    itemRow.style.transform = 'translateX(-100%)';
+                    itemRow.style.transition = '0.3s ease-in-out';
+                    setTimeout(() => renderCart(), 300); // Перерисовываем после анимации
+                } else {
+                    renderCart();
                 }
             }
-            save(); 
-            if(currentId === id) updateModalFavBtn(); 
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateTotalPrice();
+            updateCartBadge();
         }
 
-        function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
-        function updateModalFavBtn() {
-            const btn = document.getElementById('m-fav-btn');
-            if(favs.includes(currentId)) { btn.innerHTML='❤️ В избранном'; btn.classList.add('active'); }
-            else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
+        function toggleCartSelection(id) {
+            const idNum = parseInt(id);
+            if (selectedCartItems.has(idNum)) {
+                selectedCartItems.delete(idNum);
+            } else {
+                selectedCartItems.add(idNum);
+            }
+            updateCartSelectionUI();
         }
 
-        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
-        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
-        
-        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
-        function updateTotalAndButtons() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const ids = Object.keys(grouped).map(Number);
-            
-            let selectedTotal = 0;
-            ids.forEach(id => {
-                if(selectedCart.has(id)) {
-                    const product = db.find(x => x.id == id);
-                    if (product) {
-                        selectedTotal += product.price * grouped[id];
-                    }
+        function updateCartSelectionUI() {
+            document.querySelectorAll('.list-row').forEach(row => {
+                const id = parseInt(row.getAttribute('data-id'));
+                const checkCircle = row.querySelector('.check-circle');
+                if (selectedCartItems.has(id)) {
+                    checkCircle.classList.add('checked');
+                } else {
+                    checkCircle.classList.remove('checked');
                 }
             });
-
-            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
-            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
-            document.getElementById('total-price').innerText = selectedTotal;
-        }
-        
-        // --- УМНАЯ КОРЗИНА И ВЫБОР ---
-        
-        function toggleCartSelect(id) {
-            const itemElement = document.getElementById('cart-item-' + id);
-            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
-
-            if(selectedCart.has(id)) {
-                selectedCart.delete(id);
-                if (circle) circle.classList.remove('checked');
-            } else {
-                selectedCart.add(id);
-                if (circle) circle.classList.add('checked');
-            }
-            updateTotalAndButtons();
+            updateTotalPrice();
+            updateDeleteButton();
         }
 
         function toggleAllCart() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const uniqueIds = Object.keys(grouped).map(Number);
-            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
-
-            if(shouldSelectAll) {
-                uniqueIds.forEach(id => selectedCart.add(id));
+            const allItems = Object.keys(cart).map(id => parseInt(id));
+            if (selectedCartItems.size < allItems.length) {
+                selectedCartItems = new Set(allItems);
             } else {
-                selectedCart.clear();
+                selectedCartItems.clear();
             }
-            
-            uniqueIds.forEach(id => {
-                const itemElement = document.getElementById('cart-item-' + id);
-                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
-                if (circle) {
-                    if (shouldSelectAll) {
-                        circle.classList.add('checked');
-                    } else {
-                        circle.classList.remove('checked');
-                    }
-                }
-            });
-
-            updateTotalAndButtons();
+            updateCartSelectionUI();
         }
 
         function deleteSelectedCart() {
-            if(selectedCart.size === 0) return;
-            if(confirm("Удалить выбранные?")) {
-                cart = cart.filter(id => !selectedCart.has(id)); 
-                selectedCart.clear();
-                save(); updateCartUI(); 
-            }
-        }
+            if (selectedCartItems.size === 0) return;
+            tg.HapticFeedback.impactOccurred('medium');
 
-        function updateCartUI() {
-            const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
-            
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const ids = Object.keys(grouped).map(Number);
-            
-            if (!ids.length) {
-                document.getElementById('cart-items').innerHTML = '';
-                document.getElementById('cart-empty').style.display = 'block';
-                document.getElementById('cart-footer').style.display = 'none';
-                selectedCart.clear();
-            } else {
-                document.getElementById('cart-empty').style.display = 'none';
-                document.getElementById('cart-footer').style.display = 'block';
-
-                document.getElementById('cart-items').innerHTML = ids.map(id => {
-                    const p = db.find(x => x.id == id);
-                    const isChecked = selectedCart.has(id) ? 'checked' : '';
-                    
-                    return `
-                        <div class="list-row" id="cart-item-${id}">
-                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
-                            <img src="${p.images[0]}" class="list-img">
-                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
-                                <div class="cart-item-name">${p.name}</div>
-                                <div class="cart-item-price">${p.price} ₽</div>
-                            </div>
-                            <div class="qty-ctrl">
-                                <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                                <div class="qty-val">${grouped[id]}</div>
-                                <div class="qty-btn" onclick="addOne(${p.id})">+</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-            
-            updateTotalAndButtons();
-        }
-
-        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
-        function checkout() {
-            if(selectedCart.size === 0) return;
-            
-            const grouped = {}; 
-            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            
-            const itemsText = Object.keys(grouped).map(id => {
-                const product = db.find(x => x.id == id);
-                return `${product.name} x${grouped[id]}`;
-            }).join(', ');
-            
-            let total = 0;
-            Object.keys(grouped).map(Number).forEach(id => {
-                const product = db.find(x => x.id == id);
-                total += product.price * grouped[id];
+            // Создаем массив элементов для анимации и удаления
+            const itemsToDelete = [];
+            selectedCartItems.forEach(id => {
+                const row = document.querySelector(`.list-row[data-id="${id}"]`);
+                if (row) itemsToDelete.push(row);
+                delete cart[id];
             });
 
-            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
-            cart = cart.filter(id => !selectedCart.has(id)); 
-            selectedCart.clear();
-            save();
-            updateCartUI(); 
-
-            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
-        }
-        
-        // --- ИЗБРАННОЕ (СЕТКА) ---
-        
-        function clearFav() { 
-            if(confirm("Удалить все товары из избранного?")) { 
-                favs = []; 
-                save(); 
-                render(); // Обновляем сердечки на главной
-                renderFavs(); 
-            } 
-        }
-
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+            // Запускаем анимацию исчезновения
+            itemsToDelete.forEach(row => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-100%)';
+                row.style.transition = '0.3s ease-in-out';
+            });
             
-            // Используем ту же функцию drawCard, что и для каталога
-            container.innerHTML = list.map(p => drawCard(p)).join('');
-        }
-        
-        function openModal(id) {
-            currentId = id; const p = db.find(x => x.id === id);
-            document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
-            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
-        }
-        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
-        function addCurrentToCart() { addOne(currentId); closeModal(); }
-
-        function go(id, btn) {
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
-            if(id === 'fav') renderFavs(); 
-            if(id === 'cart') updateCartUI();
-            if(id === 'home') render(); // При переходе на "Каталог" перерисовываем, чтобы обновить состояние сердечек
+            // Завершаем логику после анимации
+            setTimeout(() => {
+                selectedCartItems.clear();
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart(); // Перерисовываем корзину
+                updateCartBadge();
+            }, 300);
         }
 
-        if(tg.initDataUnsafe?.user) {
-            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
-            if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
-        }
-
-        // --- НОВАЯ УНИВЕРСАЛЬНАЯ ЛОГИКА PULL-TO-REFRESH ---
-        let startY = 0;
-        // Используем основной контейнер для отслеживания жестов
-        const appContainer = document.querySelector('.app-container');
-        const spinner = document.getElementById('ptr-spinner');
-
-        appContainer.addEventListener('touchstart', e => { 
-            // Проверяем, что прокрутка находится в самой верхней точке документа
-            if(window.scrollY === 0) { 
-                startY = e.touches[0].clientY;
+        function updateDeleteButton() {
+            const delBtn = document.getElementById('cart-del-btn');
+            if (selectedCartItems.size > 0) {
+                delBtn.style.display = 'flex';
+                delBtn.innerText = `🗑 Удалить (${selectedCartItems.size})`;
             } else {
-                startY = -1; // Если не вверху, игнорируем всю последовательность касания
+                delBtn.style.display = 'none';
             }
-        });
-        
-        appContainer.addEventListener('touchmove', e => {
-            if(startY === -1) return; // Игнорировать, если не начали с верха
+        }
 
-            const diff = e.touches[0].clientY - startY;
-            
-            // Если тянем вниз и прокрутка вверху
-            if(diff > 0 && window.scrollY === 0) { 
-                e.preventDefault(); // Предотвратить прокрутку страницы
-                if(diff < 80) spinner.style.height = diff + 'px'; 
-            }
-        });
-
-        appContainer.addEventListener('touchend', e => {
-            if(startY === -1) return;
-            startY = 0; // Сброс
-            
-            if(parseInt(spinner.style.height) > 60) { 
-                tg.HapticFeedback.impactOccurred('medium'); 
-                
-                // Определяем активную страницу для вызова нужной функции обновления
-                const activePageElement = document.querySelector('.page.active');
-                const activePageId = activePageElement ? activePageElement.id : null;
-                let refreshFunction = render; // По умолчанию для 'home'
-
-                if (activePageId === 'p-cart') {
-                    refreshFunction = updateCartUI; // Обновление для Корзины
-                } else if (activePageId === 'p-fav') {
-                    refreshFunction = renderFavs; // Обновление для Избранного
-                } else if (activePageId === 'p-prof') {
-                    // Для Профиля можно просто вызвать render (для обновления общего состояния)
-                    refreshFunction = render; 
+        function updateTotalPrice() {
+            let total = 0;
+            selectedCartItems.forEach(id => {
+                const item = db.find(i => i.id == id);
+                if (item) {
+                    total += item.price * cart[id];
                 }
-                
-                // Имитация обновления данных
-                setTimeout(() => { 
-                    refreshFunction(); 
-                    spinner.style.height = '0px'; 
-                }, 500); 
-            } else { 
-                spinner.style.height = '0px'; 
-            }
-        });
-        // --- КОНЕЦ НОВОЙ УНИВЕРСАЛЬНОЙ ЛОГИКИ PULL-TO-REFRESH ---
+            });
+            document.getElementById('total-price').innerText = total;
+            document.getElementById('checkout-btn').disabled = total === 0;
+        }
 
-        render();
-        updateCartUI();
+        function addCurrentToCart() {
+            if (currentModalItem) {
+                addToCart(new Event('click'), currentModalItem.id);
+                tg.HapticFeedback.notificationOccurred('success');
+                closeModal();
+            }
+        }
+
+        function checkout() {
+            const items = [];
+            let total = 0;
+
+            selectedCartItems.forEach(id => {
+                const item = db.find(i => i.id == id);
+                if (item) {
+                    const qty = cart[id];
+                    items.push({
+                        id: id,
+                        name: item.name,
+                        price: item.price,
+                        qty: qty,
+                    });
+                    total += item.price * qty;
+                    // Удаляем оплаченные товары из корзины
+                    delete cart[id]; 
+                }
+            });
+
+            if (items.length > 0 && total > 0) {
+                const data = {
+                    total: total,
+                    items: items,
+                    user_info: tg.initDataUnsafe.user
+                };
+                
+                // Отправляем данные в бэкэнд
+                tg.sendData(JSON.stringify(data));
+                
+                // Очистка UI после отправки
+                selectedCartItems.clear();
+                localStorage.setItem('cart', JSON.stringify(cart));
+                setTimeout(() => {
+                    renderCart();
+                    updateCartBadge();
+                }, 100);
+
+            } else {
+                tg.showAlert('Выберите товары для оформления заказа!');
+            }
+        }
+
+        // --- ИЗБРАННОЕ (FAV) ---
+        function renderFav() {
+            const favItemsContainer = document.getElementById('fav-items');
+            const favList = fav.map(id => db.find(item => item.id === id)).filter(item => item);
+            
+            favItemsContainer.innerHTML = '';
+            favList.forEach(item => favItemsContainer.appendChild(createCard(item)));
+
+            document.getElementById('fav-empty').style.display = favList.length === 0 ? 'block' : 'none';
+        }
+
+        function toggleFav(event, id) {
+            event.stopPropagation();
+            tg.HapticFeedback.impactOccurred('light');
+
+            const index = fav.indexOf(id);
+            const card = event.target.closest('.card').querySelector('.fav-btn');
+
+            if (index > -1) {
+                fav.splice(index, 1);
+                card.classList.remove('is-active');
+                
+                // Если мы на странице Избранного, запускаем анимацию удаления
+                if (document.getElementById('p-fav').classList.contains('active')) {
+                    const cardElement = event.target.closest('.card');
+                    cardElement.style.opacity = '0';
+                    cardElement.style.transform = 'translateY(-20px)';
+                    cardElement.style.transition = '0.3s ease-in-out';
+                    setTimeout(() => renderFav(), 300); // Перерисовываем после анимации
+                }
+
+            } else {
+                fav.push(id);
+                card.classList.add('is-active');
+                card.classList.add('active-anim');
+                setTimeout(() => card.classList.remove('active-anim'), 300);
+            }
+
+            localStorage.setItem('fav', JSON.stringify(fav));
+            updateModalFavBtn(currentModalItem?.id);
+        }
+
+        function toggleModalFav() {
+            if (currentModalItem) {
+                const id = currentModalItem.id;
+                toggleFav(new Event('click'), id); // Имитируем клик
+                updateModalFavBtn(id);
+            }
+        }
+
+        function updateModalFavBtn(id) {
+            const btn = document.getElementById('m-fav-btn');
+            if (!btn) return;
+
+            const isFav = fav.includes(id);
+            if (isFav) {
+                btn.classList.add('active');
+                btn.innerHTML = '❤️ В избранном';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '🤍 В избранное';
+            }
+        }
+        
+        function clearFav() {
+            if (fav.length === 0) return;
+            tg.HapticFeedback.impactOccurred('medium');
+
+            // Запускаем анимацию исчезновения для всех карточек
+            document.querySelectorAll('#fav-items .card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(-20px)';
+                card.style.transition = `0.3s ease-in-out ${index * 0.05}s`;
+            });
+            
+            // Завершаем логику после анимации
+            setTimeout(() => {
+                fav = [];
+                localStorage.setItem('fav', JSON.stringify(fav));
+                renderFav(); // Перерисовываем избранное
+                render(); // Перерисовываем каталог, чтобы обновить состояние сердечек
+            }, 300 + fav.length * 50);
+        }
+
+        // --- УТИЛИТЫ ---
+        function updateCartBadge() {
+            const count = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+            const badge = document.getElementById('badge');
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        // --- НАСТРОЙКИ ---
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('light-theme');
+            localStorage.setItem('theme', body.classList.contains('light-theme') ? 'light' : 'dark');
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('modal-active');
+            tg.isClosingConfirmationEnabled = false;
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('modal-active');
+            tg.isClosingConfirmationEnabled = true;
+        }
+
+        function openSupport() {
+            tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`);
+        }
+
+        function toggleLang() {
+            tg.showAlert('Функция смены языка временно недоступна.');
+            document.getElementById('lang-toggle').checked = false;
+        }
+
+        // --- ЗАГРУЗКА И НАЧАЛО ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Загрузка темы
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('theme-toggle').checked = true;
+            } else {
+                 document.getElementById('theme-toggle').checked = false;
+            }
+
+            render();
+            updateCartBadge();
+
+            if(tg.initDataUnsafe?.user) {
+                document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+                if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
+            }
+
+            // --- PULL-TO-REFRESH ЛОГИКА ---
+            let startY = 0;
+            const homePage = document.getElementById('p-home');
+            const spinner = document.getElementById('ptr-spinner');
+
+            homePage.addEventListener('touchstart', e => { 
+                if(homePage.scrollTop === 0) startY = e.touches[0].clientY; 
+            }, {passive: true});
+
+            homePage.addEventListener('touchmove', e => {
+                const diff = e.touches[0].clientY - startY;
+                if(diff > 0 && homePage.scrollTop === 0) { 
+                    e.preventDefault(); // Останавливаем скролл, чтобы Telegram не свернулся
+                    if(diff < 80) spinner.style.height = diff + 'px'; 
+                }
+            }, {passive: false});
+
+            homePage.addEventListener('touchend', e => {
+                if(parseInt(spinner.style.height) > 60) { 
+                    tg.HapticFeedback.impactOccurred('medium'); 
+                    // Имитация обновления данных
+                    setTimeout(() => { 
+                        render(); // Перерисовать каталог (на случай если что-то изменилось)
+                        spinner.style.height = '0px'; 
+                    }, 1000); 
+                } else {
+                    spinner.style.height = '0px';
+                }
+            });
+            // -------------------------------
+
+        });
     </script>
 </body>
 </html>
