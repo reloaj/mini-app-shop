@@ -66,6 +66,10 @@
             font-size: 13px; font-weight: 600; display: none; /* Скрыта по умолчанию */
             align-items: center; gap: 5px; cursor: pointer;
         }
+        /* Кнопка "Удалить все" для Избранного */
+        .del-all-fav-btn {
+            color: var(--red); font-size: 14px; background: none; border: none; cursor: pointer;
+        }
 
         /* АНИМАЦИИ */
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -130,7 +134,7 @@
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
 
-        /* СТРОКА ТОВАРА (КОРЗИНА/ИЗБРАННОЕ) */
+        /* СТРОКА ТОВАРА (КОРЗИНА) */
         .list-row { 
             display: flex; align-items: center; gap: 12px; 
             background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; 
@@ -234,11 +238,10 @@
             <div class="head-row">
                 <h2 class="head-title">Избранное</h2>
                 <div style="display:flex; gap:15px">
-                    <button class="del-selected-btn" id="fav-del-btn" onclick="deleteSelectedFav()">🗑 Удалить</button>
-                    <button class="sel-all-btn" onclick="toggleAllFav()">Выбрать все</button>
+                    <button class="del-all-fav-btn" onclick="clearFav()">🗑 Удалить всё</button>
                 </div>
             </div>
-            <div id="fav-items"></div>
+            <div class="grid" id="fav-items"></div>
             <div class="empty-state" id="fav-empty" style="display:none">Нет любимых товаров 💔</div>
         </div>
 
@@ -348,11 +351,20 @@
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            // Обновляем цвета Telegram UI
+            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
+            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
-        if(localStorage.getItem('theme') === 'light') {
+
+        // Инициализация темы и цветов Telegram UI
+        const isLightOnLoad = localStorage.getItem('theme') === 'light';
+        if(isLightOnLoad) {
             document.body.classList.add('light-theme');
             document.getElementById('theme-toggle').checked = true;
-        } else { document.getElementById('theme-toggle').checked = false; }
+        }
+        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
+        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
+
 
         function toggleLang() {
             const isEng = document.getElementById('lang-toggle').checked;
@@ -372,9 +384,10 @@
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
-        // --- КАТАЛОГ ---
+        // --- КАТАЛОГ (КАРТОЧКИ) ---
         function drawCard(p) {
             const isFav = favs.includes(p.id);
+            // Для избранного всегда активен, для каталога - зависит от favs.
             const activeClass = isFav ? 'is-active' : '';
             let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
 
@@ -396,9 +409,23 @@
             if(e) e.stopPropagation();
             const idx = favs.indexOf(id);
             const btn = document.getElementById(`fav-btn-${id}`);
-            if(idx < 0) { favs.push(id); if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } tg.HapticFeedback.impactOccurred('medium'); }
-            else { favs.splice(idx, 1); if(btn) { btn.classList.remove('is-active'); } tg.HapticFeedback.impactOccurred('light'); }
-            save(); if(currentId === id) updateModalFavBtn(); if(document.getElementById('p-fav').classList.contains('active')) renderFavs();
+            
+            if(idx < 0) { 
+                favs.push(id); 
+                if(btn) { btn.classList.add('is-active','active-anim'); setTimeout(()=>btn.classList.remove('active-anim'),300); } 
+                tg.HapticFeedback.impactOccurred('medium'); 
+            } else { 
+                favs.splice(idx, 1); 
+                // Если мы на странице избранного, при удалении нужно обновить/перерисовать список
+                if(document.getElementById('p-fav').classList.contains('active')) {
+                    renderFavs();
+                } else if(btn) {
+                    btn.classList.remove('is-active');
+                }
+                tg.HapticFeedback.impactOccurred('light'); 
+            }
+            save(); 
+            if(currentId === id) updateModalFavBtn(); 
         }
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
@@ -410,7 +437,7 @@
         function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
         function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
         
-        // --- НОВАЯ ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
+        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
         function updateTotalAndButtons() {
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
@@ -418,7 +445,6 @@
             let selectedTotal = 0;
             ids.forEach(id => {
                 if(selectedCart.has(id)) {
-                    // Используем db.find(x => x.id == id).price для корректного расчета
                     const product = db.find(x => x.id == id);
                     if (product) {
                         selectedTotal += product.price * grouped[id];
@@ -431,7 +457,7 @@
             document.getElementById('total-price').innerText = selectedTotal;
         }
         
-        // --- МОДИФИЦИРОВАННАЯ ФУНКЦИЯ: УМНАЯ КОРЗИНА И ВЫБОР ---
+        // --- УМНАЯ КОРЗИНА И ВЫБОР ---
         
         function toggleCartSelect(id) {
             const itemElement = document.getElementById('cart-item-' + id);
@@ -484,8 +510,6 @@
             }
         }
 
-        function clearCart() { if(confirm("Очистить полностью?")) { cart = []; selectedCart.clear(); save(); updateCartUI(); } }
-
         function updateCartUI() {
             const badge = document.getElementById('badge');
             badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
@@ -528,73 +552,11 @@
             updateTotalAndButtons();
         }
 
-        // --- УМНОЕ ИЗБРАННОЕ ---
-        
-        function toggleFavSelect(id) {
-            if(selectedFav.has(id)) selectedFav.delete(id);
-            else selectedFav.add(id);
-            renderFavs();
-        }
-
-        function toggleAllFav() {
-            if(selectedFav.size === favs.length) selectedFav.clear();
-            else favs.forEach(id => selectedFav.add(id));
-            renderFavs();
-        }
-
-        function deleteSelectedFav() {
-            if(selectedFav.size === 0) return;
-            if(confirm("Удалить из избранного?")) {
-                favs = favs.filter(id => !selectedFav.has(id));
-                selectedFav.clear();
-                save(); render(); renderFavs();
-            }
-        }
-
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
-            document.getElementById('fav-del-btn').style.display = selectedFav.size > 0 ? 'flex' : 'none';
-
-            container.innerHTML = list.map(p => {
-                const isChecked = selectedFav.has(p.id) ? 'checked' : '';
-                return `
-                <div class="list-row" style="margin: 0; margin-bottom: 10px;">
-                    <div class="check-circle ${isChecked}" onclick="toggleFavSelect(${p.id})"></div>
-                    <img src="${p.images[0]}" class="list-img">
-                    <div style="flex:1">
-                        <div style="font-weight:500;font-size:13px;">${p.name}</div>
-                        <div style="color:var(--text-sec);font-size:13px;">${p.price} ₽</div>
-                    </div>
-                    <div class="qty-btn" onclick="addOne(${p.id}, event)" style="margin-left:auto">+</div>
-                </div>`;
-            }).join('');
-        }
-        
-        function clearFav() { if(confirm("Удалить всё?")) { favs = []; selectedFav.clear(); save(); render(); renderFavs(); } }
-
-        function openModal(id) {
-            currentId = id; const p = db.find(x => x.id === id);
-            document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
-            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
-        }
-        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
-        function addCurrentToCart() { addOne(currentId); closeModal(); }
-
-        function go(id, btn) {
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
-            if(id === 'fav') renderFavs(); if(id === 'cart') updateCartUI();
-        }
-        
-        // --- МОДИФИЦИРОВАННАЯ ФУНКЦИЯ: ОПЛАТА ВЫБРАННОГО ---
+        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
         function checkout() {
             if(selectedCart.size === 0) return;
             
             const grouped = {}; 
-            // Считаем только выбранные
             cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             
             const itemsText = Object.keys(grouped).map(id => {
@@ -607,16 +569,51 @@
                 const product = db.find(x => x.id == id);
                 total += product.price * grouped[id];
             });
-            
-            // !!! УДАЛЕНА ЛОГИКА ОЧИСТКИ КОРЗИНЫ ДО ПОЛУЧЕНИЯ ПОДТВЕРЖДЕНИЯ ОПЛАТЫ !!!
-            // cart = cart.filter(id => !selectedCart.has(id)); 
-            // selectedCart.clear();
-            // save();
-            // updateCartUI(); 
-            // Теперь товары исчезнут только после того, как вы (админ) подтвердите оплату
-            // и клиент перезапустит приложение (или вы реализуете другой механизм очистки).
+
+            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
+            cart = cart.filter(id => !selectedCart.has(id)); 
+            selectedCart.clear();
+            save();
+            updateCartUI(); 
 
             tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+        }
+        
+        // --- ИЗБРАННОЕ (ТЕПЕРЬ СЕТКА) ---
+        
+        function clearFav() { 
+            if(confirm("Удалить все товары из избранного?")) { 
+                favs = []; 
+                save(); 
+                render(); // Обновляем сердечки на главной
+                renderFavs(); 
+            } 
+        }
+
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            const container = document.getElementById('fav-items');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+            
+            // Используем ту же функцию drawCard, что и для каталога
+            container.innerHTML = list.map(p => drawCard(p)).join('');
+        }
+        
+        function openModal(id) {
+            currentId = id; const p = db.find(x => x.id === id);
+            document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
+            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
+            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
+        }
+        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
+        function addCurrentToCart() { addOne(currentId); closeModal(); }
+
+        function go(id, btn) {
+            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
+            if(id === 'fav') renderFavs(); 
+            if(id === 'cart') updateCartUI();
+            if(id === 'home') render(); // При переходе на "Каталог" перерисовываем, чтобы обновить состояние сердечек
         }
 
         if(tg.initDataUnsafe?.user) {
@@ -633,7 +630,16 @@
             if(diff > 0 && homePage.scrollTop === 0) { if(diff < 80) spinner.style.height = diff + 'px'; }
         });
         homePage.addEventListener('touchend', e => {
-            if(parseInt(spinner.style.height) > 60) { tg.HapticFeedback.impactOccurred('medium'); setTimeout(() => { render(); spinner.style.height = '0px'; }, 500); } else { spinner.style.height = '0px'; }
+            if(parseInt(spinner.style.height) > 60) { 
+                tg.HapticFeedback.impactOccurred('medium'); 
+                // Имитация обновления данных
+                setTimeout(() => { 
+                    render(); // Перерисовать каталог (на случай если что-то изменилось)
+                    spinner.style.height = '0px'; 
+                }, 500); 
+            } else { 
+                spinner.style.height = '0px'; 
+            }
         });
 
         render();
