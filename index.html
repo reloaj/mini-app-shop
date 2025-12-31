@@ -37,6 +37,13 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none; user-select: none;
             transition: background 0.3s;
+            touch-action: pan-y; /* V1.2: Основной скролл только вертикальный */
+        }
+        
+        /* V1.2: Класс для полной блокировки скролла страницы */
+        body.no-scroll {
+            overflow: hidden;
+            height: 100vh;
         }
 
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
@@ -178,7 +185,11 @@
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
         /* МОДАЛКИ */
-        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
+        #modal, #settings-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 100; overflow-y: auto; 
+            touch-action: pan-y; /* V1.2: Скролл внутри модалок только вертикальный */
+        }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
         .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
@@ -210,6 +221,7 @@
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
         /* СТРАНИЦЫ И PTR */
+        .app-container { touch-action: pan-y; } /* V1.2: Защита от случайного закрытия WebApp при горизонтальном свайпе */
         .page { 
             display: none; 
             /* Высота страницы должна быть calc(100vh - header - nav), чтобы скроллился только контент, 
@@ -434,12 +446,12 @@
 
             renderSlider(item.images);
             document.getElementById('modal').classList.add('modal-active');
-            document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+            document.body.classList.add('no-scroll'); // V1.2: Блокируем скролл фона через класс
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('modal-active');
-            document.body.style.overflow = 'auto'; // Включаем скролл фона
+            document.body.classList.remove('no-scroll'); // V1.2: Включаем скролл фона через класс
         }
 
         function renderSlider(images) {
@@ -743,7 +755,7 @@
             if (selectedItems.length === 0) return;
 
             const total = selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-            const itemsList = selectedItems.map(item => `${item.name} (${item.qty} шт.)`).join('\\n');
+            const itemsList = selectedItems.map(item => `${item.name} (${item.qty} шт.)`).join('\n');
             const data = { 
                 total_amount: total, 
                 items: itemsList
@@ -800,7 +812,7 @@
         
         function openSettings() {
             document.getElementById('settings-modal').classList.add('modal-active');
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('no-scroll'); // V1.2: Блокируем скролл фона
             
             const isLight = localStorage.getItem('theme') === 'light';
             document.getElementById('theme-toggle').checked = isLight;
@@ -811,7 +823,7 @@
 
         function closeSettings() {
             document.getElementById('settings-modal').classList.remove('modal-active');
-            document.body.style.overflow = 'auto';
+            document.body.classList.remove('no-scroll'); // V1.2: Включаем скролл фона
         }
         
         function toggleLang() {
