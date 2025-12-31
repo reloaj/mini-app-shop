@@ -39,6 +39,14 @@
             transition: background 0.3s;
         }
 
+        /* --- V1.2: Блокировка скролла для BODY при открытых модалках --- */
+        body.no-scroll {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
 
         /* ЧЕКБОКС (КРУЖОК ВЫБОРА) */
@@ -92,6 +100,12 @@
             background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
             box-sizing: border-box;
         }
+        
+        /* --- V1.2: touch-action для основного контейнера --- */
+        .app-container {
+            touch-action: pan-y;
+        }
+
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -142,7 +156,7 @@
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         
-        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
+        /* СТИЛИ ДЛЯ КОРЗИНЫ */
         .cart-item-name {
             font-weight: 500;
             font-size: 13px;
@@ -178,10 +192,18 @@
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
         /* МОДАЛКИ */
-        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
+        #modal, #settings-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); 
+            z-index: 100; overflow-y: auto; 
+            /* --- V1.2: touch-action для самой модалки, чтобы скролл работал вертикально и не скроллил внешний WebApp --- */
+            touch-action: pan-y;
+        }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
-        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
+        .modal-content { 
+            padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); 
+            min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; 
+        }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         .back-icon-svg { width: 24px; height: 24px; fill: white; }
         
@@ -395,8 +417,16 @@
         }
 
         function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
-        function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
+        
+        // --- V1.2: Блокировка скролла при открытии настроек ---
+        function openSettings() { 
+            document.getElementById('settings-modal').classList.add('modal-active'); 
+            document.body.classList.add('no-scroll');
+        }
+        function closeSettings() { 
+            document.getElementById('settings-modal').classList.remove('modal-active'); 
+            document.body.classList.remove('no-scroll');
+        }
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
@@ -692,13 +722,22 @@
             container.innerHTML = list.map(p => drawCard(p)).join('');
         }
         
+        // --- V1.2: Добавляем блокировку скролла при открытии модалки ---
         function openModal(id) {
             currentId = id; const p = db.find(x => x.id === id);
             document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
             document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
+            updateModalFavBtn(); 
+            
+            document.getElementById('modal').classList.add('modal-active');
+            document.body.classList.add('no-scroll');
         }
-        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
+        
+        function closeModal() { 
+            document.getElementById('modal').classList.remove('modal-active'); 
+            document.body.classList.remove('no-scroll');
+        }
+        
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
         function go(id, btn) {
