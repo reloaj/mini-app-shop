@@ -229,7 +229,7 @@
             margin-bottom: 5px;
         }
         
-        /* --- V1.4: Стили для списка подсказок DaData --- */
+        /* --- Стили для списка подсказок DaData --- */
         #address-suggestions {
             position: absolute;
             top: 100%; /* Размещаем под полем ввода */
@@ -374,7 +374,8 @@
             <form id="order-form" onsubmit="event.preventDefault(); submitOrder();">
                 
                 <div class="input-label">📞 Номер телефона получателя</div>
-                <input type="tel" class="checkout-input" id="phone-input" placeholder="+7 (XXX) XXX-XX-XX" required>
+                <input type="tel" class="checkout-input" id="phone-input" placeholder="+7 (XXX) XXX-XX-XX" required 
+                       oninput="formatPhone(this)" maxlength="18">
 
                 <div class="input-label">📍 Адрес доставки</div>
                 <div class="input-group">
@@ -448,8 +449,8 @@
 
         const SUPPORT_USERNAME = 'DUROV'; 
         
-        // --- V1.4: ВАШ API КЛЮЧ DADATA.RU (обязательно замените на свой!) ---
-        const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
+        // --- ВАШ API КЛЮЧ DADATA.RU (обязательно замените на свой!) ---
+        const DADATA_TOKEN = 'YOUR_DADATA_API_KEY'; 
 
         const db = [
             { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
@@ -515,7 +516,7 @@
             document.getElementById('checkout-modal').classList.add('modal-active'); 
             document.body.classList.add('no-scroll');
             
-            // V1.4: Фокусируем на поле адреса, чтобы сразу показать подсказки
+            // Фокусируем на поле адреса, чтобы сразу показать подсказки
             const addressInput = document.getElementById('address-input');
             addressInput.focus();
         }
@@ -757,7 +758,59 @@
             updateCartQuantities(); 
         }
 
-        // --- V1.4: ЛОГИКА АВТОЗАПОЛНЕНИЯ DADATA ---
+        // --- V1.5: ФУНКЦИЯ МАСКИ НОМЕРА ТЕЛЕФОНА И ОГРАНИЧЕНИЯ ВВОДА ---
+        function formatPhone(input) {
+            // 1. Убираем все, кроме цифр
+            let digits = input.value.replace(/\D/g, ''); 
+            
+            // 2. Ограничиваем ввод 11 цифрами
+            const maxDigits = 11;
+            if (digits.length > maxDigits) {
+                digits = digits.substring(0, maxDigits);
+            }
+
+            // 3. Форматируем: +7 (XXX) XXX-XX-XX
+            let formatted = '';
+            
+            if (digits.length === 0) {
+                input.value = '';
+                return;
+            }
+
+            // Корректируем начальный ввод для России/СНГ (+7 или 8)
+            if (digits.startsWith('8') || digits.startsWith('7')) {
+                digits = '7' + digits.substring(1);
+            } else if (digits.length > 1 && !digits.startsWith('7')) {
+                // Если пользователь начал ввод не с 7/8, предполагаем +7
+                digits = '7' + digits;
+                digits = digits.substring(0, maxDigits); // Повторное ограничение
+            }
+
+            // Само форматирование
+            if (digits.length > 0) {
+                formatted += '+7';
+            }
+            if (digits.length > 1) {
+                formatted += ' (';
+                formatted += digits.substring(1, 4);
+            }
+            if (digits.length > 4) {
+                formatted += ') ';
+                formatted += digits.substring(4, 7);
+            }
+            if (digits.length > 7) {
+                formatted += '-';
+                formatted += digits.substring(7, 9);
+            }
+            if (digits.length > 9) {
+                formatted += '-';
+                formatted += digits.substring(9, 11);
+            }
+
+            input.value = formatted;
+        }
+
+        // --- ЛОГИКА АВТОЗАПОЛНЕНИЯ DADATA ---
         const addressInput = document.getElementById('address-input');
         const suggestionsContainer = document.getElementById('address-suggestions');
         let debounceTimeout;
@@ -777,7 +830,7 @@
                 }, 300);
             });
 
-            // V1.4: Закрываем подсказки при потере фокуса (с небольшой задержкой, чтобы успел сработать клик)
+            // Закрываем подсказки при потере фокуса (с небольшой задержкой, чтобы успел сработать клик)
             addressInput.addEventListener('blur', () => {
                 setTimeout(() => {
                     suggestionsContainer.innerHTML = '';
@@ -836,14 +889,21 @@
         
         // --- ОФОРМЛЕНИЕ ЗАКАЗА (СО СБОРОМ ДАННЫХ И ОТПРАВКОЙ) ---
         function submitOrder() {
-            const phone = document.getElementById('phone-input').value.trim();
+            const phoneInput = document.getElementById('phone-input');
             const address = document.getElementById('address-input').value.trim();
             const comment = document.getElementById('comment-input').value.trim();
             
-            if (!phone || !address) {
-                // Если форма требует заполнения, браузер/Telegram покажет ошибку.
-                // Дополнительная проверка:
-                tg.showAlert("Пожалуйста, заполните все обязательные поля (телефон и адрес).");
+            // Получаем только чистые цифры из поля телефона
+            const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
+            
+            if (rawPhoneDigits.length !== 11) {
+                tg.showAlert("Пожалуйста, введите полный номер телефона (11 цифр).");
+                phoneInput.focus();
+                return;
+            }
+            if (!address) {
+                tg.showAlert("Пожалуйста, заполните адрес доставки.");
+                document.getElementById('address-input').focus();
                 return;
             }
 
@@ -862,7 +922,7 @@
                 action: "checkout",
                 total: total, 
                 items: [itemsText],
-                phone: phone,
+                phone: phoneInput.value, // Отправляем форматированный номер
                 address: address,
                 comment: comment || "Нет комментария"
             };
