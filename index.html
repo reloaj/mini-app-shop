@@ -39,9 +39,17 @@
             transition: background 0.3s;
         }
 
+        /* --- V1.2: Блокировка скролла для BODY при открытых модалках --- */
+        body.no-scroll {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
 
-        /* ЧЕКБОКС (КРУЖОК ВЫБОРА) - УДАЛЕН ИЗ КОРЗИНЫ, ОСТАВЛЕН НА СЛУЧАЙ ДАЛЬНЕЙШЕГО ИСПОЛЬЗОВАНИЯ */
+        /* ЧЕКБОКС (КРУЖОК ВЫБОРА) */
         .check-circle {
             width: 22px; height: 22px;
             border: 2px solid var(--text-sec);
@@ -92,6 +100,12 @@
             background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
             box-sizing: border-box;
         }
+        
+        /* --- V1.2: touch-action для основного контейнера --- */
+        .app-container {
+            touch-action: pan-y;
+        }
+
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -142,7 +156,7 @@
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         
-        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
+        /* СТИЛИ ДЛЯ КОРЗИНЫ */
         .cart-item-name {
             font-weight: 500;
             font-size: 13px;
@@ -178,10 +192,18 @@
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
         /* МОДАЛКИ */
-        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
+        #modal, #settings-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); 
+            z-index: 100; overflow-y: auto; 
+            /* --- V1.2: touch-action для самой модалки, чтобы скролл работал вертикально и не скроллил внешний WebApp --- */
+            touch-action: pan-y;
+        }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
-        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
+        .modal-content { 
+            padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); 
+            min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; 
+        }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         .back-icon-svg { width: 24px; height: 24px; fill: white; }
         
@@ -237,16 +259,17 @@
             <div class="head-row">
                 <h2 class="head-title">Корзина</h2>
                 <div style="display:flex; gap:15px">
-                    <button class="del-all-fav-btn" onclick="clearCart()">🗑 Очистить</button>
+                    <button class="del-selected-btn" id="cart-del-btn" onclick="deleteSelectedCart()">🗑 Удалить</button>
+                    <button class="sel-all-btn" onclick="toggleAllCart()">Выбрать все</button>
                 </div>
             </div>
             <div id="cart-items"></div>
             <div class="empty-state" id="cart-empty" style="display:none">Корзина пуста 🍃</div>
             <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto;">
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
-                    Итого: <span id="total-price" style="color: var(--accent)">0</span> ₽
+                    Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
                 </div>
-                <button class="big-btn" id="checkout-btn" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>
+                <button class="big-btn" id="checkout-btn" onclick="checkout()" disabled>ОФОРМИТЬ ВЫБРАННОЕ</button>
             </div>
         </div>
 
@@ -358,7 +381,7 @@
 
         let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
-        // let selectedCart = new Set(); // УДАЛЕНО: ЛОГИКА ВЫБОРА ТОВАРОВ В КОРЗИНЕ
+        let selectedCart = new Set();
         let currentId = null;
 
         // --- ЛОГИКА ТЕМЫ ---
@@ -394,8 +417,16 @@
         }
 
         function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
-        function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
+        
+        // --- V1.2: Блокировка скролла при открытии настроек ---
+        function openSettings() { 
+            document.getElementById('settings-modal').classList.add('modal-active'); 
+            document.body.classList.add('no-scroll');
+        }
+        function closeSettings() { 
+            document.getElementById('settings-modal').classList.remove('modal-active'); 
+            document.body.classList.remove('no-scroll');
+        }
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
@@ -479,62 +510,152 @@
             else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
         }
 
-        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartUI(); tg.HapticFeedback.impactOccurred('light'); }
-        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartUI(); } }
+        // ИЗМЕНЕНА ЛОГИКА addOne и removeOne
+        function addOne(id, e) { 
+            if(e) e.stopPropagation(); 
+            cart.push(id); 
+            save(); 
+            updateCartQuantities(); // <--- Обновляем только количества
+            tg.HapticFeedback.impactOccurred('light'); 
+        }
+
+        function removeOne(id) { 
+            const idx = cart.indexOf(id); 
+            if (idx > -1) { 
+                cart.splice(idx, 1); 
+                save(); 
+                updateCartQuantities(); // <--- Обновляем только количества
+            } 
+        }
         
-        // --- ФУНКЦИЯ: Обновление тотала (УПРОЩЕННАЯ ВЕРСИЯ 1.2) ---
+        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
         function updateTotalAndButtons() {
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
             
-            let total = 0; // Итоговая сумма ВСЕХ товаров в корзине
+            let selectedTotal = 0;
             ids.forEach(id => {
-                const product = db.find(x => x.id == id);
-                if (product) {
-                    total += product.price * grouped[id];
+                if(selectedCart.has(id)) {
+                    const product = db.find(x => x.id == id);
+                    if (product) {
+                        selectedTotal += product.price * grouped[id];
+                    }
                 }
             });
 
-            // УДАЛЕНО: ЛОГИКА С selectedCart
-            // document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
-            // document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
-            document.getElementById('total-price').innerText = total;
+            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
+            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
+            document.getElementById('total-price').innerText = selectedTotal;
         }
         
-        // УДАЛЕНО: function toggleCartSelect(id)
-        // УДАЛЕНО: function toggleAllCart()
-        // УДАЛЕНО: function deleteSelectedCart()
+        // --- УМНАЯ КОРЗИНА И ВЫБОР ---
+        
+        function toggleCartSelect(id) {
+            const itemElement = document.getElementById('cart-item-' + id);
+            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
 
-        function clearCart() { 
-            if(confirm("Очистить корзину?")) { 
-                cart = []; 
-                save(); 
-                updateCartUI(); 
+            if(selectedCart.has(id)) {
+                selectedCart.delete(id);
+                if (circle) circle.classList.remove('checked');
+            } else {
+                selectedCart.add(id);
+                if (circle) circle.classList.add('checked');
             }
+            updateTotalAndButtons();
         }
 
-        function updateCartUI() {
-            const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none'; badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s';
+        function toggleAllCart() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const uniqueIds = Object.keys(grouped).map(Number);
+            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
+
+            if(shouldSelectAll) {
+                uniqueIds.forEach(id => selectedCart.add(id));
+            } else {
+                selectedCart.clear();
+            }
             
+            uniqueIds.forEach(id => {
+                const itemElement = document.getElementById('cart-item-' + id);
+                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+                if (circle) {
+                    if (shouldSelectAll) {
+                        circle.classList.add('checked');
+                    } else {
+                        circle.classList.remove('checked');
+                    }
+                }
+            });
+
+            updateTotalAndButtons();
+        }
+
+        function deleteSelectedCart() {
+            if(selectedCart.size === 0) return;
+            if(confirm("Удалить выбранные?")) {
+                cart = cart.filter(id => !selectedCart.has(id)); 
+                selectedCart.clear();
+                save(); 
+                // Вместо updateCartUI() вызываем renderCartList() для полной перерисовки
+                renderCartList(); 
+            }
+        }
+        
+        // НОВАЯ ФУНКЦИЯ: Только обновляет значения количества и итого
+        function updateCartQuantities() {
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             const ids = Object.keys(grouped).map(Number);
+
+            // 1. Обновляем бейдж (значок корзины)
+            const badge = document.getElementById('badge');
+            badge.style.display = cart.length ? 'block' : 'none'; 
+            if (badge.innerText != cart.length) { // Только если количество изменилось
+                badge.innerText = cart.length; 
+                badge.style.animation = 'none'; 
+                badge.offsetHeight; 
+                badge.style.animation = 'pop 0.3s';
+            }
             
+            // 2. Обновляем значения количества в каждой строке
+            ids.forEach(id => {
+                const qtyValElement = document.querySelector(`#cart-item-${id} .qty-val`);
+                if (qtyValElement) {
+                    qtyValElement.innerText = grouped[id];
+                }
+            });
+
+            // 3. Если товар был удален/добавлен до нуля, нужно перерисовать список.
+            // Проверяем, отличается ли количество уникальных ID в корзине от количества видимых строк.
+            const currentRows = document.getElementById('cart-items').children.length;
+            if (currentRows !== ids.length) {
+                renderCartList(); // Перерисовываем список, если количество уникальных товаров изменилось
+            } else {
+                // Если список не менялся, просто обновляем кнопки и суммы
+                updateTotalAndButtons();
+            }
+        }
+        
+        // НОВАЯ ФУНКЦИЯ: Рисует список корзины с нуля
+        function renderCartList() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+
             if (!ids.length) {
                 document.getElementById('cart-items').innerHTML = '';
                 document.getElementById('cart-empty').style.display = 'block';
                 document.getElementById('cart-footer').style.display = 'none';
-                // УДАЛЕНО: selectedCart.clear();
+                selectedCart.clear();
             } else {
                 document.getElementById('cart-empty').style.display = 'none';
                 document.getElementById('cart-footer').style.display = 'block';
 
                 document.getElementById('cart-items').innerHTML = ids.map(id => {
                     const p = db.find(x => x.id == id);
-                    // УДАЛЕНО: const isChecked = selectedCart.has(id) ? 'checked' : '';
+                    const isChecked = selectedCart.has(id) ? 'checked' : '';
                     
                     return `
                         <div class="list-row" id="cart-item-${id}">
+                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
                             <img src="${p.images[0]}" class="list-img">
                             <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
                                 <div class="cart-item-name">${p.name}</div>
@@ -550,16 +671,16 @@
                 }).join('');
             }
             
-            updateTotalAndButtons();
+            updateCartQuantities(); // После перерисовки списка, обновляем все количества и суммы
         }
 
-        // --- ОПЛАТА ВСЕГО (УПРОЩЕННАЯ ВЕРСИЯ 1.2) ---
+
+        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
         function checkout() {
-            if(cart.length === 0) return;
+            if(selectedCart.size === 0) return;
             
             const grouped = {}; 
-            // Обрабатываем ВСЕ товары в корзине
-            cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             
             const itemsText = Object.keys(grouped).map(id => {
                 const product = db.find(x => x.id == id);
@@ -572,10 +693,11 @@
                 total += product.price * grouped[id];
             });
 
-            // ОЧИСТКА КОРЗИНЫ ПОЛНОСТЬЮ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
-            cart = []; 
+            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
+            cart = cart.filter(id => !selectedCart.has(id)); 
+            selectedCart.clear();
             save();
-            updateCartUI(); 
+            renderCartList(); // <-- Полная перерисовка, так как корзина сильно изменилась
 
             tg.sendData(JSON.stringify({ total, items: [itemsText] }));
         }
@@ -600,20 +722,29 @@
             container.innerHTML = list.map(p => drawCard(p)).join('');
         }
         
+        // --- V1.2: Добавляем блокировку скролла при открытии модалки ---
         function openModal(id) {
             currentId = id; const p = db.find(x => x.id === id);
             document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
             document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); document.getElementById('modal').classList.add('modal-active');
+            updateModalFavBtn(); 
+            
+            document.getElementById('modal').classList.add('modal-active');
+            document.body.classList.add('no-scroll');
         }
-        function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
+        
+        function closeModal() { 
+            document.getElementById('modal').classList.remove('modal-active'); 
+            document.body.classList.remove('no-scroll');
+        }
+        
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
         function go(id, btn) {
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); 
-            if(id === 'cart') updateCartUI();
+            if(id === 'cart') renderCartList(); // <-- Теперь вызываем renderCartList при переходе на вкладку
             if(id === 'home') render(); // При переходе на "Каталог" перерисовываем, чтобы обновить состояние сердечек
         }
 
@@ -644,7 +775,7 @@
         });
 
         render();
-        updateCartUI();
+        updateCartQuantities(); // <-- Заменил на updateCartQuantities при старте
     </script>
 </body>
 </html>
