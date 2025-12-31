@@ -887,13 +887,12 @@
             });
         }
         
-        // --- ОФОРМЛЕНИЕ ЗАКАЗА (СО СБОРОМ ДАННЫХ И ОТПРАВКОЙ) ---
+       // --- ОФОРМЛЕНИЕ ЗАКАЗА (ОБНОВЛЕННАЯ ВЕРСИЯ) ---
         function submitOrder() {
             const phoneInput = document.getElementById('phone-input');
             const address = document.getElementById('address-input').value.trim();
             const comment = document.getElementById('comment-input').value.trim();
             
-            // Получаем только чистые цифры из поля телефона
             const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
             
             if (rawPhoneDigits.length !== 11) {
@@ -907,36 +906,49 @@
                 return;
             }
 
-            const total = checkoutTotalPrice;
-
+            // 1. Собираем корзину для Базы Данных (ID + Количество)
+            // Мы берем только выбранные (selectedCart) товары
+            const cartItemsForBot = [];
             const grouped = {}; 
-            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             
+            // Фильтруем корзину, оставляем только то, что выбрано галочкой
+            cart.filter(id => selectedCart.has(id)).forEach(id => {
+                grouped[id] = (grouped[id] || 0) + 1;
+            });
+
+            // Формируем массив для бота: [{id: 1, qty: 2}, {id: 5, qty: 1}]
+            Object.keys(grouped).forEach(id => {
+                cartItemsForBot.push({
+                    id: parseInt(id),
+                    qty: grouped[id]
+                });
+            });
+
+            // Формируем красивый текст для админа (как раньше)
             const itemsText = Object.keys(grouped).map(id => {
                 const product = db.find(x => x.id == id);
                 return `${product.name} x${grouped[id]}`;
             }).join(', ');
 
-            // 1. Формируем данные для отправки в Telegram Bot
+            const total = checkoutTotalPrice;
+
             const dataToSend = { 
                 action: "checkout",
                 total: total, 
-                items: [itemsText],
-                phone: phoneInput.value, // Отправляем форматированный номер
+                items_text: [itemsText], // Текст для человека
+                cart_items: cartItemsForBot, // ДАННЫЕ ДЛЯ БД (Новое!)
+                phone: phoneInput.value, 
                 address: address,
                 comment: comment || "Нет комментария"
             };
 
-            // 2. Очистка корзины (только выбранные товары)
+            // Очистка корзины
             cart = cart.filter(id => !selectedCart.has(id)); 
             selectedCart.clear();
             save();
             renderCartList();
 
-            // 3. Отправка данных и переход к оплате
             tg.sendData(JSON.stringify(dataToSend));
-            
-            // 4. Закрываем модалку
             closeCheckoutModal();
         }
         
