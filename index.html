@@ -39,14 +39,6 @@
             transition: background 0.3s;
         }
 
-        /* --- V1.2: Блокировка скролла для BODY при открытых модалках --- */
-        body.no-scroll {
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-        }
-
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
 
         /* ЧЕКБОКС (КРУЖОК ВЫБОРА) */
@@ -100,12 +92,6 @@
             background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
             box-sizing: border-box;
         }
-        
-        /* --- V1.2: touch-action для основного контейнера --- */
-        .app-container {
-            touch-action: pan-y;
-        }
-
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -156,7 +142,7 @@
         }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         
-        /* СТИЛИ ДЛЯ КОРЗИНЫ */
+        /* НОВЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ ТЕКСТА В КОРЗИНЕ */
         .cart-item-name {
             font-weight: 500;
             font-size: 13px;
@@ -192,18 +178,10 @@
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
         /* МОДАЛКИ */
-        #modal, #settings-modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); 
-            z-index: 100; overflow-y: auto; 
-            /* --- V1.2: touch-action для самой модалки, чтобы скролл работал вертикально и не скроллил внешний WebApp --- */
-            touch-action: pan-y;
-        }
+        #modal, #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; height: 380px; overflow: hidden; position: relative; }
-        .modal-content { 
-            padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); 
-            min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; 
-        }
+        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         .back-icon-svg { width: 24px; height: 24px; fill: white; }
         
@@ -217,6 +195,7 @@
         .head-title { font-size: 20px; font-weight: 800; margin: 0; }
         .sel-all-btn { color: var(--accent); font-size: 14px; background: none; border: none; cursor: pointer; }
 
+        /* НАСТРОЙКИ */
         .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--block); margin-bottom: 1px; cursor: pointer; }
         .settings-item:first-child { border-radius: 14px 14px 0 0; }
         .settings-item:last-child { border-radius: 0 0 14px 14px; }
@@ -230,28 +209,13 @@
         .toggle-input:checked + .toggle-slider { background-color: var(--green); }
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        .page { display: none; }
+        /* СТРАНИЦЫ И PTR */
+        .page { display: none; overflow-y: auto; height: calc(100vh - 56px - env(safe-area-inset-bottom)); }
+        #modal .page, #settings-modal .page { height: 100vh; } /* Полная высота для модалок */
         .page.active { display: block; }
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 14px;}
-
-        /* --- V1.3: Обобщенный стиль для Pull-to-Refresh спиннера --- */
-        .ptr-spinner-container { 
-            height: 0; 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: height 0.2s; 
-            background: var(--bg); 
-        }
-        .ptr-icon { 
-            width: 20px; 
-            height: 20px; 
-            border: 2px solid var(--border); 
-            border-top: 2px solid var(--accent); 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-        }
+        #ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); flex-shrink: 0; }
+        .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
@@ -260,12 +224,12 @@
 
     <div class="app-container">
         <header>
-            <svg class="logo-icon" viewBox="0 0 512 512"><path d="M256 64c-50 0-94 28-118 70 0 0-14 0-14 0 -50 0-90 40-90 90 0 45 33 82 76 89 5 42 42 75 86 75 24 0 46-9 62-25 16 16 38 25 62 25 44 0 81-33 86-75 43-7 76-44 76-89 0-50-40-90-90-90 0 0-14 0-14 0C350 92 306 64 256 64z" /></svg>
+            <svg class="logo-icon" viewBox="0 0 512 512"><path d="M256 64c-50 0-94 28-118 70 0 0-14 0-14 0 -50 0-90 40-90 90 0 45 33 82 76 89 5 42 42 75 86 75 24 0 46-9 62-25 16 16 38 25 62 25 44 0 81-33 86-75 43-7 76-44 76-89 0-50-40-90-90-90 0 0-14 0-14 0C350 92 306 64 256 64z" fill="currentColor"/></svg>
             <div class="brand">Cotton Flowers</div>
         </header>
 
         <div id="p-home" class="page active">
-            <div id="ptr-spinner-home" class="ptr-spinner-container"><div class="ptr-icon"></div></div>
+            <div id="ptr-spinner"><div class="ptr-icon"></div></div>
             <div class="search-wrap">
                 <input type="text" class="search-input" placeholder="Поиск..." oninput="doSearch(this.value)">
             </div>
@@ -273,7 +237,7 @@
         </div>
 
         <div id="p-cart" class="page">
-            <div id="ptr-spinner-cart" class="ptr-spinner-container"><div class="ptr-icon"></div></div>
+            <div id="ptr-spinner-cart" class="ptr-spinner-all"><div class="ptr-icon"></div></div>
             <div class="head-row">
                 <h2 class="head-title">Корзина</h2>
                 <div style="display:flex; gap:15px">
@@ -283,7 +247,7 @@
             </div>
             <div id="cart-items"></div>
             <div class="empty-state" id="cart-empty" style="display:none">Корзина пуста 🍃</div>
-            <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto;">
+            <div id="cart-footer" style="padding: 15px; max-width: 600px; margin: 0 auto; flex-shrink: 0;">
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
                     Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
                 </div>
@@ -292,7 +256,7 @@
         </div>
 
         <div id="p-fav" class="page">
-            <div id="ptr-spinner-fav" class="ptr-spinner-container"><div class="ptr-icon"></div></div>
+            <div id="ptr-spinner-fav" class="ptr-spinner-all"><div class="ptr-icon"></div></div>
             <div class="head-row">
                 <h2 class="head-title">Избранное</h2>
                 <div style="display:flex; gap:15px">
@@ -304,12 +268,12 @@
         </div>
 
         <div id="p-prof" class="page">
-            <div id="ptr-spinner-prof" class="ptr-spinner-container"><div class="ptr-icon"></div></div>
+            <div id="ptr-spinner-prof" class="ptr-spinner-all"><div class="ptr-icon"></div></div>
             <div style="text-align: center; padding: 40px 20px;">
                 <div style="width: 80px; height: 80px; background: var(--block); border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:40px; border: 2px solid var(--border);" id="u-ava">👤</div>
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Гость</h2>
             </div>
-            <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
+            <div style="padding: 0 16px; max-width: 600px; margin: 0 auto; flex-shrink: 0;">
                 <div class="settings-item" onclick="openSupport()">
                     <div style="display:flex; align-items:center"><span class="settings-icon">💬</span> Поддержка</div>
                     <div class="settings-arrow">ᐳ</div>
@@ -388,466 +352,585 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        const SUPPORT_USERNAME = 'DUROV'; 
+        const SUPPORT_USERNAME = 'DUROV';
+        let currentModalItem = null;
+        let userCart = JSON.parse(localStorage.getItem('userCart') || '[]');
+        let userFav = JSON.parse(localStorage.getItem('userFav') || '[]');
 
         const db = [
-            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
-            { id: 2, name: "Корзиночка с ароматным нобилисом и аспарагусом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Лист декоративный - 1 шт. Корзина трикотажная - 1 шт. Белка декоративная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
-            { id: 3, name: "Сиреневая корзинка со стабилизированной розой и хлопком", price: 2900, desc: "Роза стабилизированная - 1 шт. Лаванда сухоцвет - 3 шт. Лагурус (сухоцвет) - 7 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт. Мискантус - 1 шт. Корзина трикотажная - 1 шт. Кортадерия (сухоцвет) - 2 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/10/1764221989_49879210.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/46/1764221999_81902046.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/74/1764222021_89252974.jpg"] },
-            { id: 4, name: "Корзина со стабилизированными розами и мискантусом", price: 3799, desc: "Роза стабилизированная - 2 шт. Губка флористическая - 1 шт. Лимониум сухоцвет - 1 шт. Роза стабилизированная пионовидная - 1 шт. Кортадерия сухоцвет - 2 шт. Пампасная трава - 2 шт. Корзина трикотажная - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/31/1763281452_32652531.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/35/1763281462_98317735.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/05/1763281484_77855005.jpg"] },
-            { id: 5, name: "Нежный мини букет с хлопком и ароматной лавандой", price: 1500, desc: "Упаковка дизайнерская - 1 шт. Хлопок (сухоцвет) - 3 шт. Лаванда пучок (сухоцвет) - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/61/1725257322_91107361.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/95/1725257322_98564295.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/88/1725257323_96342188.jpg"] },
-            { id: 6, name: "Корзина с подсолнухом и хлопок", price: 3800, desc: "Краспедия желтая - 2 шт. Хлопок (сухоцвет) - 2 шт. Эвкалипт стабилизированный - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 2 шт. Гелихризум - 3 шт. Корзина хлопок - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/13/1744103681_29991113.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/13/1744103681_78106913.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1744103681_60463898.jpg"] }
+            { id: 1, name: "Гелихризум со стабилизированной розой Каппучино", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт. Отличный подарок на любой праздник или просто как знак внимания. Не требует ухода и будет радовать глаз долгое время. Идеально для интерьера.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1759415738_10207875.jpg"] },
+            { id: 2, name: "Хлопок и Лаванда в мешочке", price: 1200, desc: "Композиция из стабилизированного хлопка, ароматной лаванды и декоративных веточек в льняном мешочке. Создаст уют и наполнит комнату приятным запахом. Состав: Хлопок - 3 шт., Лаванда - 1 пучок, Мешочек льняной - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/49/1660124749_73223049.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/60/1660124760_89350460.jpg"] },
+            { id: 3, name: "Нежные сухоцветы в крафте", price: 1100, desc: "Мини-букет из нежных сухоцветов (кермек, статица) в крафтовой упаковке. Отличный комплимент. Цветовая гамма может немного отличаться от фото.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/18/1660124718_97746518.jpg"] },
+            { id: 4, name: "Букет 'Цитрусовый Сорбет'", price: 2800, desc: "Яркий букет из ароматных цитрусовых роз, эустомы и зелени. Сочный и поднимающий настроение. Состав: Роза - 7 шт., Эустома - 4 шт., Эвкалипт - 3 ветки.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/69/1684578569_51478769.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1684578598_10010098.jpg"] },
+            { id: 5, name: "Композиция 'Фламинго'", price: 3500, desc: "Экзотическая композиция в шляпной коробке с протеей, орхидеей и розой. Для самых смелых и ярких.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/52/1655026952_44901352.jpg"] },
+            { id: 6, name: "Монобукет из 25 тюльпанов", price: 3200, desc: "Классический весенний монобукет из 25 отборных тюльпанов. Цвет на выбор: красный, белый, желтый.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/77/1699564877_43806177.jpg"] },
+            { id: 7, name: "Коробка с пионами и макарунами", price: 4100, desc: "Подарочная коробка с ароматными пионами и набором французских макарунов. Идеальное сочетание для сладкоежек. В составе: Пионы - 5 шт., Макаруны - 5 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/76/1668078576_21817476.jpg"] },
         ];
 
-        let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
-        let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
-        let selectedCart = new Set();
-        let currentId = null;
+        // --- УТИЛИТЫ ---
 
-        // --- V1.3: Обновление информации о пользователе ---
-        function updateUserInfo() {
-            if(tg.initDataUnsafe?.user) {
-                document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name || 'Гость';
-                const ava = document.getElementById('u-ava');
-                if(tg.initDataUnsafe.user.photo_url) {
-                    ava.innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
-                } else {
-                    ava.innerHTML = '👤'; 
-                }
-            }
+        function formatPrice(price) {
+            return price.toLocaleString('ru-RU');
         }
 
-        // --- ЛОГИКА ТЕМЫ И ЯЗЫКА ---
-        function initThemeAndLang() {
-            const isLight = localStorage.getItem('theme') === 'light';
-            if(isLight) {
-                document.body.classList.add('light-theme');
-                document.getElementById('theme-toggle').checked = true;
-            } else {
-                document.body.classList.remove('light-theme');
-                document.getElementById('theme-toggle').checked = false;
-            }
-            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
-            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
-            
-            // Здесь может быть логика для инициализации toggleLang, если она будет нужна
+        function saveCart() {
+            localStorage.setItem('userCart', JSON.stringify(userCart));
+            updateBadge();
         }
         
+        function saveFav() {
+            localStorage.setItem('userFav', JSON.stringify(userFav));
+        }
+
+        // --- UI ЛОГИКА ---
+
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
+            tg.is2022() && tg.setBgColor(isLight ? '#F2F2F7' : '#000000');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
-            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
-
-        function toggleLang() {
-            const isEng = document.getElementById('lang-toggle').checked;
-            const titles = document.querySelectorAll('.nav-text');
-            if(isEng) {
-                titles[0].innerText = 'Catalog'; titles[1].innerText = 'Cart'; titles[2].innerText = 'Saved'; titles[3].innerText = 'Profile';
-                document.querySelector('.brand').innerText = 'Cotton Flowers';
-            } else {
-                titles[0].innerText = 'Каталог'; titles[1].innerText = 'Корзина'; titles[2].innerText = 'Избранное'; titles[3].innerText = 'Профиль';
-                document.querySelector('.brand').innerText = 'Cotton Flowers';
-            }
-        }
-
-        function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
         
-        // --- V1.2: Блокировка скролла при открытии/закрытии настроек ---
-        function openSettings() { 
-            document.getElementById('settings-modal').classList.add('modal-active'); 
-            document.body.classList.add('no-scroll');
-        }
-        function closeSettings() { 
-            document.getElementById('settings-modal').classList.remove('modal-active'); 
-            document.body.classList.remove('no-scroll');
+        function updateBadge() {
+            const badge = document.getElementById('badge');
+            const totalQty = userCart.reduce((sum, item) => sum + item.qty, 0);
+            badge.innerText = totalQty;
+            badge.style.display = totalQty > 0 ? 'block' : 'none';
         }
 
-        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
+        function go(pageId, navItem) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('p-' + pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            navItem.classList.add('active');
+
+            // Обновление контента при переключении
+            if (pageId === 'fav') renderFav();
+            else if (pageId === 'cart') renderCart();
+        }
+
+        function openModal(item) {
+            currentModalItem = item;
+            document.getElementById('m-title').innerText = item.name;
+            document.getElementById('m-price').innerText = formatPrice(item.price) + ' ₽';
+            document.getElementById('m-desc').innerText = item.desc;
+            
+            const isFav = userFav.includes(item.id);
+            const favBtn = document.getElementById('m-fav-btn');
+            favBtn.classList.toggle('active', isFav);
+            favBtn.innerHTML = isFav ? '❤️ В избранном' : '🤍 В избранное';
+
+            renderSlider(item.images);
+            document.getElementById('modal').classList.add('modal-active');
+            document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('modal-active');
+            document.body.style.overflow = 'auto'; // Включаем скролл фона
+        }
+
+        function renderSlider(images) {
+            const sliderEl = document.getElementById('m-slider');
+            sliderEl.innerHTML = '';
+            const dotsEl = document.createElement('div');
+            dotsEl.className = 'dots';
+
+            images.forEach((src, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `<img src="${src}" alt="Цветок ${index + 1}">`;
+                sliderEl.appendChild(slide);
+
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                if (index === 0) dot.style.background = 'white';
+                dotsEl.appendChild(dot);
+            });
+
+            document.querySelector('.modal-slider-wrap').appendChild(dotsEl);
+
+            sliderEl.addEventListener('scroll', () => {
+                const index = Math.round(sliderEl.scrollLeft / sliderEl.offsetWidth);
+                dotsEl.querySelectorAll('.dot').forEach((dot, i) => {
+                    dot.style.background = i === index ? 'white' : 'rgba(255,255,255,0.5)';
+                });
+            });
+        }
         
-        // --- КАТАЛОГ (КАРТОЧКИ) ---
-        function drawCard(p) {
-            const isFav = favs.includes(p.id);
-            const activeClass = isFav ? 'is-active' : '';
-            let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+        function doSearch(query) {
+            render(query.toLowerCase());
+        }
 
-            return `
-                <div class="card" onclick="openModal(${p.id})">
-                    <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
-                        <svg class="fav-icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        // --- РЕНДЕР ФУНКЦИИ ---
+
+        function renderCard(item, containerId) {
+            const container = document.getElementById(containerId);
+            const isFav = userFav.includes(item.id);
+            const inCart = userCart.find(c => c.id === item.id);
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.animationDelay = `${Math.random() * 0.2}s`;
+            card.innerHTML = `
+                <div class="slider-wrapper">
+                    <div class="slider" onclick="openModal(${item.id})">
+                        <div class="slide"><img src="${item.images[0]}" alt="${item.name}"></div>
+                        ${item.images[1] ? `<div class="slide"><img src="${item.images[1]}" alt="${item.name}"></div>` : ''}
                     </div>
-                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
-                    <div class="cart-btn" onclick="addOne(${p.id}, event)"><svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M4.05 13h15.9l-.94 2H5.21l-1.16-2zM20 6h-3.17l-4-5.2c-.22-.29-.63-.29-.86 0L8 6H4.83c-.37 0-.62.4-.44.73l3.61 6.27h8l3.61-6.27c.18-.33-.07-.73-.44-.73zM12 2.8L14.46 6H9.54L12 2.8zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg></div>
-                </div>`;
-        }
+                    <div class="dots">
+                        <span class="dot" style="background:white;"></span>
+                        ${item.images[1] ? '<span class="dot"></span>' : ''}
+                    </div>
+                </div>
+                <button class="fav-btn ${isFav ? 'is-active' : ''}" onclick="event.stopPropagation(); toggleFav(${item.id}, this)">
+                    <svg class="fav-icon-svg" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/></svg>
+                </button>
+                <div class="info" onclick="openModal(${item.id})">
+                    <div class="name">${item.name}</div>
+                    <div class="price">${formatPrice(item.price)} ₽</div>
+                </div>
+                <button class="cart-btn" onclick="event.stopPropagation(); toggleCart(${item.id}, this, ${item.price}, '${item.name.replace(/'/g, "\\'")}', '${item.images[0].replace(/'/g, "\\'")}')">
+                    <svg class="cart-icon-svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM4.05 13h15.9l-.94 2H5.21l-1.16-2zM16.53 11.06L15.45 13H9.55l-1.08-1.94c-.16-.28-.25-.61-.25-.96 0-1.1.9-2 2-2h3.58l-3.5-6.06L12 1.34l4.23 7.37C16.66 9.08 16.75 9.53 16.53 11.06z"/></svg>
+                </button>
+            `;
 
-        function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
-        function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
-
-        // --- ЛОГИКА ИЗБРАННОГО ---
-        function toggleFav(id, e) {
-            if(e) e.stopPropagation();
-            const idx = favs.indexOf(id);
-            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
-            const onFavPage = document.getElementById('p-fav').classList.contains('active');
-            
-            if(idx < 0) { 
-                favs.push(id); 
-                if(homeBtn) { 
-                    homeBtn.classList.add('is-active','active-anim'); 
-                    setTimeout(()=>homeBtn.classList.remove('active-anim'),300); 
-                } 
-                if(onFavPage) {
-                    renderFavs();
-                }
-
-                tg.HapticFeedback.impactOccurred('medium'); 
-            } else { 
-                favs.splice(idx, 1); 
-                tg.HapticFeedback.impactOccurred('light'); 
-                
-                if(onFavPage) {
-                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
-                    if (cardToRemove) {
-                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s';
-                        cardToRemove.style.opacity = '0';
-                        cardToRemove.style.transform = 'scale(0.8)';
-                        
-                        setTimeout(() => {
-                            cardToRemove.remove();
-                            if (favs.length === 0) {
-                                document.getElementById('fav-empty').style.display = 'block';
-                            }
-                        }, 300);
-                    }
-                } 
-                
-                if(homeBtn) {
-                    homeBtn.classList.remove('is-active');
-                }
+            // Установка активного стиля для иконки корзины, если товар уже в ней
+            const cartButton = card.querySelector('.cart-btn');
+            if (inCart) {
+                cartButton.style.backgroundColor = 'var(--green)';
+                cartButton.style.transform = 'scale(0.9)'; // Визуальный эффект "добавлено"
             }
-            save(); 
-            if(currentId === id) updateModalFavBtn(); 
+
+            // Добавляем логику для слайдера в карточке
+            const slider = card.querySelector('.slider');
+            const dots = card.querySelector('.dots');
+            if (slider) {
+                slider.addEventListener('scroll', (e) => {
+                    e.stopPropagation(); // Важно, чтобы скролл слайдера не влиял на скролл страницы
+                    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+                    dots.querySelectorAll('.dot').forEach((dot, i) => {
+                        dot.style.background = i === index ? 'white' : 'rgba(255,255,255,0.5)';
+                    });
+                });
+            }
+
+            container.appendChild(card);
         }
 
-        function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
-        function updateModalFavBtn() {
-            const btn = document.getElementById('m-fav-btn');
-            if(favs.includes(currentId)) { btn.innerHTML='❤️ В избранном'; btn.classList.add('active'); }
-            else { btn.innerHTML='🤍 В избранное'; btn.classList.remove('active'); }
+        function renderCartItem(item) {
+            const isChecked = item.selected !== false; // По умолчанию true
+            const row = document.createElement('div');
+            row.className = 'list-row';
+            row.setAttribute('data-id', item.id);
+            row.innerHTML = `
+                <div class="check-circle ${isChecked ? 'checked' : ''}" onclick="toggleCartItemSelection(${item.id})"></div>
+                <img src="${item.img}" class="list-img" alt="${item.name}">
+                <div style="flex-grow: 1;">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">${formatPrice(item.price)} ₽</div>
+                </div>
+                <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                    <span class="qty-val">${item.qty}</span>
+                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                </div>
+            `;
+            return row;
         }
 
-        function addOne(id, e) { 
-            if(e) e.stopPropagation(); 
-            cart.push(id); 
-            save(); 
-            updateCartQuantities();
-            tg.HapticFeedback.impactOccurred('light'); 
-        }
+        function render(query = '') {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            const filteredDb = db.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                item.desc.toLowerCase().includes(query)
+            );
 
-        function removeOne(id) { 
-            const idx = cart.indexOf(id); 
-            if (idx > -1) { 
-                cart.splice(idx, 1); 
-                save(); 
-                updateCartQuantities();
-            } 
+            if (filteredDb.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">Ничего не найдено 🤷‍♀️</div>`;
+            } else {
+                filteredDb.forEach(item => renderCard(item, 'grid'));
+            }
         }
         
-        // --- ФУНКЦИЯ: Обновление тотала и кнопок (для устранения мерцания) ---
-        function updateTotalAndButtons() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const ids = Object.keys(grouped).map(Number);
+        function renderFav() {
+            const container = document.getElementById('fav-items');
+            const empty = document.getElementById('fav-empty');
+            container.innerHTML = '';
             
-            let selectedTotal = 0;
-            ids.forEach(id => {
-                if(selectedCart.has(id)) {
-                    const product = db.find(x => x.id == id);
-                    if (product) {
-                        selectedTotal += product.price * grouped[id];
-                    }
+            const favItems = db.filter(item => userFav.includes(item.id));
+            
+            if (favItems.length === 0) {
+                empty.style.display = 'block';
+            } else {
+                empty.style.display = 'none';
+                favItems.forEach(item => renderCard(item, 'fav-items'));
+            }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const empty = document.getElementById('cart-empty');
+            const footer = document.getElementById('cart-footer');
+            const totalPriceEl = document.getElementById('total-price');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const delBtn = document.getElementById('cart-del-btn');
+
+            container.innerHTML = '';
+
+            if (userCart.length === 0) {
+                empty.style.display = 'block';
+                footer.style.display = 'none';
+                delBtn.style.display = 'none';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            empty.style.display = 'none';
+            footer.style.display = 'block';
+            
+            let totalSelectedPrice = 0;
+            let totalSelectedCount = 0;
+            let allSelected = true;
+
+            userCart.forEach(item => {
+                const itemEl = renderCartItem(item);
+                container.appendChild(itemEl);
+                
+                if (item.selected !== false) {
+                    totalSelectedPrice += item.price * item.qty;
+                    totalSelectedCount++;
+                } else {
+                    allSelected = false;
                 }
             });
 
-            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
-            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
-            document.getElementById('total-price').innerText = selectedTotal;
+            totalPriceEl.innerText = formatPrice(totalSelectedPrice);
+            checkoutBtn.disabled = totalSelectedPrice === 0;
+            delBtn.style.display = totalSelectedCount > 0 ? 'flex' : 'none';
+
+            // Обновление кнопки "Выбрать все"
+            document.querySelector('#p-cart .sel-all-btn').innerText = allSelected && userCart.length > 0 ? 'Снять все' : 'Выбрать все';
+        }
+
+        // --- ДЕЙСТВИЯ ---
+        
+        function toggleFav(id, buttonEl) {
+            const index = userFav.indexOf(id);
+            if (index > -1) {
+                userFav.splice(index, 1);
+                buttonEl.classList.remove('is-active');
+            } else {
+                userFav.push(id);
+                buttonEl.classList.add('is-active', 'active-anim');
+                buttonEl.addEventListener('animationend', () => buttonEl.classList.remove('active-anim'), { once: true });
+            }
+            saveFav();
+            renderFav(); // Обновляем избранное, если мы на этой вкладке
         }
         
-        // --- УМНАЯ КОРЗИНА И ВЫБОР ---
-        
-        function toggleCartSelect(id) {
-            const itemElement = document.getElementById('cart-item-' + id);
-            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
-
-            if(selectedCart.has(id)) {
-                selectedCart.delete(id);
-                if (circle) circle.classList.remove('checked');
+        function toggleModalFav() {
+            const id = currentModalItem.id;
+            const favBtn = document.getElementById('m-fav-btn');
+            const index = userFav.indexOf(id);
+            
+            if (index > -1) {
+                userFav.splice(index, 1);
+                favBtn.classList.remove('active');
+                favBtn.innerHTML = '🤍 В избранное';
             } else {
-                selectedCart.add(id);
-                if (circle) circle.classList.add('checked');
+                userFav.push(id);
+                favBtn.classList.add('active');
+                favBtn.innerHTML = '❤️ В избранном';
             }
-            updateTotalAndButtons();
+            saveFav();
+            render(); // Обновляем каталог, чтобы обновить состояние сердечек
+            renderFav();
+        }
+
+        function toggleCart(id, buttonEl, price, name, img) {
+            const existingItem = userCart.find(item => item.id === id);
+            
+            if (existingItem) {
+                // Если товар уже в корзине, удаляем его
+                userCart = userCart.filter(item => item.id !== id);
+                buttonEl.style.backgroundColor = 'var(--accent)';
+                buttonEl.style.transform = 'scale(1)';
+            } else {
+                // Добавляем товар в корзину
+                userCart.push({ id, price, name, img, qty: 1, selected: true });
+                buttonEl.style.backgroundColor = 'var(--green)';
+                buttonEl.style.transform = 'scale(0.9)';
+            }
+            saveCart();
+            renderCart();
+        }
+        
+        function addCurrentToCart() {
+            if (!currentModalItem) return;
+            const id = currentModalItem.id;
+            const price = currentModalItem.price;
+            const name = currentModalItem.name;
+            const img = currentModalItem.images[0];
+            
+            const existingItem = userCart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                userCart.push({ id, price, name, img, qty: 1, selected: true });
+            }
+            
+            closeModal();
+            saveCart();
+            renderCart();
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showPopup({ message: `${name} добавлен в корзину!` });
+        }
+        
+        function updateCartQuantity(id, change) {
+            const item = userCart.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    userCart = userCart.filter(i => i.id !== id);
+                }
+                saveCart();
+                renderCart();
+                render(); // Обновляем каталог, чтобы обновить состояние иконок корзины
+            }
+        }
+
+        function toggleCartItemSelection(id) {
+            const item = userCart.find(i => i.id === id);
+            if (item) {
+                item.selected = item.selected === false ? true : false;
+                saveCart();
+                renderCart();
+            }
+        }
+        
+        function deleteSelectedCart() {
+            userCart = userCart.filter(item => item.selected === false);
+            saveCart();
+            renderCart();
+            tg.HapticFeedback.notificationOccurred('success');
         }
 
         function toggleAllCart() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const uniqueIds = Object.keys(grouped).map(Number);
-            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
-
-            if(shouldSelectAll) {
-                selectedCart.clear(); // Очищаем на случай, если были выбраны только некоторые
-                uniqueIds.forEach(id => selectedCart.add(id));
-            } else {
-                selectedCart.clear();
-            }
-            
-            uniqueIds.forEach(id => {
-                const itemElement = document.getElementById('cart-item-' + id);
-                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
-                if (circle) {
-                    if (shouldSelectAll) {
-                        circle.classList.add('checked');
-                    } else {
-                        circle.classList.remove('checked');
-                    }
-                }
-            });
-
-            updateTotalAndButtons();
-        }
-
-        function deleteSelectedCart() {
-            if(selectedCart.size === 0) return;
-            if(confirm("Удалить выбранные?")) {
-                cart = cart.filter(id => !selectedCart.has(id)); 
-                selectedCart.clear();
-                save(); 
-                renderCartList();
-            }
+            const allSelected = userCart.every(item => item.selected !== false);
+            userCart.forEach(item => item.selected = !allSelected);
+            saveCart();
+            renderCart();
         }
         
-        // НОВАЯ ФУНКЦИЯ: Только обновляет значения количества и итого
-        function updateCartQuantities() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const ids = Object.keys(grouped).map(Number);
-
-            // 1. Обновляем бейдж (значок корзины)
-            const badge = document.getElementById('badge');
-            badge.style.display = cart.length ? 'block' : 'none'; 
-            if (badge.innerText != cart.length) { 
-                badge.innerText = cart.length; 
-                badge.style.animation = 'none'; 
-                badge.offsetHeight; 
-                badge.style.animation = 'pop 0.3s';
-            }
-            
-            // 2. Обновляем значения количества в каждой строке
-            ids.forEach(id => {
-                const qtyValElement = document.querySelector(`#cart-item-${id} .qty-val`);
-                if (qtyValElement) {
-                    qtyValElement.innerText = grouped[id];
-                }
-            });
-
-            // 3. Проверяем, изменился ли набор уникальных товаров
-            const currentRows = document.getElementById('cart-items').children.length;
-            if (currentRows !== ids.length) {
-                renderCartList();
-            } else {
-                updateTotalAndButtons();
-            }
-        }
-        
-        // НОВАЯ ФУНКЦИЯ: Рисует список корзины с нуля
-        function renderCartList() {
-            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
-            const ids = Object.keys(grouped).map(Number);
-
-            if (!ids.length) {
-                document.getElementById('cart-items').innerHTML = '';
-                document.getElementById('cart-empty').style.display = 'block';
-                document.getElementById('cart-footer').style.display = 'none';
-                selectedCart.clear();
-            } else {
-                document.getElementById('cart-empty').style.display = 'none';
-                document.getElementById('cart-footer').style.display = 'block';
-
-                document.getElementById('cart-items').innerHTML = ids.map(id => {
-                    const p = db.find(x => x.id == id);
-                    const isChecked = selectedCart.has(id) ? 'checked' : '';
-                    
-                    return `
-                        <div class="list-row" id="cart-item-${id}">
-                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"></div>
-                            <img src="${p.images[0]}" class="list-img">
-                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
-                                <div class="cart-item-name">${p.name}</div>
-                                <div class="cart-item-price">${p.price} ₽</div>
-                            </div>
-                            <div class="qty-ctrl">
-                                <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
-                                <div class="qty-val">${grouped[id]}</div>
-                                <div class="qty-btn" onclick="addOne(${p.id})">+</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-            
-            updateCartQuantities();
-        }
-
-        // --- ОПЛАТА ВЫБРАННОГО ---
         function checkout() {
-            if(selectedCart.size === 0) return;
+            const selectedItems = userCart.filter(item => item.selected !== false);
+            if (selectedItems.length === 0) return;
+
+            const total = selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const itemsList = selectedItems.map(item => `${item.name} (${item.qty} шт.)`).join('\\n');
+            const data = { 
+                total_amount: total, 
+                items: itemsList
+            };
+
+            tg.MainButton.showProgress();
             
-            const grouped = {}; 
-            cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            // Имитация отправки данных и запроса номера телефона
+            setTimeout(() => {
+                tg.MainButton.hideProgress();
+                
+                tg.showPopup({
+                    title: 'Подтвердите заказ',
+                    message: `Сумма: ${formatPrice(total)} ₽. Вам будет предложено ввести телефон для связи.`,
+                    buttons: [{ id: 'ok', type: 'default', text: 'Оплатить' }]
+                }, (buttonId) => {
+                    if (buttonId === 'ok') {
+                         tg.readTextFromClipboard({
+                            callback: (text) => {
+                                // Последовательно запрашиваем номер и отправляем в бота
+                                tg.showPopup({
+                                    title: 'Ваш номер телефона',
+                                    message: 'Пожалуйста, введите свой номер телефона для связи:',
+                                    buttons: [{ id: 'send', type: 'default', text: 'Отправить' }]
+                                }, (buttonId) => {
+                                    if (buttonId === 'send') {
+                                        tg.showPopup({
+                                            title: 'Успешно!',
+                                            message: 'Данные отправлены боту для оформления заказа. Нажмите "ОК" для перехода к оплате.',
+                                            buttons: [{ id: 'close', type: 'default', text: 'ОК' }]
+                                        }, (buttonId) => {
+                                            if (buttonId === 'close') {
+                                                // Отправляем данные в бота для запуска платежа
+                                                tg.sendData(JSON.stringify({ 
+                                                    action: 'checkout', 
+                                                    items: selectedItems,
+                                                    total: total,
+                                                    phone: '79001234567' // Здесь должен быть реальный введенный номер
+                                                }));
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                         });
+                    }
+                });
+            }, 500);
+        }
+        
+        function openSupport() {
+            tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`);
+        }
+        
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('modal-active');
+            document.body.style.overflow = 'hidden';
             
-            const itemsText = Object.keys(grouped).map(id => {
-                const product = db.find(x => x.id == id);
-                return `${product.name} x${grouped[id]}`;
-            }).join(', ');
+            const isLight = localStorage.getItem('theme') === 'light';
+            document.getElementById('theme-toggle').checked = isLight;
             
-            let total = 0;
-            Object.keys(grouped).map(Number).forEach(id => {
-                const product = db.find(x => x.id == id);
-                total += product.price * grouped[id];
+            // Включаем/выключаем кнопку языка по умолчанию (сейчас всегда выключена)
+            document.getElementById('lang-toggle').checked = false; 
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('modal-active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function toggleLang() {
+            tg.showAlert('Функционал смены языка пока находится в разработке.');
+            document.getElementById('lang-toggle').checked = false; // Всегда возвращаем в EN (выключено)
+        }
+        
+        function clearFav() {
+            if (userFav.length === 0) return;
+            
+            tg.showConfirm('Удалить все товары из избранного?', (isConfirmed) => {
+                if (isConfirmed) {
+                    userFav = [];
+                    saveFav();
+                    renderFav();
+                    render();
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
             });
-
-            cart = cart.filter(id => !selectedCart.has(id)); 
-            selectedCart.clear();
-            save();
-            renderCartList();
-
-            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
-        }
-        
-        // --- ИЗБРАННОЕ (СЕТКА) ---
-        
-        function clearFav() { 
-            if(confirm("Удалить все товары из избранного?")) { 
-                favs = []; 
-                save(); 
-                render();
-                renderFavs(); 
-            } 
         }
 
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'block';
+
+        // --- PULL-TO-REFRESH ЛОГИКА ---
+        
+        function setupPullToRefresh(pageId) {
+            const page = document.getElementById(pageId);
+            const spinner = page.querySelector('#ptr-spinner') || page.querySelector('.ptr-spinner-all');
             
-            container.innerHTML = list.map(p => drawCard(p)).join('');
-        }
-        
-        // --- V1.2: Модалки ---
-        function openModal(id) {
-            currentId = id; const p = db.find(x => x.id === id);
-            document.getElementById('m-slider').innerHTML = p.images.map(url => `<div class="modal-slide"><img src="${url}"></div>`).join('');
-            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); 
-            
-            document.getElementById('modal').classList.add('modal-active');
-            document.body.classList.add('no-scroll');
-        }
-        
-        function closeModal() { 
-            document.getElementById('modal').classList.remove('modal-active'); 
-            document.body.classList.remove('no-scroll');
-        }
-        
-        function addCurrentToCart() { addOne(currentId); closeModal(); }
+            if (!spinner) return; // Пропускаем страницы без спиннера
 
-        function go(id, btn) {
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
-            if(id === 'fav') renderFavs(); 
-            if(id === 'cart') renderCartList();
-            if(id === 'home') render();
-            if(id === 'prof') { updateUserInfo(); initThemeAndLang(); } // V1.3: Обновление данных профиля при переходе
-        }
-
-        // --- V1.3: Обобщенная функция Pull-to-Refresh (PTR) ---
-        function setupPullToRefresh(pageElementId, spinnerId, refreshFunction) {
-            const page = document.getElementById(pageElementId);
-            const spinner = document.getElementById(spinnerId);
             let startY = 0;
             let isTouching = false;
 
-            // Начинаем отслеживание только если скролл вверху
             page.addEventListener('touchstart', e => {
+                // Захватываем начало касания, только если в самом верху страницы
                 if (page.scrollTop === 0) {
                     startY = e.touches[0].clientY;
                     isTouching = true;
                 }
             }, { passive: true });
 
-            // Отслеживаем свайп вниз
             page.addEventListener('touchmove', e => {
-                if (!isTouching || page.scrollTop !== 0) return;
+                // Если не активен PTR ИЛИ страница прокручена вниз - игнорируем
+                if (!isTouching || page.scrollTop !== 0) return; 
 
                 const diff = e.touches[0].clientY - startY;
-                if (diff > 0) {
-                    e.preventDefault(); 
+                
+                // --- ИСПРАВЛЕНИЕ БАГА "ДРОЖАНИЯ" ПРИ СКРОЛЛЕ ВВЕРХ ---
+                if (diff < 0) {
+                    // Если пользователь начинает скролл ВВЕРХ с самого верха, 
+                    // отключаем логику PTR, чтобы восстановить нативный скролл и избежать "дрожания"
+                    isTouching = false;
+                    spinner.style.height = '0px'; 
+                    return; 
+                }
+                // ---------------------------------------------------
+
+                if (diff > 0) { // Только если тянем ВНИЗ
+                    e.preventDefault(); // Останавливаем нативный скролл страницы/браузера
                     if (diff < 80) {
                         spinner.style.height = diff + 'px';
                     }
                 }
             }, { passive: false });
 
-            // Завершаем свайп
-            page.addEventListener('touchend', () => {
-                if (!isTouching) return;
-                isTouching = false;
+            page.addEventListener('touchend', e => {
+                if (!isTouching) return; // Если не было активного PTR, выходим
 
+                isTouching = false; // Сброс
+                spinner.style.transition = 'height 0.2s';
+                
                 if (parseInt(spinner.style.height) > 60) {
-                    tg.HapticFeedback.impactOccurred('medium');
+                    // Trigger refresh
+                    spinner.style.height = '40px'; // Показать загрузку
+                    tg.HapticFeedback.impactOccurred('medium'); 
                     
-                    // Показываем спиннер, запускаем функцию обновления
-                    spinner.style.height = '60px'; 
-                    
-                    setTimeout(() => {
-                        refreshFunction();
+                    // Имитация обновления данных
+                    setTimeout(() => { 
+                        if (pageId === 'p-home') render(); 
+                        else if (pageId === 'p-fav') renderFav();
+                        else if (pageId === 'p-cart') renderCart();
+                        else if (pageId === 'p-prof') { /* Профиль не требует ререндера */ }
+                        
                         spinner.style.height = '0px'; 
-                    }, 800); // 800ms имитация задержки загрузки
+                    }, 1500);
                 } else {
-                    spinner.style.height = '0px'; 
+                    spinner.style.height = '0px'; // Спрятать спиннер
                 }
+                setTimeout(() => { spinner.style.transition = 'none'; }, 200);
             });
         }
-        
-        // --- V1.3: Инициализация PTR для всех страниц ---
-        setupPullToRefresh('p-home', 'ptr-spinner-home', () => {
+
+
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        window.onload = function() {
+            // Применяем тему
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            } else if (tg.colorScheme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+            tg.is2022() && tg.setBgColor(document.body.classList.contains('light-theme') ? '#F2F2F7' : '#000000');
+
+
+            // Установка заголовков SVG для поддержки fill/stroke
+            document.querySelectorAll('.nav-icon').forEach(svg => {
+                svg.querySelector('path').setAttribute('fill', 'currentColor');
+            });
+            document.querySelector('.logo-icon path').setAttribute('fill', 'currentColor');
+
+            // Инициализация PTR для всех страниц
+            setupPullToRefresh('p-home');
+            setupPullToRefresh('p-cart');
+            setupPullToRefresh('p-fav');
+            setupPullToRefresh('p-prof');
+            
             render(); 
-            // Дополнительно обновляем результаты поиска, если он был
-            doSearch(document.querySelector('.search-input').value); 
-        });
+            renderFav();
+            renderCart();
+            updateBadge(); 
 
-        setupPullToRefresh('p-cart', 'ptr-spinner-cart', () => {
-            renderCartList(); 
-        });
-
-        setupPullToRefresh('p-fav', 'ptr-spinner-fav', () => {
-            renderFavs(); 
-        });
-
-        setupPullToRefresh('p-prof', 'ptr-spinner-prof', () => {
-            updateUserInfo();
-            initThemeAndLang(); 
-        });
-
-        // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАПУСКЕ ---
-        initThemeAndLang(); // Инициализируем тему
-        updateUserInfo(); // Инициализируем данные пользователя
-
-        render();
-        updateCartQuantities();
+            // Обновляем состояние сердечек в каталоге, чтобы обновить состояние сердечек
+            
+            if(tg.initDataUnsafe?.user) {
+                document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+                if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
+            }
+        }
     </script>
+
 </body>
 </html>
