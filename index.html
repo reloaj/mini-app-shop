@@ -191,8 +191,8 @@
         .nav-item.active .nav-icon { fill: var(--accent); }
         .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; }
 
-        /* МОДАЛКИ */
-        #modal, #settings-modal { 
+        /* МОДАЛКИ (ОБЩИЕ СТИЛИ) */
+        #modal, #settings-modal, #checkout-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); 
             z-index: 100; overflow-y: auto; 
             /* --- V1.2: touch-action для самой модалки, чтобы скролл работал вертикально и не скроллил внешний WebApp --- */
@@ -212,6 +212,24 @@
         .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); }
         .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; }
 
+        /* --- V1.3: Стили для полей ввода в модалке оформления заказа --- */
+        .checkout-input, .checkout-textarea {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--input-bg); color: var(--text); font-size: 15px; outline: none;
+            box-sizing: border-box; margin-bottom: 12px;
+        }
+        .checkout-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sec);
+            margin-bottom: 5px;
+        }
+        
         /* ЗАГОЛОВКИ ВКЛАДОК */
         .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
         .head-title { font-size: 20px; font-weight: 800; margin: 0; }
@@ -269,7 +287,7 @@
                 <div style="text-align: right; font-weight: 600; font-size: 18px; margin-bottom: 15px;">
                     Итого (выбрано): <span id="total-price" style="color: var(--accent)">0</span> ₽
                 </div>
-                <button class="big-btn" id="checkout-btn" onclick="checkout()" disabled>ОФОРМИТЬ ВЫБРАННОЕ</button>
+                <button class="big-btn" id="checkout-btn" onclick="openCheckoutModal()" disabled>ОФОРМИТЬ ВЫБРАННОЕ</button>
             </div>
         </div>
 
@@ -313,6 +331,35 @@
             <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">🤍 В избранное</button>
             <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <div id="checkout-modal">
+        <div style="padding: 20px;">
+            <div style="display:flex; align-items:center; margin-bottom: 20px;">
+                <div class="back-btn" style="position:static; margin-right:15px; background:var(--block);" onclick="closeCheckoutModal()">
+                    <svg class="back-icon-svg" style="fill:var(--text)" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </div>
+                <h2 style="margin:0">Оформление заказа</h2>
+            </div>
+            
+            <form id="order-form" onsubmit="event.preventDefault(); submitOrder();">
+                
+                <div class="input-label">📞 Номер телефона получателя</div>
+                <input type="tel" class="checkout-input" id="phone-input" placeholder="+7 (XXX) XXX-XX-XX" required>
+
+                <div class="input-label">📍 Адрес доставки</div>
+                <input type="text" class="checkout-input" id="address-input" placeholder="Город, Улица, Дом, Квартира" required>
+                
+                <div class="input-label">💬 Комментарий к заказу</div>
+                <textarea class="checkout-textarea" id="comment-input" placeholder="Например: номер отправителя для связи, текст записки или пожелания по времени доставки."></textarea>
+                
+                <div style="text-align: right; font-weight: 600; font-size: 16px; margin-top: 15px; margin-bottom: 15px;">
+                    Итого к оплате: <span id="checkout-total-price" style="color: var(--accent)">0</span> ₽
+                </div>
+
+                <button type="submit" class="big-btn">ПЕРЕЙТИ К ОПЛАТЕ</button>
+            </form>
         </div>
     </div>
 
@@ -383,6 +430,7 @@
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
         let selectedCart = new Set();
         let currentId = null;
+        let checkoutTotalPrice = 0; // V1.3: Переменная для хранения итоговой суммы выбранных товаров
 
         // --- ЛОГИКА ТЕМЫ ---
         function toggleTheme() {
@@ -425,6 +473,22 @@
         }
         function closeSettings() { 
             document.getElementById('settings-modal').classList.remove('modal-active'); 
+            document.body.classList.remove('no-scroll');
+        }
+        
+        // --- V1.3: Модалка оформления заказа ---
+        function openCheckoutModal() {
+            if(selectedCart.size === 0) return;
+
+            // Обновляем сумму в модалке перед открытием
+            document.getElementById('checkout-total-price').innerText = checkoutTotalPrice; 
+
+            document.getElementById('checkout-modal').classList.add('modal-active'); 
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.remove('modal-active'); 
             document.body.classList.remove('no-scroll');
         }
 
@@ -542,6 +606,9 @@
                     }
                 }
             });
+
+            // V1.3: Сохраняем итоговую сумму в переменную для модалки
+            checkoutTotalPrice = selectedTotal; 
 
             document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
             document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
@@ -675,31 +742,49 @@
         }
 
 
-        // --- ОПЛАТА ВЫБРАННОГО (С ОЧИСТКОЙ ПОСЛЕ КНОПКИ) ---
-        function checkout() {
-            if(selectedCart.size === 0) return;
+        // --- V1.3: ОФОРМЛЕНИЕ ЗАКАЗА (СО СБОРОМ ДАННЫХ И ОТПРАВКОЙ) ---
+        function submitOrder() {
+            const phone = document.getElementById('phone-input').value.trim();
+            const address = document.getElementById('address-input').value.trim();
+            const comment = document.getElementById('comment-input').value.trim();
             
+            if (!phone || !address) {
+                alert("Пожалуйста, введите номер телефона и адрес.");
+                return;
+            }
+
+            const total = checkoutTotalPrice; // Берем сумму из сохраненной переменной
+
             const grouped = {}; 
+            // Фильтруем корзину, оставляя только выбранные товары
             cart.filter(id => selectedCart.has(id)).forEach(id => grouped[id] = (grouped[id] || 0) + 1);
             
             const itemsText = Object.keys(grouped).map(id => {
                 const product = db.find(x => x.id == id);
                 return `${product.name} x${grouped[id]}`;
             }).join(', ');
-            
-            let total = 0;
-            Object.keys(grouped).map(Number).forEach(id => {
-                const product = db.find(x => x.id == id);
-                total += product.price * grouped[id];
-            });
 
-            // ОЧИСТКА КОРЗИНЫ СРАЗУ ПОСЛЕ НАЖАТИЯ КНОПКИ
+            // 1. Формируем данные для отправки в Telegram Bot
+            const dataToSend = { 
+                action: "checkout",
+                total: total, 
+                items: [itemsText],
+                phone: phone,
+                address: address,
+                comment: comment || "Нет комментария"
+            };
+
+            // 2. Очистка корзины (только выбранные товары)
             cart = cart.filter(id => !selectedCart.has(id)); 
             selectedCart.clear();
             save();
             renderCartList(); // <-- Полная перерисовка, так как корзина сильно изменилась
 
-            tg.sendData(JSON.stringify({ total, items: [itemsText] }));
+            // 3. Отправка данных и переход к оплате
+            tg.sendData(JSON.stringify(dataToSend));
+            
+            // 4. Закрываем модалку
+            closeCheckoutModal();
         }
         
         // --- ИЗБРАННОЕ (СЕТКА) ---
