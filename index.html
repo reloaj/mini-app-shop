@@ -47,25 +47,41 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ОБНОВЛЕННАЯ ШАПКА (ВЕТКА) --- */
+        /* --- ШАПКА С РИСОВАННОЙ ВЕТКОЙ --- */
         header { 
             flex-shrink: 0; 
-            background: var(--bg); /* Фон под веткой */
+            background: var(--bg);
             z-index: 20; 
-            padding: 0; /* Убрали отступы */
-            height: 80px; /* Высота шапки под ветку */
+            padding: 0;
+            height: 100px; /* Чуть выше для ветки */
             border-bottom: 1px solid var(--border);
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
 
-        .header-branch-img {
+        /* Канвас для ветки */
+        #nobilis-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Заполняет всю шапку */
-            display: block;
-            opacity: 0.9;
+            z-index: 1;
         }
+
+        /* Текст бренда поверх ветки */
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Текст справа, т.к. ветка слева */
+            height: 100%;
+            padding-right: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* Тень чтобы читалось на ветке */
+        }
+        
+        .brand { font-weight: 800; font-size: 24px; letter-spacing: 0.5px; color: #fff; }
 
         nav {
             flex-shrink: 0; height: 56px;
@@ -91,25 +107,18 @@
         /* --- СНЕЖИНКИ --- */
         #snow-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* Чтобы можно было кликать сквозь снег */
-            z-index: 9999; /* Поверх всего */
-            overflow: hidden;
+            pointer-events: none; z-index: 9999; overflow: hidden;
         }
         
         .snowflake {
-            position: absolute;
-            top: -10px;
-            color: white;
-            font-size: 1em;
-            opacity: 0.8;
-            user-select: none;
-            animation-name: fall;
-            animation-timing-function: linear;
+            position: absolute; top: -10px; color: white; font-size: 1em; opacity: 0.8;
+            user-select: none; animation-name: fall; animation-timing-function: linear;
         }
 
         @keyframes fall {
             0% { transform: translateY(-10px) translateX(0px) rotate(0deg); }
-            100% { transform: translateY(110vh) translateX(20px) rotate(360deg); }
+            50% { transform: translateY(55vh) translateX(15px) rotate(180deg); }
+            100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
         }
 
         /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
@@ -227,12 +236,12 @@
 
     <div class="app-container">
         
-        <!-- НОВАЯ ШАПКА С ВЕТКОЙ -->
+        <!-- ХУДОЖЕСТВЕННАЯ ШАПКА (CANVAS) -->
         <header>
-            <!-- 👇 СЮДА ВСТАВЬ ССЫЛКУ НА КАРТИНКУ ВЕТКИ 👇 -->
-            <img src="https://i.pinimg.com/736x/7e/0e/f2/7e0ef26407bc0069f8bf90fc4cf7a6e1.jpg" 
-                 class="header-branch-img" 
-                 alt="Nobilis Branch">
+            <canvas id="nobilis-canvas"></canvas>
+            <div class="header-content">
+                <div class="brand">Cotton Flowers</div>
+            </div>
         </header>
 
         <div id="p-home" class="page active">
@@ -716,18 +725,14 @@
             if(!spinner) return;
             let startY = 0;
             
-            // ВАЖНО: { passive: false } позволяет нам использовать e.preventDefault()
             page.addEventListener('touchstart', e => { 
                 if(page.scrollTop === 0) startY = e.touches[0].clientY; 
             }, { passive: false });
 
             page.addEventListener('touchmove', e => {
                 const diff = e.touches[0].clientY - startY;
-                // Если мы в самом верху и тянем вниз
                 if(diff > 0 && page.scrollTop <= 0) { 
-                    // ГЛАВНЫЙ ФИКС: Запрещаем стандартное поведение (сворачивание Web App)
                     if (e.cancelable) e.preventDefault();
-                    
                     if(diff < 80) spinner.style.height = diff + 'px'; 
                 }
             }, { passive: false });
@@ -751,23 +756,80 @@
             if(!snowContainer) return;
             const snow = document.createElement('div');
             snow.classList.add('snowflake');
-            snow.innerText = '❄'; // Символ снежинки
+            snow.innerText = '❄';
             snow.style.left = Math.random() * 100 + 'vw';
-            snow.style.animationDuration = Math.random() * 3 + 4 + 's'; // от 4 до 7 секунд
-            snow.style.opacity = Math.random() * 0.7 + 0.3; // Разная прозрачность
-            snow.style.fontSize = Math.random() * 10 + 10 + 'px'; // Разный размер
-            
+            snow.style.animationDuration = Math.random() * 3 + 4 + 's';
+            snow.style.opacity = Math.random() * 0.7 + 0.3;
+            snow.style.fontSize = Math.random() * 10 + 10 + 'px';
             snowContainer.appendChild(snow);
-            
-            // Удаляем снежинку после завершения анимации
             setTimeout(() => { snow.remove(); }, 7000);
         }
+        setInterval(createSnowflake, 300);
 
-        // Запускаем снегопад с интервалом
-        setInterval(createSnowflake, 300); // Каждые 300мс новая снежинка
+        // --- РИСОВАНИЕ ВЕТКИ НОБИЛИСА (CANVAS) ---
+        function drawNobilisHeader() {
+            const canvas = document.getElementById('nobilis-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Настройка размера Canvas
+            const width = canvas.parentElement.offsetWidth;
+            const height = canvas.parentElement.offsetHeight;
+            canvas.width = width * 2; // Retina fix
+            canvas.height = height * 2;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.scale(2, 2);
+
+            // Очистка
+            ctx.clearRect(0, 0, width, height);
+
+            // Параметры ветки
+            const startX = -20;
+            const startY = -20;
+            const endX = width * 0.6; // Ветка идет до 60% ширины
+            const endY = height * 0.8;
+
+            // Цвета хвои (Нобилис: серо-голубо-зеленый)
+            const needleColors = ['#4A6E4E', '#5F8575', '#355E3B', '#2F4F4F'];
+
+            // Функция рисования иголки
+            function drawNeedle(x, y, angle, length, width) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                const tipX = x + Math.cos(angle) * length;
+                const tipY = y + Math.sin(angle) * length;
+                ctx.lineTo(tipX, tipY);
+                ctx.strokeStyle = needleColors[Math.floor(Math.random() * needleColors.length)];
+                ctx.lineWidth = width;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+
+            // Рисуем основную ветку (изогнутую)
+            const steps = 150;
+            for (let i = 0; i < steps; i++) {
+                const t = i / steps;
+                // Кривая Безье вручную
+                const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * (width * 0.2) + t * t * endX;
+                const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * (height * 0.1) + t * t * endY;
+
+                // Рисуем пучок иголок в каждой точке
+                const clusterSize = 10 + Math.random() * 5;
+                for (let j = 0; j < clusterSize; j++) {
+                    const angleBase = Math.atan2(endY - startY, endX - startX); // Направление ветки
+                    const angle = angleBase + (Math.random() - 0.5) * 3; // Разброс иголок
+                    const length = 15 + Math.random() * 20; // Длина иголок
+                    drawNeedle(x, y, angle, length, 1.5);
+                }
+            }
+        }
+
+        // Рисуем при загрузке
+        window.addEventListener('load', drawNobilisHeader);
+        // Перерисовываем при повороте экрана
+        window.addEventListener('resize', drawNobilisHeader);
 
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
-
         render();
         updateCartQuantities();
     </script>
