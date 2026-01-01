@@ -47,11 +47,24 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
+        /* --- ОБНОВЛЕННАЯ ШАПКА (ВЕТКА) --- */
         header { 
-            flex-shrink: 0; background: var(--nav-bg);
-            backdrop-filter: blur(20px); z-index: 20; padding: 12px 16px;
-            display: flex; align-items: center; gap: 12px;
+            flex-shrink: 0; 
+            background: var(--bg); /* Фон под веткой */
+            z-index: 20; 
+            padding: 0; /* Убрали отступы */
+            height: 80px; /* Высота шапки под ветку */
             border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-branch-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Заполняет всю шапку */
+            display: block;
+            opacity: 0.9;
         }
 
         nav {
@@ -62,8 +75,6 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* v1.3: overflow-y: scroll вместо auto. 
-           Это заставляет iOS всегда считать блок скроллящимся, даже если он пустой. */
         .page {
             display: none; 
             flex-grow: 1; 
@@ -71,32 +82,40 @@
             padding-bottom: 20px;
             overscroll-behavior-y: contain; 
             -webkit-overflow-scrolling: touch;
-            position: relative; /* Важно для корректного скролла */
+            position: relative; 
         }
         
-        /* v1.3: Добавляем невидимый пиксель внизу, чтобы контент всегда был чуть больше контейнера */
-        .page::after {
-            content: "";
-            display: block;
-            height: 1px;
-            width: 100%;
-        }
-
+        .page::after { content: ""; display: block; height: 1px; width: 100%; }
         .page.active { display: block; }
         
-        /* --- СПИННЕР ЗАГРУЗКИ (ptr) --- */
-        .ptr-spinner { 
-            height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; 
-            transition: height 0.2s; background: var(--bg); width: 100%; flex-shrink: 0;
+        /* --- СНЕЖИНКИ --- */
+        #snow-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* Чтобы можно было кликать сквозь снег */
+            z-index: 9999; /* Поверх всего */
+            overflow: hidden;
         }
-        .ptr-icon { 
-            width: 20px; height: 20px; border: 2px solid var(--border); 
-            border-top: 2px solid var(--accent); border-radius: 50%; 
-            animation: spin 1s linear infinite; 
+        
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            opacity: 0.8;
+            user-select: none;
+            animation-name: fall;
+            animation-timing-function: linear;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ------------------------------------------ */
+        @keyframes fall {
+            0% { transform: translateY(-10px) translateX(0px) rotate(0deg); }
+            100% { transform: translateY(110vh) translateX(20px) rotate(360deg); }
+        }
+
+        /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
+        .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); width: 100%; flex-shrink: 0; }
+        .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
         .check-circle { width: 22px; height: 22px; border: 2px solid var(--text-sec); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; cursor: pointer; }
@@ -109,8 +128,6 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        .logo-icon { width: 32px; height: 32px; fill: var(--accent); }
-        .brand { font-weight: 700; font-size: 19px; letter-spacing: 0.5px; color: var(--text); }
         .search-wrap { padding: 12px 16px; }
         .search-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; }
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
@@ -209,9 +226,13 @@
 <body>
 
     <div class="app-container">
+        
+        <!-- НОВАЯ ШАПКА С ВЕТКОЙ -->
         <header>
-            <svg class="logo-icon" viewBox="0 0 512 512"><path d="M256 64c-50 0-94 28-118 70 0 0-14 0-14 0 -50 0-90 40-90 90 0 45 33 82 76 89 5 42 42 75 86 75 24 0 46-9 62-25 16 16 38 25 62 25 44 0 81-33 86-75 43-7 76-44 76-89 0-50-40-90-90-90 0 0-14 0-14 0C350 92 306 64 256 64z" /></svg>
-            <div class="brand">Cotton Flowers</div>
+            <!-- 👇 СЮДА ВСТАВЬ ССЫЛКУ НА КАРТИНКУ ВЕТКИ 👇 -->
+            <img src="https://images.unsplash.com/photo-1574625575772-5b128549926d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                 class="header-branch-img" 
+                 alt="Nobilis Branch">
         </header>
 
         <div id="p-home" class="page active">
@@ -271,7 +292,6 @@
             </div>
         </div>
 
-        <!-- НАВИГАЦИЯ -->
         <nav>
             <button class="nav-item active" onclick="go('home', this)">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -292,8 +312,10 @@
             </button>
         </nav>
     </div>
+    
+    <!-- КОНТЕЙНЕР ДЛЯ СНЕГА -->
+    <div id="snow-container"></div>
 
-    <!-- МОДАЛКИ (Modal, Lightbox, Checkout, Settings) -->
     <div id="modal">
         <div class="back-btn" onclick="closeModal()">
             <svg class="back-icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -722,6 +744,27 @@
                 } else { spinner.style.height = '0px'; }
             });
         }
+        
+        // --- СНЕГОПАД (JS) ---
+        function createSnowflake() {
+            const snowContainer = document.getElementById('snow-container');
+            if(!snowContainer) return;
+            const snow = document.createElement('div');
+            snow.classList.add('snowflake');
+            snow.innerText = '❄'; // Символ снежинки
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.animationDuration = Math.random() * 3 + 4 + 's'; // от 4 до 7 секунд
+            snow.style.opacity = Math.random() * 0.7 + 0.3; // Разная прозрачность
+            snow.style.fontSize = Math.random() * 10 + 10 + 'px'; // Разный размер
+            
+            snowContainer.appendChild(snow);
+            
+            // Удаляем снежинку после завершения анимации
+            setTimeout(() => { snow.remove(); }, 7000);
+        }
+
+        // Запускаем снегопад с интервалом
+        setInterval(createSnowflake, 300); // Каждые 300мс новая снежинка
 
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
 
