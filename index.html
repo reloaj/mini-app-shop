@@ -19,6 +19,7 @@
             --nav-bg: rgba(28, 28, 30, 0.95);
             --border: rgba(255,255,255,0.1);
             --shadow-color: rgba(0,0,0,0.3);
+            --header-bg: #0d1610; /* Темно-зеленый фон для шапки */
         }
 
         body.light-theme {
@@ -30,6 +31,7 @@
             --nav-bg: rgba(255, 255, 255, 0.95);
             --border: rgba(0,0,0,0.1);
             --shadow-color: rgba(0,0,0,0.1);
+            --header-bg: #eaf5eb; /* Светло-зеленый фон для шапки */
         }
 
         /* --- ГЛАВНЫЙ ФИКС --- */
@@ -47,32 +49,31 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ШАПКА CANVAS (v3.4) --- */
+        /* --- ШАПКА V3.5 (КОМПАКТНАЯ И СТАБИЛЬНАЯ) --- */
         header { 
             flex-shrink: 0; 
-            height: 160px; /* Высокая шапка для ветки */
-            background-color: var(--block); /* Цвет фона под веткой */
+            height: 85px; /* Уменьшили высоту в 2 раза */
+            background-color: var(--header-bg); /* Отдельный цвет фона */
             z-index: 20; 
             padding: 0;
-            position: relative;
+            position: relative; /* relative для канваса, но не перекрывает скролл */
             border-bottom: 1px solid var(--border);
-            transition: margin-top 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Тень, чтобы не сливалось */
             overflow: hidden;
         }
-        
-        header.header-hidden { margin-top: -161px; }
 
         /* Канвас на всю шапку */
         #header-canvas {
-            width: 100%; height: 100%; display: block;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; display: block; z-index: 1;
         }
 
         /* Название поверх канваса */
         .brand-overlay { 
-            position: absolute; bottom: 15px; width: 100%; text-align: center;
-            font-weight: 800; font-size: 28px; letter-spacing: 0.5px; color: #fff; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            pointer-events: none; /* Чтобы клики проходили сквозь текст */
+            position: absolute; bottom: 10px; width: 100%; text-align: center;
+            font-weight: 800; font-size: 22px; letter-spacing: 0.5px; color: #fff; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9); /* Тень текста */
+            pointer-events: none; z-index: 2;
         }
 
         nav {
@@ -220,7 +221,7 @@
 
     <div class="app-container">
         
-        <!-- КАНВАС-ШАПКА -->
+        <!-- КАНВАС-ШАПКА (COMPACT STABLE VERSION) -->
         <header id="main-header">
             <canvas id="header-canvas"></canvas>
             <div class="brand-overlay">Cotton Flowers</div>
@@ -700,30 +701,38 @@
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
 
+        // --- УНИВЕРСАЛЬНЫЙ PULL TO REFRESH ДЛЯ ВСЕХ ВКЛАДОК (v1.3) ---
         function setupPTR(page) {
             const spinner = page.querySelector('.ptr-spinner');
-            const mainHeader = document.getElementById('main-header');
             if(!spinner) return;
-            let startY = 0; let lastScrollTop = 0;
+            let startY = 0;
             
-            page.addEventListener('touchstart', e => { if(page.scrollTop === 0) startY = e.touches[0].clientY; }, { passive: false });
-            page.addEventListener('scroll', () => {
-                const st = page.scrollTop;
-                if (st > lastScrollTop && st > 50) mainHeader.classList.add('header-hidden');
-                else if (st < lastScrollTop) mainHeader.classList.remove('header-hidden');
-                lastScrollTop = st;
-            });
+            page.addEventListener('touchstart', e => { 
+                if(page.scrollTop === 0) startY = e.touches[0].clientY; 
+            }, { passive: false });
+
             page.addEventListener('touchmove', e => {
                 const diff = e.touches[0].clientY - startY;
-                if(diff > 0 && page.scrollTop <= 0) { if (e.cancelable) e.preventDefault(); if(diff < 80) spinner.style.height = diff + 'px'; }
+                if(diff > 0 && page.scrollTop <= 0) { 
+                    if (e.cancelable) e.preventDefault();
+                    if(diff < 80) spinner.style.height = diff + 'px'; 
+                }
             }, { passive: false });
+
             page.addEventListener('touchend', e => {
                 if(parseInt(spinner.style.height) > 60) { 
-                    tg.HapticFeedback.impactOccurred('medium'); setTimeout(() => { if(page.id === 'p-home') render(); if(page.id === 'p-cart') renderCartList(); if(page.id === 'p-fav') renderFavs(); spinner.style.height = '0px'; }, 500); 
+                    tg.HapticFeedback.impactOccurred('medium'); 
+                    setTimeout(() => { 
+                        if(page.id === 'p-home') render();
+                        if(page.id === 'p-cart') renderCartList();
+                        if(page.id === 'p-fav') renderFavs();
+                        spinner.style.height = '0px'; 
+                    }, 500); 
                 } else { spinner.style.height = '0px'; }
             });
         }
         
+        // --- СНЕГОПАД (JS) ---
         function createSnowflake() {
             const snowContainer = document.getElementById('snow-container');
             if(!snowContainer) return;
@@ -739,7 +748,7 @@
         }
         setInterval(createSnowflake, 300);
 
-        // --- ГЕНЕРАТОР ШАПКИ С НОБИЛИСОМ И ИГРУШКАМИ ---
+        // --- ГЕНЕРАТОР ШАПКИ (v3.5) ---
         function drawFestiveHeader() {
             const canvas = document.getElementById('header-canvas');
             if(!canvas) return;
@@ -750,105 +759,69 @@
             canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
             ctx.scale(2, 2);
 
-            // Очистка
             ctx.clearRect(0, 0, w, h);
 
-            // 1. РИСУЕМ ВЕТКУ (Spine)
-            const spineY = h * 0.4;
-            const points = [];
-            // Кривая свисающей гирлянды
-            for (let x = 0; x <= w; x += 5) {
-                const y = spineY + Math.sin(x / w * Math.PI) * 40; // Дуга вниз
-                points.push({x, y});
-            }
+            // 1. РИСУЕМ ГУСТУЮ ВЕТКУ (Прямая линия по центру)
+            const spineY = h * 0.5; // Центр шапки
+            const needleColors = ['#4A6E4E', '#5F8575', '#355E3B', '#2F4F4F'];
 
-            // Функция рисования иголки
-            const needleColors = ['#4A6E4E', '#5F8575', '#355E3B', '#2F4F4F']; // Нобилис
-            function drawNeedle(x, y, angle, length) {
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
-                ctx.strokeStyle = needleColors[Math.floor(Math.random() * needleColors.length)];
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-            }
-
-            // Рисуем хвою вокруг кривой
-            points.forEach(p => {
-                // Плотность хвои
-                for (let i = 0; i < 30; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const len = 10 + Math.random() * 20;
-                    // Смещение от центра ветки
-                    const offsetX = (Math.random() - 0.5) * 20; 
-                    const offsetY = (Math.random() - 0.5) * 20;
-                    drawNeedle(p.x + offsetX, p.y + offsetY, angle, len);
+            // Рисуем много иголок вдоль линии
+            for (let x = -20; x <= w + 20; x += 2) {
+                // Случайный разброс по Y (толщина ветки)
+                const y = spineY + (Math.random() - 0.5) * 10;
+                
+                // Рисуем пучок иголок
+                for(let i=0; i<8; i++) {
+                    const angle = (Math.random() - 0.5) * Math.PI * 1.5; // Вверх и вниз
+                    const len = 15 + Math.random() * 25; // Длина иголки
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
+                    ctx.strokeStyle = needleColors[Math.floor(Math.random() * needleColors.length)];
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
                 }
-            });
-
-            // 2. РИСУЕМ ГИРЛЯНДУ (НИТЬ С ОГОНЬКАМИ)
-            ctx.beginPath();
-            ctx.moveTo(0, spineY);
-            for(let i=0; i<points.length; i+=10) {
-                // Нить чуть ниже ветки, провисает
-                const p = points[i];
-                ctx.lineTo(p.x, p.y + 10); 
-            }
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            // Огоньки
-            for(let i=0; i<points.length; i+=25) {
-                const p = points[i];
-                ctx.beginPath();
-                ctx.arc(p.x, p.y + 10 + Math.random()*5, 3, 0, Math.PI*2);
-                ctx.fillStyle = Math.random() > 0.5 ? "#FFD700" : "#FF4500"; // Золотой или Оранжевый
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = ctx.fillStyle;
-                ctx.fill();
-                ctx.shadowBlur = 0; // Сброс
             }
 
-            // 3. РИСУЕМ ИГРУШКИ (ШАРЫ)
+            // 2. ИГРУШКИ СНИЗУ ВЕТКИ
             const ballColors = [
                 {c: '#D4AF37', s: '#F9E076'}, // Gold
                 {c: '#C41E3A', s: '#FF6B6B'}, // Red
-                {c: '#0F52BA', s: '#6FA3EF'}  // Blue
+                {c: '#0F52BA', s: '#6FA3EF'},  // Blue
+                {c: '#E0E0E0', s: '#FFFFFF'}   // Silver
             ];
 
-            // Развешиваем шары случайно
-            for (let i = 20; i < w - 20; i += 60 + Math.random() * 40) {
-                const yBase = spineY + Math.sin(i / w * Math.PI) * 40;
-                const dropLen = 20 + Math.random() * 30; // Длина нитки
+            // Развешиваем шары
+            for (let i = 40; i < w - 40; i += 50 + Math.random() * 60) {
+                const yBase = spineY + 10; // Цепляем к низу ветки
+                const dropLen = 15 + Math.random() * 20; // Короткая нить
                 const ballX = i;
                 const ballY = yBase + dropLen;
-                const r = 12 + Math.random() * 6; // Размер шара
+                const r = 10 + Math.random() * 5; // Небольшие шары
 
                 // Нитка
                 ctx.beginPath();
                 ctx.moveTo(ballX, yBase);
                 ctx.lineTo(ballX, ballY);
-                ctx.strokeStyle = "#DDD";
+                ctx.strokeStyle = "#AAA";
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
                 // Шар
                 const colorPair = ballColors[Math.floor(Math.random() * ballColors.length)];
-                
-                // Градиент для объема
                 const grad = ctx.createRadialGradient(ballX - r/3, ballY - r/3, r/4, ballX, ballY, r);
-                grad.addColorStop(0, colorPair.s); // Блик
-                grad.addColorStop(1, colorPair.c); // Тень
+                grad.addColorStop(0, colorPair.s);
+                grad.addColorStop(1, colorPair.c);
 
                 ctx.beginPath();
                 ctx.arc(ballX, ballY, r, 0, Math.PI * 2);
                 ctx.fillStyle = grad;
                 ctx.fill();
                 
-                // Пипка сверху шара
-                ctx.fillStyle = "#888";
-                ctx.fillRect(ballX - 3, ballY - r, 6, 4);
+                // Крепление
+                ctx.fillStyle = "#666";
+                ctx.fillRect(ballX - 2, ballY - r, 4, 3);
             }
         }
 
