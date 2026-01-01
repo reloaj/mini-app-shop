@@ -19,8 +19,7 @@
             --nav-bg: rgba(28, 28, 30, 0.95);
             --border: rgba(255,255,255,0.1);
             --shadow-color: rgba(0,0,0,0.3);
-            /* Фон шапки: полупрозрачный глубокий хвойный */
-            --header-bg: rgba(15, 26, 20, 0.85); 
+            --header-bg-scrolled: rgba(15, 26, 20, 0.8); /* Фон при скролле */
         }
 
         body.light-theme {
@@ -32,7 +31,7 @@
             --nav-bg: rgba(255, 255, 255, 0.95);
             --border: rgba(0,0,0,0.1);
             --shadow-color: rgba(0,0,0,0.1);
-            --header-bg: rgba(230, 240, 235, 0.85);
+            --header-bg-scrolled: rgba(230, 240, 235, 0.8);
         }
 
         /* --- ГЛАВНЫЙ ФИКС --- */
@@ -50,27 +49,25 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ШАПКА V3.7 (Dynamic Glass Header) --- */
+        /* --- ШАПКА V3.6 (ПРОЗРАЧНАЯ ПРИ СКРОЛЛЕ) --- */
         header { 
-            flex-shrink: 0; 
-            height: 85px; /* Компактная высота */
-            background-color: var(--header-bg);
-            backdrop-filter: blur(12px); /* Эффект матового стекла */
-            -webkit-backdrop-filter: blur(12px);
+            position: fixed; /* Фиксируем шапку */
+            top: 0; left: 0; width: 100%;
+            height: 70px; /* Уменьшено */
+            background-color: transparent; /* Изначально прозрачная */
             z-index: 20; 
             padding: 0;
-            position: relative; 
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4); 
+            border-bottom: 1px solid transparent; /* Граница появляется при скролле */
+            transition: background-color 0.3s, backdrop-filter 0.3s, border-color 0.3s;
             overflow: hidden;
-            
-            /* Плавный переход для фона */
-            transition: background-color 0.3s ease-in-out;
         }
-
-        /* Класс, который делает шапку прозрачной при скролле */
-        header.header-scrolled {
-            background-color: transparent;
+        
+        /* Стиль шапки при прокрутке */
+        header.scrolled {
+            background-color: var(--header-bg-scrolled);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom-color: var(--border);
         }
 
         #header-canvas {
@@ -79,8 +76,8 @@
         }
 
         .brand-overlay { 
-            position: absolute; bottom: 10px; width: 100%; text-align: center;
-            font-weight: 800; font-size: 22px; letter-spacing: 0.5px; color: #fff; 
+            position: absolute; bottom: 8px; width: 100%; text-align: center;
+            font-weight: 800; font-size: 20px; letter-spacing: 0.5px; color: #fff; 
             text-shadow: 0 2px 10px rgba(0,0,0,1);
             pointer-events: none; z-index: 2;
         }
@@ -93,8 +90,11 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
+        /* Страницы теперь имеют отступ сверху, равный высоте шапки */
         .page {
-            display: none; flex-grow: 1; overflow-y: scroll; padding-bottom: 20px;
+            display: none; flex-grow: 1; overflow-y: scroll; 
+            padding-top: 70px; /* Отступ для фиксированной шапки */
+            padding-bottom: 20px;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; 
         }
         .page::after { content: ""; display: block; height: 1px; width: 100%; }
@@ -116,7 +116,7 @@
         }
 
         /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
-        .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); width: 100%; flex-shrink: 0; }
+        .ptr-spinner { position: absolute; top: 0; left: 0; height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; background: var(--bg); width: 100%; }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -230,6 +230,7 @@
 
     <div class="app-container">
         
+        <!-- КАНВАС-ШАПКА (COMPACT REALISTIC VERSION) -->
         <header id="main-header">
             <canvas id="header-canvas"></canvas>
             <div class="brand-overlay">Cotton Flowers</div>
@@ -709,22 +710,18 @@
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
 
-        function setupPage(page) {
+        // --- УНИВЕРСАЛЬНЫЙ PTR + ЛОГИКА ШАПКИ ---
+        function setupScrollLogic(page) {
             const spinner = page.querySelector('.ptr-spinner');
             const mainHeader = document.getElementById('main-header');
             if(!spinner) return;
             let startY = 0;
             
-            // Динамическая шапка
             page.addEventListener('scroll', () => {
-                if(page.scrollTop > 10) {
-                    mainHeader.classList.add('header-scrolled');
-                } else {
-                    mainHeader.classList.remove('header-scrolled');
-                }
+                if (page.scrollTop > 10) mainHeader.classList.add('scrolled');
+                else mainHeader.classList.remove('scrolled');
             });
-
-            // Pull to Refresh
+            
             page.addEventListener('touchstart', e => { if(page.scrollTop === 0) startY = e.touches[0].clientY; }, { passive: false });
             page.addEventListener('touchmove', e => {
                 const diff = e.touches[0].clientY - startY;
@@ -751,18 +748,18 @@
             snow.classList.add('snowflake');
             snow.innerText = '❄';
             snow.style.left = Math.random() * 100 + 'vw';
-            snow.style.animationDuration = Math.random() * 3 + 5 + 's';
-            snow.style.opacity = Math.random() * 0.6 + 0.3;
-            snow.style.fontSize = Math.random() * 8 + 8 + 'px';
+            snow.style.animationDuration = Math.random() * 3 + 4 + 's';
+            snow.style.opacity = Math.random() * 0.7 + 0.3;
+            snow.style.fontSize = Math.random() * 10 + 10 + 'px';
             snowContainer.appendChild(snow);
-            setTimeout(() => { snow.remove(); }, 8000);
+            setTimeout(() => { snow.remove(); }, 7000);
         }
-        setInterval(createSnowflake, 400);
+        setInterval(createSnowflake, 300);
 
         // --- ГЕНЕРАТОР ШАПКИ NOBILIS (Hyper-Realistic v3.6) ---
-        function drawRealisticNobilis() {
+        function drawFestiveHeader() {
             const canvas = document.getElementById('header-canvas');
-            if(!canvas) return;
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const w = canvas.parentElement.offsetWidth;
             const h = canvas.parentElement.offsetHeight;
@@ -770,126 +767,141 @@
             canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
             ctx.scale(2, 2);
 
-            ctx.clearRect(0, 0, w, h);
+            const lights = [];
+            const ballColors = [ {c: '#b8860b', s: '#ffd700'}, {c: '#8b0000', s: '#ff4500'}, {c: '#191970', s: '#4169e1'} ];
+            const needlePalette = ['#2d4a3e', '#416b5a', '#6b9c8a']; // от темного к светлому
 
-            // Палитра Нобилиса (3 слоя)
-            const needlePalette = {
-                dark: ['#1a2f23', '#223d30'], // Глубина
-                mid: ['#2d4a3e', '#416b5a'],   // Основной цвет
-                light: ['#6b9c8a', '#8fbdaf'] // Блики и иней
-            };
-
+            // --- ФУНКЦИИ РИСОВАНИЯ ---
             function drawBranch(startX, startY, angle, length, depth) {
                 if (depth === 0) return;
                 const endX = startX + Math.cos(angle) * length;
                 const endY = startY + Math.sin(angle) * length;
-
-                // Рисуем иголки (3 слоя)
                 const steps = length;
+
+                // Основа ветки (палка)
+                ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(endX, endY);
+                ctx.strokeStyle = '#4a2e1d'; ctx.lineWidth = depth * 1.5; ctx.stroke();
+                
+                // Иголки
                 for (let i = 0; i < steps; i++) {
                     const t = i / steps;
-                    const x = startX + (endX - startX) * t;
-                    const y = startY + (endY - startY) * t;
-
-                    // Слой 1: Темный, широкий разброс
-                    for(let k=0; k<2; k++) {
-                        const needleAngle = angle + (Math.random() - 0.5) * 2.5;
-                        ctx.beginPath();
-                        ctx.moveTo(x, y);
-                        ctx.lineTo(x + Math.cos(needleAngle) * (15 + Math.random()*20), y + Math.sin(needleAngle) * (15 + Math.random()*20));
-                        ctx.strokeStyle = needlePalette.dark[Math.floor(Math.random()*2)];
-                        ctx.lineWidth = 1.5; ctx.stroke();
-                    }
-                    // Слой 2: Средний, основной
-                    for(let k=0; k<3; k++) {
-                        const needleAngle = angle + (Math.random() - 0.5) * 2;
-                        ctx.beginPath();
-                        ctx.moveTo(x, y);
-                        ctx.lineTo(x + Math.cos(needleAngle) * (10 + Math.random()*15), y + Math.sin(needleAngle) * (10 + Math.random()*15));
-                        ctx.strokeStyle = needlePalette.mid[Math.floor(Math.random()*2)];
-                        ctx.lineWidth = 1.2; ctx.stroke();
+                    const cx = startX + (endX - startX) * t;
+                    const cy = startY + (endY - startY) * t;
+                    for (let layer = 0; layer < 2; layer++) {
+                        const needleAngle = angle + (Math.random() - 0.5) * 1.8;
+                        const needleLen = (1 - t) * 20 + 5;
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(needleAngle) * needleLen, cy + Math.sin(needleAngle) * needleLen);
+                        ctx.strokeStyle = needlePalette[layer]; ctx.lineWidth = 1; ctx.stroke();
                     }
                 }
                 
-                // Рекурсия для дочерних веток
+                // Светлые иголки (верхний слой)
+                 for (let i = 0; i < steps; i+=2) {
+                    const t = i / steps;
+                    const cx = startX + (endX - startX) * t;
+                    const cy = startY + (endY - startY) * t;
+                    const needleAngle = angle + (Math.random() - 0.5) * 1.5;
+                    const needleLen = (1 - t) * 15 + 5;
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(needleAngle) * needleLen, cy + Math.sin(needleAngle) * needleLen);
+                    ctx.strokeStyle = needlePalette[2]; ctx.lineWidth = 1; ctx.stroke();
+                }
+
                 if (depth > 1) {
-                    const subBranches = 2 + Math.floor(Math.random() * 2);
-                    for (let i = 0; i < subBranches; i++) {
-                        const pos = 0.3 + Math.random() * 0.7;
-                        const subAngle = angle + (Math.random() - 0.5) * 1.2;
-                        drawBranch(startX + (endX - startX) * pos, startY + (endY - startY) * pos, subAngle, length * 0.7, depth - 1);
+                    const branches = 3 + Math.floor(Math.random()*3);
+                    for(let i=0; i<branches; i++) {
+                       const pos = 0.2 + Math.random() * 0.7;
+                       const subAngle = angle + (Math.random() - 0.5) * 1.2;
+                       drawBranch(startX + (endX-startX)*pos, startY+(endY-startY)*pos, subAngle, length * 0.6, depth - 1);
                     }
                 }
             }
             
-            // ОСНОВНАЯ КОМПОЗИЦИЯ
-            const mainY = h * 0.45;
-            drawBranch(-50, mainY, 0.05, w + 100, 3); // Главная ветка
+            function drawSnow(branchPoints) {
+                ctx.fillStyle = 'rgba(240, 248, 255, 0.6)'; // Alice blue
+                branchPoints.forEach(p => {
+                    for(let i=0; i<3; i++) { // Плотность снега
+                        if(Math.random() > 0.5) {
+                            ctx.beginPath();
+                            ctx.arc(p.x + (Math.random()-0.5)*20, p.y + (Math.random()-0.5)*10 - 5, Math.random()*1.5, 0, Math.PI*2);
+                            ctx.fill();
+                        }
+                    }
+                });
+            }
 
-            // СНЕЖНАЯ ПУДРА
-            ctx.globalAlpha = 0.6;
-            for(let i=0; i<w; i+=2) {
-                if (Math.random() > 0.5) {
-                    const x = i;
-                    const y = mainY + Math.sin(i / w * Math.PI) * 10 + (Math.random() - 0.5) * 30; // Поверх веток
-                    ctx.beginPath();
-                    ctx.arc(x, y, Math.random() * 1.5, 0, Math.PI * 2);
-                    ctx.fillStyle = Math.random() > 0.3 ? '#FFFFFF' : '#d4f0ff';
-                    ctx.fill();
+            function drawOrnaments(branchPoints) {
+                const numBalls = 6;
+                for (let i = 0; i < numBalls; i++) {
+                    const p = branchPoints[Math.floor(Math.random() * branchPoints.length)];
+                    const r = 6 + Math.random() * 4;
+                    const drop = 10 + Math.random() * 10;
+                    const ballY = p.y + drop;
+
+                    // Проверка, чтобы шар не вылезал за шапку
+                    if (ballY + r > h - 5) continue;
+                    
+                    const color = ballColors[Math.floor(Math.random() * ballColors.length)];
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, ballY);
+                    ctx.strokeStyle = "rgba(200,200,200,0.5)"; ctx.stroke();
+                    
+                    const grad = ctx.createRadialGradient(p.x - r/3, ballY - r/3, r/4, p.x, ballY, r);
+                    grad.addColorStop(0, color.s); grad.addColorStop(1, color.c);
+                    ctx.beginPath(); ctx.arc(p.x, ballY, r, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
                 }
             }
-            ctx.globalAlpha = 1.0;
 
-            // ГИРЛЯНДА
-            const lightColors = ['#ffd700', '#ff4500', '#00bfff', '#ff69b4'];
-            for(let i=0; i<w; i+= 30 + Math.random()*20) {
-                const x = i;
-                const y = mainY + Math.sin(i / 100) * 15 + (Math.random() - 0.5) * 15;
-                const r = 1.5 + Math.random();
-                const color = lightColors[Math.floor(Math.random() * lightColors.length)];
+            // --- ГЛАВНАЯ ЛОГИКА ---
+            // 1. Создаем путь основной ветки
+            const mainBranchPoints = [];
+            for (let x = -20; x <= w + 20; x += 5) {
+                mainBranchPoints.push({ x, y: h * 0.4 + Math.sin(x / 100) * 10 });
+            }
+            
+            // 2. Рисуем статичные части
+            mainBranchPoints.forEach(p => drawBranch(p.x, p.y, (Math.random() - 0.5) * 0.1, 80, 2)); // Основные лапы
+            drawSnow(mainBranchPoints);
+            drawOrnaments(mainBranchPoints);
 
-                ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI*2);
-                ctx.fillStyle = color;
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 10;
-                ctx.fill();
+            // 3. Создаем огоньки для анимации
+            mainBranchPoints.forEach((p, i) => {
+                if (i % 20 === 0) { // Плотность огней
+                    lights.push({ x: p.x, y: p.y, phase: Math.random() * Math.PI * 2, color: Math.random() > 0.3 ? '#FFD700' : '#FFF' });
+                }
+            });
+            
+            // 4. Запускаем анимацию огоньков
+            function animateLights() {
+                // Очищаем только область огней для производительности
+                ctx.clearRect(0, 0, w, h);
+                
+                // Перерисовываем статичные части
+                mainBranchPoints.forEach(p => drawBranch(p.x, p.y, (Math.random() - 0.5) * 0.1, 80, 2));
+                drawSnow(mainBranchPoints);
+                drawOrnaments(mainBranchPoints);
+
+                // Рисуем мерцающие огни
+                lights.forEach(light => {
+                    const brightness = Math.abs(Math.sin(Date.now() * 0.002 + light.phase));
+                    ctx.beginPath();
+                    ctx.arc(light.x, light.y, 2 * brightness, 0, Math.PI * 2);
+                    ctx.fillStyle = light.color;
+                    ctx.shadowColor = light.color;
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.fill();
+                });
                 ctx.shadowBlur = 0;
+                requestAnimationFrame(animateLights);
             }
-
-            // ИГРУШКИ (ШАРЫ)
-            const ballColors = [{c: '#b8860b', s: '#ffd700'}, {c: '#8b0000', s: '#ff4500'}];
-            for (let i = 0; i < 3; i++) {
-                const x = (w / 3) * i + Math.random() * 40;
-                const y = mainY + 10; // Цепляем к низу ветки
-                const r = 8 + Math.random() * 3;
-                const drop = 15 + Math.random() * 10;
-                if (y + drop + r > h) continue; // Не выходить за край
-
-                // Нить
-                ctx.beginPath();
-                ctx.moveTo(x, y); ctx.lineTo(x, y + drop);
-                ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 1; ctx.stroke();
-
-                const color = ballColors[i % 2];
-                const grad = ctx.createRadialGradient(x - r/3, y + drop - r/3, r/4, x, y + drop, r);
-                grad.addColorStop(0, color.s); grad.addColorStop(1, color.c);
-                ctx.beginPath();
-                ctx.arc(x, y + drop, r, 0, Math.PI * 2);
-                ctx.fillStyle = grad; ctx.fill();
-                ctx.fillStyle = "#666";
-                ctx.fillRect(x - 2, y + drop - r - 1, 4, 2);
-            }
+            
+            animateLights();
         }
 
-        window.addEventListener('load', () => {
-            drawRealisticNobilis();
-            document.querySelectorAll('.page').forEach(page => setupPage(page));
-            render();
-            updateCartQuantities();
-        });
-        window.addEventListener('resize', drawRealisticNobilis);
+        window.addEventListener('load', drawFestiveHeader);
+        window.addEventListener('resize', drawFestiveHeader);
 
+        document.querySelectorAll('.page').forEach(page => setupScrollLogic(page));
+        render();
+        updateCartQuantities();
     </script>
 </body>
 </html>
