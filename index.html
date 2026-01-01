@@ -47,32 +47,40 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ШАПКА С ВЕТКОЙ (v3.2) --- */
+        /* --- ШАПКА С ТВОЕЙ ГИРЛЯНДОЙ (v3.3) --- */
         header { 
             flex-shrink: 0; 
-            height: 140px; /* Высокая шапка */
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1576014131795-d440191a8e8b?q=80&w=1000&auto=format&fit=crop'); 
-            background-size: cover;
-            background-position: center 30%; /* Центрируем ветку */
+            height: 150px; /* Высота под гирлянду */
+            background-color: #000; /* Черный фон, чтобы сливалось с картинкой */
+            
+            /* ССЫЛКА НА КАРТИНКУ (Файл должен лежать рядом с index.html) */
+            background-image: url('header_new.png'); 
+            
+            background-size: cover; /* Растягиваем */
+            background-position: center center;
+            background-repeat: no-repeat;
+            
             z-index: 20; 
             padding: 0 20px;
             display: flex;
             align-items: flex-end; /* Текст внизу */
             border-bottom: 1px solid var(--border);
             
-            /* Анимация скрытия */
+            /* Анимация скрытия при скролле */
             transition: margin-top 0.3s ease-in-out;
         }
         
         /* Класс для скрытия шапки */
         header.header-hidden {
-            margin-top: -141px; /* Скрываем вверх полностью */
+            margin-top: -151px; /* Скрываем вверх полностью */
         }
 
         .brand { 
             font-weight: 800; font-size: 28px; letter-spacing: 0.5px; color: #fff; 
-            margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+            margin-bottom: 20px; 
+            text-shadow: 0 2px 15px rgba(0,0,0,1); /* Сильная тень, чтобы читалось на ветках */
             width: 100%;
+            text-align: center; /* Центрируем название */
         }
 
         nav {
@@ -228,7 +236,7 @@
 
     <div class="app-container">
         
-        <!-- КРАСИВАЯ ШАПКА С ЕЛКОЙ -->
+        <!-- КРАСИВАЯ ШАПКА С ЕЛКОЙ (ЗАМЕНЯЕМ НА ФАЙЛ header_new.png) -->
         <header id="main-header">
             <div class="brand">Cotton Flowers</div>
         </header>
@@ -725,9 +733,10 @@
                 const st = page.scrollTop;
                 
                 // Скрываем шапку при скролле вниз, показываем при скролле вверх
+                // Но только если мы не в самом верху (чтобы не прыгало)
                 if (st > lastScrollTop && st > 50) {
                     mainHeader.classList.add('header-hidden');
-                } else {
+                } else if (st < lastScrollTop) {
                     mainHeader.classList.remove('header-hidden');
                 }
                 lastScrollTop = st;
