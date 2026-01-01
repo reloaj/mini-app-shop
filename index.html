@@ -32,7 +32,7 @@
             --shadow-color: rgba(0,0,0,0.1);
         }
 
-        /* --- ГЛАВНЫЙ ФИКС SCROLL v1.3 --- */
+        /* --- ГЛАВНЫЙ ФИКС --- */
         html { height: 100%; overflow: hidden; }
         body {
             height: 100%; margin: 0; padding: 0; overflow: hidden;
@@ -47,41 +47,33 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ШАПКА С РИСОВАННОЙ ВЕТКОЙ --- */
+        /* --- ШАПКА С ВЕТКОЙ (v3.2) --- */
         header { 
             flex-shrink: 0; 
-            background: var(--bg);
+            height: 140px; /* Высокая шапка */
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1576014131795-d440191a8e8b?q=80&w=1000&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center 30%; /* Центрируем ветку */
             z-index: 20; 
-            padding: 0;
-            height: 100px; /* Чуть выше для ветки */
-            border-bottom: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Канвас для ветки */
-        #nobilis-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* Текст бренда поверх ветки */
-        .header-content {
-            position: relative;
-            z-index: 2;
+            padding: 0 20px;
             display: flex;
-            align-items: center;
-            justify-content: flex-end; /* Текст справа, т.к. ветка слева */
-            height: 100%;
-            padding-right: 20px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* Тень чтобы читалось на ветке */
+            align-items: flex-end; /* Текст внизу */
+            border-bottom: 1px solid var(--border);
+            
+            /* Анимация скрытия */
+            transition: margin-top 0.3s ease-in-out;
         }
         
-        .brand { font-weight: 800; font-size: 24px; letter-spacing: 0.5px; color: #fff; }
+        /* Класс для скрытия шапки */
+        header.header-hidden {
+            margin-top: -141px; /* Скрываем вверх полностью */
+        }
+
+        .brand { 
+            font-weight: 800; font-size: 28px; letter-spacing: 0.5px; color: #fff; 
+            margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+            width: 100%;
+        }
 
         nav {
             flex-shrink: 0; height: 56px;
@@ -117,8 +109,8 @@
 
         @keyframes fall {
             0% { transform: translateY(-10px) translateX(0px) rotate(0deg); }
-            50% { transform: translateY(55vh) translateX(15px) rotate(180deg); }
-            100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
+            50% { transform: translateY(55vh) translateX(10px) rotate(180deg); }
+            100% { transform: translateY(110vh) translateX(-10px) rotate(360deg); }
         }
 
         /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
@@ -236,12 +228,9 @@
 
     <div class="app-container">
         
-        <!-- ХУДОЖЕСТВЕННАЯ ШАПКА (CANVAS) -->
-        <header>
-            <canvas id="nobilis-canvas"></canvas>
-            <div class="header-content">
-                <div class="brand">Cotton Flowers</div>
-            </div>
+        <!-- КРАСИВАЯ ШАПКА С ЕЛКОЙ -->
+        <header id="main-header">
+            <div class="brand">Cotton Flowers</div>
         </header>
 
         <div id="p-home" class="page active">
@@ -722,12 +711,27 @@
         // --- УНИВЕРСАЛЬНЫЙ PULL TO REFRESH ДЛЯ ВСЕХ ВКЛАДОК (v1.3) ---
         function setupPTR(page) {
             const spinner = page.querySelector('.ptr-spinner');
+            const mainHeader = document.getElementById('main-header');
             if(!spinner) return;
             let startY = 0;
+            let lastScrollTop = 0;
             
             page.addEventListener('touchstart', e => { 
                 if(page.scrollTop === 0) startY = e.touches[0].clientY; 
             }, { passive: false });
+
+            // ЛОГИКА СКРОЛЛА ШАПКИ И PTR
+            page.addEventListener('scroll', () => {
+                const st = page.scrollTop;
+                
+                // Скрываем шапку при скролле вниз, показываем при скролле вверх
+                if (st > lastScrollTop && st > 50) {
+                    mainHeader.classList.add('header-hidden');
+                } else {
+                    mainHeader.classList.remove('header-hidden');
+                }
+                lastScrollTop = st;
+            });
 
             page.addEventListener('touchmove', e => {
                 const diff = e.touches[0].clientY - startY;
@@ -766,70 +770,8 @@
         }
         setInterval(createSnowflake, 300);
 
-        // --- РИСОВАНИЕ ВЕТКИ НОБИЛИСА (CANVAS) ---
-        function drawNobilisHeader() {
-            const canvas = document.getElementById('nobilis-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Настройка размера Canvas
-            const width = canvas.parentElement.offsetWidth;
-            const height = canvas.parentElement.offsetHeight;
-            canvas.width = width * 2; // Retina fix
-            canvas.height = height * 2;
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            ctx.scale(2, 2);
-
-            // Очистка
-            ctx.clearRect(0, 0, width, height);
-
-            // Параметры ветки
-            const startX = -20;
-            const startY = -20;
-            const endX = width * 0.6; // Ветка идет до 60% ширины
-            const endY = height * 0.8;
-
-            // Цвета хвои (Нобилис: серо-голубо-зеленый)
-            const needleColors = ['#4A6E4E', '#5F8575', '#355E3B', '#2F4F4F'];
-
-            // Функция рисования иголки
-            function drawNeedle(x, y, angle, length, width) {
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                const tipX = x + Math.cos(angle) * length;
-                const tipY = y + Math.sin(angle) * length;
-                ctx.lineTo(tipX, tipY);
-                ctx.strokeStyle = needleColors[Math.floor(Math.random() * needleColors.length)];
-                ctx.lineWidth = width;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-            }
-
-            // Рисуем основную ветку (изогнутую)
-            const steps = 150;
-            for (let i = 0; i < steps; i++) {
-                const t = i / steps;
-                // Кривая Безье вручную
-                const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * (width * 0.2) + t * t * endX;
-                const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * (height * 0.1) + t * t * endY;
-
-                // Рисуем пучок иголок в каждой точке
-                const clusterSize = 10 + Math.random() * 5;
-                for (let j = 0; j < clusterSize; j++) {
-                    const angleBase = Math.atan2(endY - startY, endX - startX); // Направление ветки
-                    const angle = angleBase + (Math.random() - 0.5) * 3; // Разброс иголок
-                    const length = 15 + Math.random() * 20; // Длина иголок
-                    drawNeedle(x, y, angle, length, 1.5);
-                }
-            }
-        }
-
-        // Рисуем при загрузке
-        window.addEventListener('load', drawNobilisHeader);
-        // Перерисовываем при повороте экрана
-        window.addEventListener('resize', drawNobilisHeader);
-
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
+
         render();
         updateCartQuantities();
     </script>
