@@ -19,7 +19,8 @@
             --nav-bg: rgba(28, 28, 30, 0.95);
             --border: rgba(255,255,255,0.1);
             --shadow-color: rgba(0,0,0,0.3);
-            --header-bg: #0d1610; /* Темно-зеленый фон для шапки */
+            /* Фон шапки: полупрозрачный глубокий хвойный */
+            --header-bg: rgba(15, 26, 20, 0.9); 
         }
 
         body.light-theme {
@@ -31,7 +32,7 @@
             --nav-bg: rgba(255, 255, 255, 0.95);
             --border: rgba(0,0,0,0.1);
             --shadow-color: rgba(0,0,0,0.1);
-            --header-bg: #eaf5eb; /* Светло-зеленый фон для шапки */
+            --header-bg: rgba(230, 240, 235, 0.9);
         }
 
         /* --- ГЛАВНЫЙ ФИКС --- */
@@ -49,30 +50,33 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden;
         }
 
-        /* --- ШАПКА V3.5 (КОМПАКТНАЯ И СТАБИЛЬНАЯ) --- */
+        /* --- ШАПКА V3.6 (Compact & Realistic) --- */
         header { 
             flex-shrink: 0; 
-            height: 85px; /* Уменьшили высоту в 2 раза */
-            background-color: var(--header-bg); /* Отдельный цвет фона */
+            height: 70px; /* Уменьшено на 20% */
+            background-color: var(--header-bg);
+            backdrop-filter: blur(10px); /* Эффект матового стекла */
+            -webkit-backdrop-filter: blur(10px);
             z-index: 20; 
             padding: 0;
-            position: relative; /* relative для канваса, но не перекрывает скролл */
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Тень, чтобы не сливалось */
+            position: relative; 
+            
+            /* Четкое разделение снизу */
+            border-bottom: 1px solid rgba(255,255,255,0.15); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+            
             overflow: hidden;
         }
 
-        /* Канвас на всю шапку */
         #header-canvas {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; display: block; z-index: 1;
         }
 
-        /* Название поверх канваса */
         .brand-overlay { 
-            position: absolute; bottom: 10px; width: 100%; text-align: center;
-            font-weight: 800; font-size: 22px; letter-spacing: 0.5px; color: #fff; 
-            text-shadow: 0 2px 8px rgba(0,0,0,0.9); /* Тень текста */
+            position: absolute; bottom: 8px; width: 100%; text-align: center;
+            font-weight: 800; font-size: 20px; letter-spacing: 0.5px; color: #fff; 
+            text-shadow: 0 2px 10px rgba(0,0,0,1); /* Сильная тень для читаемости */
             pointer-events: none; z-index: 2;
         }
 
@@ -221,7 +225,7 @@
 
     <div class="app-container">
         
-        <!-- КАНВАС-ШАПКА (COMPACT STABLE VERSION) -->
+        <!-- КАНВАС-ШАПКА (COMPACT REALISTIC VERSION) -->
         <header id="main-header">
             <canvas id="header-canvas"></canvas>
             <div class="brand-overlay">Cotton Flowers</div>
@@ -701,16 +705,13 @@
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;border-radius:50%">`;
         }
 
-        // --- УНИВЕРСАЛЬНЫЙ PULL TO REFRESH ДЛЯ ВСЕХ ВКЛАДОК (v1.3) ---
         function setupPTR(page) {
             const spinner = page.querySelector('.ptr-spinner');
             if(!spinner) return;
             let startY = 0;
-            
             page.addEventListener('touchstart', e => { 
                 if(page.scrollTop === 0) startY = e.touches[0].clientY; 
             }, { passive: false });
-
             page.addEventListener('touchmove', e => {
                 const diff = e.touches[0].clientY - startY;
                 if(diff > 0 && page.scrollTop <= 0) { 
@@ -718,21 +719,17 @@
                     if(diff < 80) spinner.style.height = diff + 'px'; 
                 }
             }, { passive: false });
-
             page.addEventListener('touchend', e => {
                 if(parseInt(spinner.style.height) > 60) { 
                     tg.HapticFeedback.impactOccurred('medium'); 
                     setTimeout(() => { 
-                        if(page.id === 'p-home') render();
-                        if(page.id === 'p-cart') renderCartList();
-                        if(page.id === 'p-fav') renderFavs();
+                        if(page.id === 'p-home') render(); if(page.id === 'p-cart') renderCartList(); if(page.id === 'p-fav') renderFavs(); 
                         spinner.style.height = '0px'; 
                     }, 500); 
                 } else { spinner.style.height = '0px'; }
             });
         }
         
-        // --- СНЕГОПАД (JS) ---
         function createSnowflake() {
             const snowContainer = document.getElementById('snow-container');
             if(!snowContainer) return;
@@ -748,8 +745,8 @@
         }
         setInterval(createSnowflake, 300);
 
-        // --- ГЕНЕРАТОР ШАПКИ (v3.5) ---
-        function drawFestiveHeader() {
+        // --- ГЕНЕРАТОР ШАПКИ NOBILIS (Hyper-Realistic v3.6) ---
+        function drawRealisticNobilis() {
             const canvas = document.getElementById('header-canvas');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -761,72 +758,111 @@
 
             ctx.clearRect(0, 0, w, h);
 
-            // 1. РИСУЕМ ГУСТУЮ ВЕТКУ (Прямая линия по центру)
-            const spineY = h * 0.5; // Центр шапки
-            const needleColors = ['#4A6E4E', '#5F8575', '#355E3B', '#2F4F4F'];
+            // Палитра Нобилиса (от темного к светлому голубо-зеленому)
+            const needlePalette = ['#1a2f23', '#2d4a3e', '#416b5a', '#6b9c8a', '#8fbdaf']; 
 
-            // Рисуем много иголок вдоль линии
-            for (let x = -20; x <= w + 20; x += 2) {
-                // Случайный разброс по Y (толщина ветки)
-                const y = spineY + (Math.random() - 0.5) * 10;
-                
-                // Рисуем пучок иголок
-                for(let i=0; i<8; i++) {
-                    const angle = (Math.random() - 0.5) * Math.PI * 1.5; // Вверх и вниз
-                    const len = 15 + Math.random() * 25; // Длина иголки
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
-                    ctx.strokeStyle = needleColors[Math.floor(Math.random() * needleColors.length)];
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
+            // Функция рисования игольчатой ветки
+            function drawBranch(startX, startY, angle, length, width, depth) {
+                if (depth === 0) return;
+
+                const endX = startX + Math.cos(angle) * length;
+                const endY = startY + Math.sin(angle) * length;
+
+                // Рисуем иголки вдоль линии ветки
+                const steps = length / 2; // Плотность
+                for (let i = 0; i < steps; i++) {
+                    const t = i / steps;
+                    const cx = startX + (endX - startX) * t;
+                    const cy = startY + (endY - startY) * t;
+
+                    // Наслаиваем иголки (задний план -> передний план)
+                    for (let layer = 0; layer < 3; layer++) {
+                        const needleAngle = angle + (Math.random() - 0.5) * 2.5; // Хаотичный угол
+                        const needleLen = 10 + Math.random() * 15;
+                        const color = needlePalette[Math.floor(Math.random() * (layer + 2))]; // Темнее в глубине
+
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.lineTo(cx + Math.cos(needleAngle) * needleLen, cy + Math.sin(needleAngle) * needleLen);
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 1.5;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+                }
+
+                // Рекурсия для ответвлений (только для основной ветки)
+                if (depth > 1) {
+                    const subBranches = 3;
+                    for (let i = 0; i < subBranches; i++) {
+                        const subAngle = angle + (Math.random() - 0.5) * 1.5;
+                        const subLen = length * 0.6;
+                        const pos = Math.random();
+                        const sx = startX + (endX - startX) * pos;
+                        const sy = startY + (endY - startY) * pos;
+                        drawBranch(sx, sy, subAngle, subLen, width * 0.7, depth - 1);
+                    }
                 }
             }
 
-            // 2. ИГРУШКИ СНИЗУ ВЕТКИ
+            // РИСУЕМ ОСНОВНУЮ КОМПОЗИЦИЮ
+            // Главная ветка идет слева направо с изгибом
+            const mainY = h * 0.4;
+            
+            // 1. Задние ветки (темные, для объема)
+            drawBranch(-20, mainY + 20, -0.2, w * 0.5, 4, 1);
+            drawBranch(w, mainY + 30, 3.2, w * 0.6, 4, 1);
+
+            // 2. Основная ветка (жирная)
+            drawBranch(-50, mainY, 0.1, w * 1.2, 5, 2);
+
+            // 3. Дополнительные пушистые лапы сверху и снизу
+            for(let i=0; i<w; i+=80) {
+               drawBranch(i, mainY, 1.5, 60, 2, 1); // Вниз
+               drawBranch(i + 40, mainY, -1.5, 40, 2, 1); // Вверх
+            }
+
+            // 4. ИГРУШКИ (ШАРЫ)
             const ballColors = [
-                {c: '#D4AF37', s: '#F9E076'}, // Gold
-                {c: '#C41E3A', s: '#FF6B6B'}, // Red
-                {c: '#0F52BA', s: '#6FA3EF'},  // Blue
-                {c: '#E0E0E0', s: '#FFFFFF'}   // Silver
+                {c: '#b8860b', s: '#ffd700'}, // Gold
+                {c: '#8b0000', s: '#ff4500'}, // Deep Red
+                {c: '#191970', s: '#4169e1'}  // Royal Blue
             ];
 
-            // Развешиваем шары
-            for (let i = 40; i < w - 40; i += 50 + Math.random() * 60) {
-                const yBase = spineY + 10; // Цепляем к низу ветки
-                const dropLen = 15 + Math.random() * 20; // Короткая нить
-                const ballX = i;
-                const ballY = yBase + dropLen;
-                const r = 10 + Math.random() * 5; // Небольшие шары
+            // Вешаем шары на "ниточках"
+            const numBalls = 5;
+            for (let i = 0; i < numBalls; i++) {
+                const x = (w / numBalls) * i + (w / numBalls) / 2 + (Math.random()-0.5)*30;
+                const y = mainY + 15;
+                const r = 8 + Math.random() * 4;
+                const drop = 15 + Math.random() * 20;
 
-                // Нитка
+                // Нить
                 ctx.beginPath();
-                ctx.moveTo(ballX, yBase);
-                ctx.lineTo(ballX, ballY);
-                ctx.strokeStyle = "#AAA";
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, y + drop);
+                ctx.strokeStyle = "rgba(255,255,255,0.5)";
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
                 // Шар
-                const colorPair = ballColors[Math.floor(Math.random() * ballColors.length)];
-                const grad = ctx.createRadialGradient(ballX - r/3, ballY - r/3, r/4, ballX, ballY, r);
-                grad.addColorStop(0, colorPair.s);
-                grad.addColorStop(1, colorPair.c);
+                const color = ballColors[Math.floor(Math.random() * ballColors.length)];
+                const grad = ctx.createRadialGradient(x - r/3, y + drop - r/3, r/4, x, y + drop, r);
+                grad.addColorStop(0, color.s);
+                grad.addColorStop(1, color.c);
 
                 ctx.beginPath();
-                ctx.arc(ballX, ballY, r, 0, Math.PI * 2);
+                ctx.arc(x, y + drop, r, 0, Math.PI * 2);
                 ctx.fillStyle = grad;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = color.s;
                 ctx.fill();
-                
-                // Крепление
-                ctx.fillStyle = "#666";
-                ctx.fillRect(ballX - 2, ballY - r, 4, 3);
+                ctx.shadowBlur = 0;
             }
         }
 
-        window.addEventListener('load', drawFestiveHeader);
-        window.addEventListener('resize', drawFestiveHeader);
+        window.addEventListener('load', drawRealisticNobilis);
+        window.addEventListener('resize', drawRealisticNobilis);
 
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
         render();
