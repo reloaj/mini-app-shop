@@ -1,3 +1,4 @@
+<!-- VERSION 2.0: Added Rounded Design, Promo Codes, Delivery Time -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -57,15 +58,18 @@
             display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative;
         }
 
-        /* --- ШАПКА V3.8 (Elegant Font) --- */
+        /* --- ШАПКА V2.0 (Уменьшена и закруглена) --- */
         header { 
             flex-shrink: 0; 
-            height: 70px; 
+            height: 63px; /* Уменьшено на 10% */
             background-color: var(--header-glass);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 20; padding: 0; position: absolute; top: 0; left: 0; width: 100%;
             border-bottom: 1px solid rgba(255,255,255,0.1); 
             overflow: hidden;
+            /* Закругление снизу как у современных приложений */
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         #header-canvas {
@@ -74,41 +78,39 @@
         }
 
         .brand-overlay { 
-            position: absolute; bottom: 10px; width: 100%; text-align: center;
-            /* Новый шрифт */
+            position: absolute; bottom: 8px; width: 100%; text-align: center;
             font-family: 'Playfair Display', serif;
             font-style: italic;
             font-weight: 600; 
-            font-size: 26px; 
+            font-size: 24px; /* Чуть уменьшен шрифт */
             letter-spacing: 1px; 
             color: #fff; 
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); 
             pointer-events: none; z-index: 2;
         }
 
-        /* --- НИЖНЯЯ ПАНЕЛЬ V3.8 (Glass & Taller) --- */
+        /* --- НИЖНЯЯ ПАНЕЛЬ V2.0 (Закруглена сверху) --- */
         nav {
             flex-shrink: 0; 
-            height: 70px; /* Увеличено на 15-20% */
+            height: 70px; 
             background: var(--nav-glass); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute; bottom: 0; left: 0; width: 100%;
+            /* Закругление сверху */
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
         }
 
-        /* Чтобы контент прокручивался ПОД шапкой и ПОД меню */
         .page {
             display: none; 
-            width: 100%; height: 100%; /* На весь экран */
+            width: 100%; height: 100%; 
             overflow-y: scroll; 
-            
-            /* Отступы, чтобы контент не перекрывался барами в начале/конце */
-            padding-top: 80px; 
+            padding-top: 75px; /* Отступ под новую шапку */
             padding-bottom: 90px; 
             box-sizing: border-box;
-
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
@@ -144,7 +146,7 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        .search-wrap { padding: 0 16px 12px 16px; /* Чуть меньше паддинг сверху т.к. есть отступ страницы */ }
+        .search-wrap { padding: 0 16px 12px 16px; }
         .search-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; }
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
@@ -213,8 +215,17 @@
         .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; }
 
         .input-group { position: relative; margin-bottom: 12px; }
-        .checkout-input, .checkout-textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; }
+        .checkout-input, .checkout-textarea, .checkout-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; }
         .checkout-textarea { resize: vertical; min-height: 80px; }
+        .checkout-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238E8E93%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 12px auto; }
+
+        /* Стиль для поля промокода */
+        .promo-wrap { display: flex; gap: 8px; margin-bottom: 15px; }
+        .promo-btn { background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0 15px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .promo-status { font-size: 13px; margin-top: -8px; margin-bottom: 12px; }
+        .promo-success { color: var(--green); }
+        .promo-error { color: var(--red); }
+
         .input-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-sec); margin-bottom: 5px; }
         #address-suggestions { position: absolute; top: 100%; left: 0; right: 0; z-index: 10; background: var(--block); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px var(--shadow-color); max-height: 200px; overflow-y: auto; }
         .suggestion-item { padding: 10px 12px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--border); color: var(--text); }
@@ -243,7 +254,7 @@
 
     <div class="app-container">
         
-        <!-- КАНВАС-ШАПКА (ELEGANT FONT & FROSTY GLASS) -->
+        <!-- КАНВАС-ШАПКА (V2.0: ELEGANT, FROSTY & ROUNDED) -->
         <header id="main-header">
             <canvas id="header-canvas"></canvas>
             <div class="brand-overlay">Cotton Flowers</div>
@@ -306,7 +317,7 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ (СТЕКЛО, УВЕЛИЧЕННАЯ) -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ V2.0 (Закруглена сверху) -->
         <nav>
             <button class="nav-item active" onclick="go('home', this)">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -352,6 +363,7 @@
         <img id="lightbox-img" src="">
     </div>
 
+    <!-- МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА V2.0 -->
     <div id="checkout-modal">
         <div style="padding: 20px;">
             <div style="display:flex; align-items:center; margin-bottom: 20px;">
@@ -363,13 +375,35 @@
             <form id="order-form" onsubmit="event.preventDefault(); submitOrder();">
                 <div class="input-label">📞 Номер телефона получателя</div>
                 <input type="tel" class="checkout-input" id="phone-input" placeholder="+7 (XXX) XXX-XX-XX" required oninput="formatPhone(this)" maxlength="18">
+                
                 <div class="input-label">📍 Адрес доставки</div>
                 <div class="input-group">
                     <input type="text" class="checkout-input" id="address-input" placeholder="Город, Улица, Дом, Квартира" required>
                     <div id="address-suggestions"></div> 
                 </div>
+
+                <!-- NEW: Время доставки -->
+                <div class="input-label">🕒 Время доставки</div>
+                <div class="input-group">
+                    <select class="checkout-select" id="delivery-time">
+                        <option value="asap">⚡ Как можно скорее</option>
+                        <option value="today_evening">🌙 Сегодня вечером (18:00 - 21:00)</option>
+                        <option value="tomorrow">📅 Завтра (в течение дня)</option>
+                        <option value="call_me">📞 Уточнить по телефону</option>
+                    </select>
+                </div>
+
                 <div class="input-label">💬 Комментарий к заказу</div>
-                <textarea class="checkout-textarea" id="comment-input" placeholder="Например: номер отправителя для связи, текст записки или пожелания по времени доставки."></textarea>
+                <textarea class="checkout-textarea" id="comment-input" placeholder="Текст записки или пожелания..."></textarea>
+                
+                <!-- NEW: Промокод -->
+                <div class="input-label">🏷 Промокод</div>
+                <div class="promo-wrap">
+                    <input type="text" class="checkout-input" id="promo-input" placeholder="Введите код (напр. COTTON)">
+                    <button type="button" class="promo-btn" onclick="applyPromo()">OK</button>
+                </div>
+                <div id="promo-status" class="promo-status"></div>
+
                 <div style="text-align: right; font-weight: 600; font-size: 16px; margin-top: 15px; margin-bottom: 15px;">
                     Итого к оплате: <span id="checkout-total-price" style="color: var(--accent)">0</span> ₽
                 </div>
@@ -427,6 +461,8 @@
         let selectedCart = new Set();
         let currentId = null;
         let checkoutTotalPrice = 0;
+        let currentDiscount = 0; // NEW: Скидка
+        let appliedPromoCode = ""; // NEW: Промокод
 
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
@@ -463,12 +499,47 @@
         
         function openCheckoutModal() {
             if(selectedCart.size === 0) return;
+            // Сбрасываем промокод при новом открытии
+            currentDiscount = 0; appliedPromoCode = "";
+            document.getElementById('promo-input').value = "";
+            document.getElementById('promo-status').innerText = "";
+            
             document.getElementById('checkout-total-price').innerText = checkoutTotalPrice; 
             document.getElementById('checkout-modal').classList.add('modal-active'); 
             const addressInput = document.getElementById('address-input');
             addressInput.focus();
         }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('modal-active'); }
+
+        // NEW: Логика промокодов
+        function applyPromo() {
+            const code = document.getElementById('promo-input').value.trim().toUpperCase();
+            const statusDiv = document.getElementById('promo-status');
+            const totalSpan = document.getElementById('checkout-total-price');
+            
+            if(appliedPromoCode === code && code !== "") return; // Уже применен
+
+            // Пример простого промокода
+            if (code === "COTTON") {
+                const original = checkoutTotalPrice / (1 - currentDiscount); // Восстанавливаем базу если была скидка
+                currentDiscount = 0.10; // 10%
+                appliedPromoCode = code;
+                const newTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
+                
+                // Визуальное обновление
+                totalSpan.innerHTML = `<s style="color:var(--text-sec);font-size:14px">${checkoutTotalPrice}</s> ${newTotal}`;
+                statusDiv.innerText = "✅ Скидка 10% применена!";
+                statusDiv.className = "promo-status promo-success";
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                currentDiscount = 0;
+                appliedPromoCode = "";
+                totalSpan.innerText = checkoutTotalPrice; // Вернуть как было
+                statusDiv.innerText = "❌ Неверный промокод";
+                statusDiv.className = "promo-status promo-error";
+                tg.HapticFeedback.notificationOccurred('error');
+            }
+        }
 
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
         
@@ -657,22 +728,47 @@
         }
         
         function submitOrder() {
-            const phoneInput = document.getElementById('phone-input');
-            const address = document.getElementById('address-input').value.trim();
-            const comment = document.getElementById('comment-input').value.trim();
-            const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
-            if (rawPhoneDigits.length !== 11) { tg.showAlert("Пожалуйста, введите полный номер телефона (11 цифр)."); phoneInput.focus(); return; }
-            if (!address) { tg.showAlert("Пожалуйста, заполните адрес доставки."); document.getElementById('address-input').focus(); return; }
-            const cartItemsForBot = []; const grouped = {}; 
-            cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
-            Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
-            const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', ');
-            const dataToSend = { 
-                action: "checkout", total: checkoutTotalPrice, items_text: [itemsText], cart_items: cartItemsForBot, 
-                phone: phoneInput.value, address: address, comment: comment || "Нет комментария"
-            };
-            cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
-            tg.sendData(JSON.stringify(dataToSend)); closeCheckoutModal();
+            try {
+                const phoneInput = document.getElementById('phone-input');
+                const address = document.getElementById('address-input').value.trim();
+                const comment = document.getElementById('comment-input').value.trim();
+                const deliveryTime = document.getElementById('delivery-time').value; // NEW
+                const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
+                
+                if (rawPhoneDigits.length !== 11) { tg.showAlert("Пожалуйста, введите полный номер телефона (11 цифр)."); phoneInput.focus(); return; }
+                if (!address) { tg.showAlert("Пожалуйста, заполните адрес доставки."); document.getElementById('address-input').focus(); return; }
+                
+                const cartItemsForBot = []; const grouped = {}; 
+                cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
+                Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
+                
+                const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', ');
+                
+                // Пересчитываем итог с учетом скидки
+                let finalTotal = checkoutTotalPrice;
+                if(currentDiscount > 0) {
+                    finalTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
+                }
+
+                const dataToSend = { 
+                    action: "checkout", 
+                    total: finalTotal, 
+                    items_text: [itemsText], 
+                    cart_items: cartItemsForBot, 
+                    phone: phoneInput.value, 
+                    address: address, 
+                    comment: comment || "Нет комментария",
+                    delivery_time: deliveryTime, // NEW
+                    promo_code: appliedPromoCode // NEW
+                };
+                
+                cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
+                tg.sendData(JSON.stringify(dataToSend)); 
+                closeCheckoutModal();
+            } catch (e) {
+                tg.showAlert("Произошла ошибка при отправке данных. Попробуйте еще раз.");
+                console.error(e);
+            }
         }
         
         function clearFav() { if(confirm("Удалить все товары из избранного?")) { favs = []; save(); render(); renderFavs(); } }
@@ -764,7 +860,7 @@
         }
         setInterval(createSnowflake, 300);
 
-        // --- ГЕНЕРАТОР ШАПКИ NOBILIS (Hyper-Realistic v3.7 - Frosty) ---
+        // --- ГЕНЕРАТОР ШАПКИ NOBILIS (Hyper-Realistic v3.8 - Frosty) ---
         function drawRealisticNobilis() {
             const canvas = document.getElementById('header-canvas');
             if(!canvas) return;
@@ -806,7 +902,7 @@
                         ctx.lineCap = 'round';
                         ctx.stroke();
                         
-                        // СНЕЖНАЯ ПУДРА (только на верхнем слое)
+                        // СНЕЖНАЯ ПУДРА
                         if(layer === 2 && Math.random() > 0.7) {
                             ctx.beginPath();
                             const tipX = cx + Math.cos(needleAngle) * needleLen;
