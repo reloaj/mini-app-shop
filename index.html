@@ -1,4 +1,4 @@
-<!-- VERSION 2.3: Client Side Ready for Status Updates -->
+<!-- VERSION 2.5: iOS Fixes & UI Polish -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -132,7 +132,8 @@
         @keyframes pop { 50% { transform: scale(1.2); } }
 
         .search-wrap { padding: 0 16px 12px 16px; position: relative;}
-        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; }
+        /* IOS FIX: Font size 16px prevents zooming */
+        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
         .search-icon-abs { position: absolute; left: 28px; top: 10px; color: var(--text-sec); pointer-events: none; }
         
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
@@ -200,7 +201,8 @@
         .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; }
 
         .input-group { position: relative; margin-bottom: 15px; }
-        .checkout-input, .checkout-textarea, .checkout-select { width: 100%; padding: 14px 14px 14px 45px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 15px; outline: none; box-sizing: border-box; transition: border-color 0.2s; }
+        /* IOS FIX: Font size 16px */
+        .checkout-input, .checkout-textarea, .checkout-select { width: 100%; padding: 14px 14px 14px 45px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; transition: border-color 0.2s; }
         .checkout-input:focus, .checkout-textarea:focus { border-color: var(--accent); }
         .checkout-textarea { resize: vertical; min-height: 80px; padding-left: 14px; }
         .checkout-select { appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 14px center; }
@@ -310,7 +312,7 @@
             </div>
         </div>
 
-        <!-- PAGE: PROFILE (UPDATED v2.2) -->
+        <!-- PAGE: PROFILE -->
         <div id="p-prof" class="page">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
             <div style="text-align: center; padding: 40px 20px;">
@@ -321,7 +323,6 @@
             </div>
             <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
                 
-                <!-- Контакты (New) -->
                 <div class="settings-item" onclick="openInfo('contacts')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -330,7 +331,6 @@
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
 
-                <!-- Оферта (New) -->
                 <div class="settings-item" onclick="openInfo('offer')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -494,7 +494,7 @@
         </div>
     </div>
 
-    <!-- INFO MODAL (CONTACTS & OFFER) v2.2 -->
+    <!-- INFO MODAL -->
     <div id="info-modal">
         <div style="padding: 20px;">
             <div style="display:flex; align-items:center; margin-bottom: 20px;">
@@ -532,7 +532,7 @@
         let currentDiscount = 0;
         let appliedPromoCode = "";
 
-        // --- INFO & CONTACTS LOGIC (v2.2) ---
+        // --- INFO & CONTACTS LOGIC ---
         function openInfo(type) {
             const modal = document.getElementById('info-modal');
             const title = document.getElementById('info-title');
@@ -540,7 +540,6 @@
             
             if (type === 'contacts') {
                 title.innerText = 'Контакты';
-                // ВНИМАНИЕ: Заполни здесь свои данные для модерации ЮКассы
                 content.innerHTML = `
                     <div class="info-block">
                         <div class="info-row"><span class="info-label">Магазин</span><span class="info-val">Cotton Flowers</span></div>
@@ -557,7 +556,6 @@
                 `;
             } else if (type === 'offer') {
                 title.innerText = 'Оферта';
-                // Стандартный текст оферты для самозанятых (сокращенный)
                 content.innerHTML = `
                     <div class="legal-text">
                         <h3>Публичная оферта</h3>
@@ -666,7 +664,6 @@
             const activeClass = isFav ? 'is-active' : '';
             let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
             
-            // UPDATED v2.2: Cart Icon instead of Plus sign
             return `
                 <div class="card" onclick="openModal(${p.id})">
                     <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
