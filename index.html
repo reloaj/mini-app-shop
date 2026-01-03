@@ -1,4 +1,4 @@
-<!-- VERSION 3.0: SMART DELIVERY CALCULATOR -->
+<!-- VERSION 4.0: CDEK 130KM + LEGAL CHECKBOX + PRO DELIVERY INFO -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -196,8 +196,8 @@
         
         .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
-        .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); }
-        .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; }
+        .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); transition: all 0.3s; }
+        .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; opacity: 0.6; }
 
         .input-group { position: relative; margin-bottom: 15px; }
         
@@ -238,12 +238,24 @@
         .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
         
         .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 15px; display:flex; flex-direction:column; align-items:center; gap:15px; }
+        
         .legal-text { color: var(--text); font-size: 14px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 20px; }
         .legal-text h3 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 10px; color: var(--accent); }
+        
         .info-block { background: var(--block); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
         .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .info-label { color: var(--text-sec); }
         .info-val { font-weight: 500; text-align: right; max-width: 60%; }
+
+        /* LEGAL CHECKBOX STYLE */
+        .legal-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
+        .custom-checkbox { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: 0.2s; }
+        .custom-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+        .custom-checkbox svg { width: 14px; height: 14px; stroke: white; opacity: 0; transition: 0.2s; }
+        .custom-checkbox.checked svg { opacity: 1; }
+        .legal-label { font-size: 12px; color: var(--text-sec); line-height: 1.4; cursor: pointer; }
+        
+        .delivery-note { background: rgba(231, 90, 124, 0.1); border: 1px solid rgba(231, 90, 124, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text); line-height: 1.4; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
@@ -320,6 +332,15 @@
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Гость</h2>
             </div>
             <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
+                
+                <div class="settings-item" onclick="openInfo('delivery')">
+                    <div class="settings-left">
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                        <span>🚚 Доставка и упаковка</span>
+                    </div>
+                    <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                </div>
+
                 <div class="settings-item" onclick="openInfo('contacts')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -327,6 +348,7 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
+
                 <div class="settings-item" onclick="openInfo('offer')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -334,6 +356,7 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
+
                 <div class="settings-item" onclick="openSupport()">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -341,6 +364,7 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
+
                 <div class="settings-item" onclick="openSettings()">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -387,7 +411,13 @@
         <div class="modal-content">
             <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
             <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 25px; font-size: 15px;"></p>
+            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 20px; font-size: 15px;"></p>
+            
+            <div class="delivery-note">
+                <svg class="icon" style="min-width:20px; color:var(--accent)" viewBox="0 0 24 24"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                <span>Доставка в регионы осуществляется <b>СДЭК</b>. Стоимость рассчитывается автоматически при оформлении, а время доставки зависит от ТК.</span>
+            </div>
+
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 <span>В избранное</span>
@@ -455,10 +485,19 @@
                 <input type="hidden" id="final-delivery-price" value="0">
                 <!-- КОНЕЦ БЛОКА ДОСТАВКИ -->
 
-                <div style="text-align: right; font-weight: 600; font-size: 16px; margin-top: 15px; margin-bottom: 15px;">
+                <div style="text-align: right; font-weight: 600; font-size: 16px; margin-top: 5px; margin-bottom: 5px;">
                     К оплате: <span id="checkout-total-price" style="color: var(--accent)">0</span> ₽
                 </div>
-                <button type="submit" class="big-btn">ОПЛАТИТЬ</button>
+
+                <!-- LEGAL CHECKBOX -->
+                <div class="legal-row" onclick="toggleCheckoutSubmit()">
+                    <div class="custom-checkbox" id="legal-check">
+                        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="legal-label">Я согласен с условиями <span style="color:var(--accent); text-decoration:underline">оферты</span>, политикой конфиденциальности и получением рассылок об акциях.</div>
+                </div>
+
+                <button type="submit" class="big-btn" id="final-pay-btn" disabled>ОПЛАТИТЬ</button>
             </form>
         </div>
     </div>
@@ -536,62 +575,72 @@
         let appliedPromoCode = "";
 
         // ==========================================
-        // 🚀 ЛОГИКА ДОСТАВКИ
+        // 🚀 ЛОГИКА ДОСТАВКИ v4.0 (130 KM RULE)
         // ==========================================
         
-        // Координаты склада (Центр Москвы)
         const WAREHOUSE_LAT = 55.755814; 
         const WAREHOUSE_LON = 37.617635;
 
+        // 📦 ТАРИФНЫЕ ЗОНЫ ДЛЯ ДАЛЬНИХ ОТПРАВОК
+        const DELIVERY_ZONES = {
+            "Moscow": { base: 0, perKm: 40 },
+            "Sankt-Peterburg": 600,
+            "Krasnodar": 750,
+            "Novosibirsk": 900,
+            "Yekaterinburg": 850,
+            "Kazan": 700,
+            "Nizhny Novgorod": 650,
+            "Rostov": 750,
+            "Samara": 700,
+            "Ufa": 750,
+            "Vladivostok": 1200
+        };
+        const DEFAULT_RUSSIA_PRICE = 850; 
+
         let deliveryPrice = 0; 
 
+        function deg2rad(deg) { return deg * (Math.PI/180); }
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             const R = 6371; 
             const dLat = deg2rad(lat2 - lat1);
             const dLon = deg2rad(lon2 - lon1);
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            const d = R * c; 
-            return d;
+            return R * c; 
         }
 
-        function deg2rad(deg) { return deg * (Math.PI/180); }
-
-        function calculateDeliveryCost(lat, lon, city) {
-            const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon);
+        function calculateDeliveryCost(lat, lon, city, region) {
             const costEl = document.getElementById('delivery-cost-val');
-            
-            // Коэффициент "кривизны дорог"
-            const realDist = Math.round(dist * 1.3);
+            const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon);
+            const realDist = Math.round(dist * 1.3); // +30% на изгибы дорог
 
             let price = 0;
             let text = "";
 
-            if (city && !city.includes("Москва") && dist > 100) {
-                price = 0;
-                text = "СДЭК / Почта (Расчет менеджером)";
-                deliveryPrice = 0;
-            } 
-            else {
+            // 1. КУРЬЕРСКАЯ ЗОНА (До 130 км)
+            if (realDist <= 130) {
                 if (realDist <= 5) {
                     price = 0; 
                     text = `Бесплатно (${realDist} км)`;
                 } else if (realDist <= 15) {
                     price = 500;
-                    text = `${price} ₽ (${realDist} км)`;
-                } else if (realDist <= 50) {
-                    price = 500 + (realDist - 15) * 40; 
-                    text = `${price} ₽ (${realDist} км)`;
+                    text = `Курьер: ${price} ₽ (${realDist} км)`;
                 } else {
-                    price = 0;
-                    text = "Индивидуально (далеко)";
+                    price = 500 + (realDist - 15) * 40; 
+                    text = `Курьер: ${price} ₽ (${realDist} км)`;
                 }
-                deliveryPrice = price;
+            } 
+            // 2. ОТПРАВКА ПО РОССИИ (СДЭК/ПОЧТА) - Более 130 км
+            else {
+                let zonePrice = DEFAULT_RUSSIA_PRICE;
+                if(city && city.includes("Санкт-Петербург")) zonePrice = DELIVERY_ZONES["Sankt-Peterburg"];
+                else if(region && region.includes("Краснодар")) zonePrice = DELIVERY_ZONES["Krasnodar"];
+                // ... можно расширить
+                price = zonePrice;
+                text = `СДЭК (до пункта): ~${price} ₽`;
             }
 
+            deliveryPrice = price;
             costEl.innerText = text;
             updateCheckoutTotalUI();
         }
@@ -599,9 +648,7 @@
         function updateCheckoutTotalUI() {
             const totalSpan = document.getElementById('checkout-total-price');
             let basePrice = checkoutTotalPrice;
-            if (currentDiscount > 0) {
-                basePrice = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
-            }
+            if (currentDiscount > 0) basePrice = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
             const final = basePrice + deliveryPrice;
             
             if (currentDiscount > 0) {
@@ -625,6 +672,27 @@
                         <div class="info-row"><span class="info-label">Магазин</span><span class="info-val">Cotton Flowers</span></div>
                         <div class="info-row"><span class="info-label">Телефон</span><span class="info-val">+7 (999) 000-00-00</span></div>
                         <div class="info-row"><span class="info-label">Адрес</span><span class="info-val">г. Москва, ул. Цветочная, д. 1</span></div>
+                    </div>
+                `;
+            } else if (type === 'delivery') {
+                title.innerText = 'Доставка и Упаковка';
+                content.innerHTML = `
+                    <div class="legal-text">
+                        <h3>📦 Бережная упаковка</h3>
+                        Мы понимаем, как важно, чтобы букет приехал в идеальном состоянии. 
+                        <ul>
+                            <li>Все букеты отправляются в жестких транспортировочных коробках.</li>
+                            <li>Живые цветы устанавливаются в аквабокс с водой.</li>
+                            <li>Сухоцветы фиксируются, чтобы не осыпались в пути.</li>
+                        </ul>
+
+                        <h3>🚚 Курьерская доставка</h3>
+                        Действует по Москве и области (до 130 км). Наши курьеры знают, как обращаться с цветами. Интервал доставки: 3 часа.
+
+                        <h3>✈️ Отправка в регионы (СДЭК)</h3>
+                        Для адресов далее 130 км мы используем СДЭК.
+                        Средний срок: 2-5 дней.
+                        Стоимость рассчитывается автоматически в корзине.
                     </div>
                 `;
             } else if (type === 'offer') {
@@ -678,11 +746,32 @@
             document.getElementById('promo-status').innerText = "";
             document.getElementById('checkout-total-price').innerText = checkoutTotalPrice; 
             
+            // Сброс чекбокса
+            const chk = document.getElementById('legal-check');
+            chk.classList.remove('checked');
+            document.getElementById('final-pay-btn').disabled = true;
+
             document.getElementById('checkout-modal').classList.add('modal-active'); 
             const addressInput = document.getElementById('address-input');
             addressInput.focus();
         }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('modal-active'); }
+
+        // LEGAL CHECKBOX LOGIC
+        function toggleCheckoutSubmit() {
+            const chk = document.getElementById('legal-check');
+            const btn = document.getElementById('final-pay-btn');
+            
+            if(chk.classList.contains('checked')) {
+                chk.classList.remove('checked');
+                btn.disabled = true;
+                tg.HapticFeedback.impactOccurred('light');
+            } else {
+                chk.classList.add('checked');
+                btn.disabled = false;
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
 
         function applyPromo() {
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
@@ -899,8 +988,10 @@
                     addressInput.blur();
                     const lat = parseFloat(s.data.geo_lat);
                     const lon = parseFloat(s.data.geo_lon);
-                    const city = s.data.city || s.data.region; 
-                    if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city);
+                    const city = s.data.city || s.data.region;
+                    const region = s.data.region_with_type || "";
+                    
+                    if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city, region);
                     else {
                         document.getElementById('delivery-cost-val').innerText = "Уточнит менеджер";
                         deliveryPrice = 0; updateCheckoutTotalUI();
