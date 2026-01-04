@@ -1,10 +1,10 @@
-<!-- VERSION 5.0: PREMIUM UI & SMART LOGIC -->
+<!-- VERSION 6.0: FIXED PROFILE & PREMIUM SVG UI -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop</title>
+    <title>Cotton Flowers</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <!-- FONTS -->
@@ -14,7 +14,7 @@
 
     <style>
         :root {
-            /* --- ТЕМНАЯ ТЕМА --- */
+            /* --- ТЕМНАЯ ТЕМА (Default) --- */
             --bg: #000000;
             --block: #1C1C1E;
             --text: #FFFFFF;
@@ -24,7 +24,7 @@
             --green: #32D74B;
             --red: #FF453A;
             --border: rgba(255,255,255,0.1);
-            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-color: rgba(0,0,0,0.4);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
@@ -43,9 +43,8 @@
             --nav-glass: rgba(255, 255, 255, 0.7);
         }
 
-        html { height: 100%; overflow: hidden; }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
         body {
-            height: 100%; margin: 0; padding: 0; overflow: hidden;
             background: var(--bg); color: var(--text);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-tap-highlight-color: transparent;
@@ -73,9 +72,7 @@
             overflow: hidden; border-radius: 0 0 24px 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-
         #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; }
-
         .brand-overlay { 
             position: absolute; bottom: 8px; width: 100%; text-align: center;
             font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; 
@@ -95,7 +92,13 @@
             border-radius: 24px 24px 0 0;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
         }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #636366; background: none; border: none; cursor: pointer; width: 25%; height: 100%; transition: color 0.2s; }
+        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; stroke: #636366; stroke-width: 2; transition: stroke 0.2s; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active .nav-icon { stroke: var(--accent); }
+        .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
+        /* --- PAGES --- */
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
             padding-top: 75px; padding-bottom: 90px; box-sizing: border-box;
@@ -103,31 +106,10 @@
         }
         .page.active { display: block; }
 
-        /* --- SNOW --- */
-        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
-        .snowflake { position: absolute; top: -10px; color: white; font-size: 1em; opacity: 0.8; user-select: none; animation-name: fall; animation-timing-function: linear; }
-        @keyframes fall {
-            0% { transform: translateY(-10px) translateX(0px) rotate(0deg); }
-            50% { transform: translateY(55vh) translateX(15px) rotate(180deg); }
-            100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
-        }
-
-        /* --- COMMON UI --- */
+        /* --- COMPONENTS --- */
         .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; width: 100%; flex-shrink: 0; margin-top: -10px; }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        img { -webkit-touch-callout: none; -webkit-user-drag: none; pointer-events: auto; }
-        
-        .check-circle { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; cursor: pointer; }
-        .check-circle.checked { background: var(--accent); border-color: var(--accent); }
-        .check-circle svg { width: 12px; height: 12px; stroke: white; stroke-width: 3; opacity: 0; transform: scale(0.5); transition: 0.2s; }
-        .check-circle.checked svg { opacity: 1; transform: scale(1); }
-
-        .clean-btn { background: none; border: none; padding: 5px; color: var(--red); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; border-radius: 8px; transition: background 0.2s; }
-        .clean-btn:active { background: rgba(255, 69, 58, 0.1); }
-        .sel-all-btn { color: var(--accent); font-size: 14px; background: none; border: none; cursor: pointer; font-weight: 500; }
-
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
@@ -149,13 +131,10 @@
         .dot { width: 4px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 
         .fav-btn { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
-        .light-theme .fav-btn { background: rgba(255,255,255,0.8); }
         .fav-btn.is-active svg { fill: var(--red); stroke: var(--red); }
         .fav-btn.active-anim { animation: pop 0.3s ease; }
-
         .cart-btn { position: absolute; bottom: 10px; right: 10px; width: 34px; height: 34px; background: var(--accent); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
-
         .info { padding: 10px; padding-right: 45px; }
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
@@ -168,98 +147,63 @@
         .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); border-radius: 6px; font-weight: bold; cursor: pointer; }
         .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
 
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #636366; background: none; border: none; cursor: pointer; width: 25%; height: 100%; transition: color 0.2s; }
-        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; stroke: #636366; stroke-width: 2; transition: stroke 0.2s; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active .nav-icon { stroke: var(--accent); }
-        .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
+        .check-circle { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; cursor: pointer; }
+        .check-circle.checked { background: var(--accent); border-color: var(--accent); }
+        .check-circle svg { width: 12px; height: 12px; stroke: white; stroke-width: 3; opacity: 0; transform: scale(0.5); transition: 0.2s; }
+        .check-circle.checked svg { opacity: 1; transform: scale(1); }
+        
+        .clean-btn { background: none; border: none; padding: 5px; color: var(--red); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; border-radius: 8px; transition: background 0.2s; }
+        .clean-btn:active { background: rgba(255, 69, 58, 0.1); }
+        .sel-all-btn { color: var(--accent); font-size: 14px; background: none; border: none; cursor: pointer; font-weight: 500; }
 
-        /* MODALS */
+        /* --- MODALS --- */
         #modal, #settings-modal, #checkout-modal, #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; background: #000; }
-        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
-        .modal-slider::-webkit-scrollbar { display: none; }
-        .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
-        .modal-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
-        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; }
-        .modal-dot.active { background: #fff; transform: scale(1.2); }
-
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
-        #lightbox.visible { opacity: 1; }
-        #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
-        .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
-
         .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         
-        .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
-        .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); transition: all 0.3s; }
-        .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; opacity: 0.6; }
-
+        /* --- CHECKOUT FORM --- */
         .input-group { position: relative; margin-bottom: 15px; }
-        
         .checkout-input, .checkout-textarea, .checkout-select { width: 100%; padding: 14px 14px 14px 45px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; transition: border-color 0.2s; }
         .checkout-input:focus, .checkout-textarea:focus { border-color: var(--accent); }
         .checkout-textarea { resize: vertical; min-height: 80px; padding-left: 14px; }
         .checkout-select { appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 14px center; }
         .input-icon { position: absolute; left: 14px; top: 14px; color: var(--text-sec); pointer-events: none; }
-
+        .input-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-sec); margin-bottom: 6px; margin-left: 4px; }
+        
+        #address-suggestions { position: absolute; top: 100%; left: 0; right: 0; z-index: 10; background: var(--block); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px var(--shadow-color); max-height: 250px; overflow-y: auto; }
+        .suggestion-item { padding: 12px 14px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--border); color: var(--text); }
+        
         .promo-wrap { display: flex; gap: 8px; margin-bottom: 15px; }
         .promo-btn { background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0 15px; font-weight: 600; font-size: 14px; cursor: pointer; }
         .promo-status { font-size: 13px; margin-top: -8px; margin-bottom: 12px; }
         .promo-success { color: var(--green); }
         .promo-error { color: var(--red); }
 
-        .input-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-sec); margin-bottom: 6px; margin-left: 4px; }
-        
-        #address-suggestions { position: absolute; top: 100%; left: 0; right: 0; z-index: 10; background: var(--block); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px var(--shadow-color); max-height: 250px; overflow-y: auto; }
-        .suggestion-item { padding: 12px 14px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--border); color: var(--text); }
-        .suggestion-item:last-child { border-bottom: none; }
-        
-        .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
-        .head-title { font-size: 20px; font-weight: 800; margin: 0; }
-        
-        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--block); margin-bottom: 1px; cursor: pointer; }
+        .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); transition: all 0.3s; }
+        .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; opacity: 0.6; }
+        .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
+
+        /* --- SETTINGS & INFO --- */
+        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--block); margin-bottom: 1px; cursor: pointer; pointer-events: auto; }
         .settings-item:first-child { border-radius: 14px 14px 0 0; }
         .settings-item:last-child { border-radius: 0 0 14px 14px; }
         .settings-left { display: flex; align-items: center; gap: 12px; font-weight: 500; }
         .settings-icon { color: var(--text-sec); }
         .settings-arrow { color: var(--text-sec); opacity: 0.5; }
-
-        .toggle-switch { position: relative; width: 50px; height: 30px; }
-        .toggle-input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #39393D; transition: .4s; border-radius: 34px; }
-        .light-theme .toggle-slider { background-color: #E9E9EA; }
-        .toggle-slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .toggle-input:checked + .toggle-slider { background-color: var(--green); }
-        .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
-        
-        .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 15px; display:flex; flex-direction:column; align-items:center; gap:15px; }
         
         .legal-text { color: var(--text); font-size: 14px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 20px; }
         .legal-text h3 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 10px; color: var(--accent); }
         .legal-text ul { padding-left: 20px; margin: 10px 0; }
         .legal-text li { margin-bottom: 8px; }
-        
         .info-block { background: var(--block); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
         .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .info-label { color: var(--text-sec); }
         .info-val { font-weight: 500; text-align: right; max-width: 60%; }
 
-        /* LEGAL CHECKBOX STYLE */
-        .legal-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
-        .custom-checkbox { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: 0.2s; }
-        .custom-checkbox.checked { background: var(--accent); border-color: var(--accent); }
-        .custom-checkbox svg { width: 14px; height: 14px; stroke: white; opacity: 0; transition: 0.2s; }
-        .custom-checkbox.checked svg { opacity: 1; }
-        .legal-label { font-size: 12px; color: var(--text-sec); line-height: 1.4; cursor: pointer; }
-        
-        .delivery-note { background: rgba(231, 90, 124, 0.1); border: 1px solid rgba(231, 90, 124, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text); line-height: 1.4; display: flex; align-items: center; gap: 10px; }
-
-        /* --- STYLES FOR SMART DELIVERY PANEL --- */
+        /* --- DELIVERY UI & TIME SELECTOR --- */
         .delivery-info-panel {
             background: var(--input-bg);
             border-left: 4px solid var(--accent);
@@ -295,21 +239,43 @@
             border-color: var(--accent);
             box-shadow: 0 4px 10px rgba(231, 90, 124, 0.3);
         }
-        .time-chip svg { width: 16px; height: 16px; } /* SVG Icon size */
+        .time-chip svg { width: 16px; height: 16px; } 
         
-        .date-time-inputs {
-            display: none;
-            gap: 10px;
-            margin-top: 10px;
-            animation: fadeUp 0.3s;
-        }
+        .date-time-inputs { display: none; gap: 10px; margin-top: 10px; animation: fadeUp 0.3s; }
         .date-time-inputs.visible { display: flex; }
+
+        /* LEGAL CHECKBOX */
+        .legal-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
+        .custom-checkbox { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: 0.2s; }
+        .custom-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+        .custom-checkbox svg { width: 14px; height: 14px; stroke: white; opacity: 0; transition: 0.2s; }
+        .custom-checkbox.checked svg { opacity: 1; }
+        .legal-label { font-size: 12px; color: var(--text-sec); line-height: 1.4; cursor: pointer; }
+        
+        .delivery-note { background: rgba(231, 90, 124, 0.1); border: 1px solid rgba(231, 90, 124, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text); line-height: 1.4; display: flex; align-items: center; gap: 10px; }
+        
+        /* LIGHTBOX */
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox.visible { opacity: 1; }
+        #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
+        
+        /* MISC */
+        .head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 15px; margin-bottom: 10px; }
+        .head-title { font-size: 20px; font-weight: 800; margin: 0; }
+        .empty-state { text-align: center; color: var(--text-sec); margin-top: 60px; font-size: 15px; display:flex; flex-direction:column; align-items:center; gap:15px; }
+        .toggle-switch { position: relative; width: 50px; height: 30px; }
+        .toggle-input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #39393D; transition: .4s; border-radius: 34px; }
+        .light-theme .toggle-slider { background-color: #E9E9EA; }
+        .toggle-slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-input:checked + .toggle-slider { background-color: var(--green); }
+        .toggle-input:checked + .toggle-slider:before { transform: translateX(20px); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- HEADER -->
         <header id="main-header">
             <canvas id="header-canvas"></canvas>
             <div class="brand-overlay">Cotton Flowers</div>
@@ -380,15 +346,13 @@
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Гость</h2>
             </div>
             <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
-                
                 <div class="settings-item" onclick="openInfo('delivery')">
                     <div class="settings-left">
-                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
                         <span>Доставка и упаковка</span>
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
-
                 <div class="settings-item" onclick="openInfo('contacts')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -396,7 +360,6 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
-
                 <div class="settings-item" onclick="openInfo('offer')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -404,7 +367,6 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
-
                 <div class="settings-item" onclick="openSupport()">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -412,7 +374,6 @@
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
-
                 <div class="settings-item" onclick="openSettings()">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -423,7 +384,6 @@
             </div>
         </div>
 
-        <!-- NAVBAR -->
         <nav>
             <button class="nav-item active" onclick="go('home', this)">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -447,7 +407,7 @@
     
     <div id="snow-container"></div>
 
-    <!-- PRODUCT MODAL -->
+    <!-- MODALS -->
     <div id="modal">
         <div class="back-btn" onclick="closeModal()">
             <svg class="icon" style="stroke:white" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
@@ -463,7 +423,7 @@
             
             <div class="delivery-note">
                 <svg class="icon" style="min-width:20px; color:var(--accent)" viewBox="0 0 24 24"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                <span>Доставка в регионы осуществляется <b>СДЭК</b>. Стоимость рассчитывается автоматически при оформлении, а время доставки зависит от ТК.</span>
+                <span>Доставка в регионы осуществляется <b>СДЭК</b>. Стоимость рассчитывается автоматически при оформлении.</span>
             </div>
 
             <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">
@@ -474,13 +434,6 @@
         </div>
     </div>
 
-    <!-- LIGHTBOX -->
-    <div id="lightbox">
-        <div class="lightbox-close" onclick="closeLightbox()">✕</div>
-        <img id="lightbox-img" src="">
-    </div>
-
-    <!-- CHECKOUT MODAL -->
     <div id="checkout-modal">
         <div style="padding: 20px;">
             <div style="display:flex; align-items:center; margin-bottom: 20px;">
@@ -495,6 +448,7 @@
                     <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                     <input type="tel" class="checkout-input" id="phone-input" placeholder="+7 (XXX) XXX-XX-XX" required oninput="formatPhone(this)" maxlength="18">
                 </div>
+                
                 <div class="input-label">Адрес доставки</div>
                 <div class="input-group">
                     <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -502,7 +456,6 @@
                     <div id="address-suggestions"></div> 
                 </div>
 
-                <!-- INFO PANEL (SMART DELIVERY) -->
                 <div id="delivery-info-panel" class="delivery-info-panel">
                     <div class="delivery-info-title" id="d-info-title">📍 Выберите адрес</div>
                     <div class="delivery-info-text" id="d-info-text">Мы рассчитаем стоимость и сроки</div>
@@ -511,14 +464,12 @@
                 <div class="input-label">Желаемое время получения</div>
                 <div class="input-group" style="margin-bottom: 20px;">
                     <input type="hidden" id="final-time-string" value="asap">
-                    
                     <div class="time-selector-wrap" id="time-chips-container">
                         <div class="time-chip selected" onclick="selectTimeOption('call_me', this)">
                             <svg viewBox="0 0 24 24" class="icon"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                             <span>Уточнить детали</span>
                         </div>
                     </div>
-
                     <div class="date-time-inputs" id="custom-date-wrap">
                         <input type="date" class="checkout-input" id="delivery-date" onchange="updateCustomTime()">
                         <select class="checkout-select" id="delivery-interval" onchange="updateCustomTime()">
@@ -534,6 +485,7 @@
                 <div class="input-group">
                     <textarea class="checkout-textarea" id="comment-input" placeholder="Текст записки, код домофона..."></textarea>
                 </div>
+                
                 <div class="input-label">Промокод</div>
                 <div class="promo-wrap">
                     <div style="position:relative; width:100%">
@@ -554,7 +506,6 @@
                     К оплате: <span id="checkout-total-price" style="color: var(--accent)">0</span> ₽
                 </div>
 
-                <!-- LEGAL CHECKBOX -->
                 <div class="legal-row" onclick="toggleCheckoutSubmit()">
                     <div class="custom-checkbox" id="legal-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
                     <div class="legal-label">Я согласен с условиями <span style="color:var(--accent); text-decoration:underline">оферты</span>, политикой конфиденциальности и получением рассылок об акциях.</div>
@@ -565,21 +516,76 @@
         </div>
     </div>
 
+    <div id="settings-modal">
+        <div style="padding: 20px;">
+            <div style="display:flex; align-items:center; margin-bottom: 20px;">
+                <div class="back-btn" style="position:static; margin-right:15px; background:var(--block);" onclick="closeSettings()">
+                    <svg class="icon" style="stroke:var(--text)" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+                </div>
+                <h2 style="margin:0">Настройки</h2>
+            </div>
+            <div style="background: var(--block); border-radius: 14px; overflow:hidden;">
+                <div class="settings-item" style="cursor:default">
+                    <div class="settings-left">
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <span>Темная тема</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="toggle-input" id="theme-toggle" onchange="toggleTheme()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item" style="cursor:default">
+                    <div class="settings-left">
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>English Language</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="toggle-input" id="lang-toggle" onchange="toggleLang()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-modal">
+        <div style="padding: 20px;">
+            <div style="display:flex; align-items:center; margin-bottom: 20px;">
+                <div class="back-btn" style="position:static; margin-right:15px; background:var(--block);" onclick="closeInfo()">
+                    <svg class="icon" style="stroke:var(--text)" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+                </div>
+                <h2 id="info-title" style="margin:0">Информация</h2>
+            </div>
+            <div id="info-content"></div>
+        </div>
+    </div>
+
+    <div id="lightbox">
+        <div class="lightbox-close" onclick="closeLightbox()">✕</div>
+        <img id="lightbox-img" src="">
+    </div>
+
     <script>
+        // --- CONSTANTS & CONFIG ---
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.enableClosingConfirmation();
 
         const SUPPORT_USERNAME = 'DUROV'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
+        const WAREHOUSE_LAT = 55.755814; 
+        const WAREHOUSE_LON = 37.617635;
+        const DEFAULT_RUSSIA_PRICE = 850; 
 
-        // --- ICONS SVG CONSTANTS (FOR JS INJECTION) ---
+        // ICONS
         const SVG_LIGHTNING = '<svg viewBox="0 0 24 24" class="icon"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>';
         const SVG_MOON = '<svg viewBox="0 0 24 24" class="icon"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
         const SVG_CALENDAR = '<svg viewBox="0 0 24 24" class="icon"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
-        const SVG_CAR = '<svg viewBox="0 0 24 24" class="icon"><path d="M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>'; // Simplified car
-        const SVG_PLANE = '<svg viewBox="0 0 24 24" class="icon"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>'; // Paper plane style for speed
+        const SVG_CAR = '<svg viewBox="0 0 24 24" class="icon"><path d="M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>';
+        const SVG_PLANE = '<svg viewBox="0 0 24 24" class="icon"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>';
 
+        // DATA
         const db = [
             { id: 1, name: "Гелихризум со стабилизированной розой", price: 1500, desc: "Состав: Роза стабилизированная - 1 шт. Губка флористическая - 1 шт. Пампасная трава - 1 шт. Фаларис сухоцвет - 3 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/71/1759415719_47099271.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/48/1759415735_22242048.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/45/1759415748_93858245.jpg"] },
             { id: 2, name: "Корзиночка с ароматным нобилисом", price: 3500, desc: "Нобилис - 3 шт. Игрушка елочная - 5 шт. Хлопок (сухоцвет) - 1 шт. Губка флористическая - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/1000x1000/27/1766478201_42725527.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/75/1766478332_27661575.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/92/1766478389_74341492.jpg"] },
@@ -589,6 +595,21 @@
             { id: 6, name: "Корзина с подсолнухом", price: 3800, desc: "Краспедия желтая - 2 шт. Хлопок (сухоцвет) - 2 шт. Эвкалипт стабилизированный - 1 шт.", images: ["https://content2.flowwow-images.com/data/flowers/524x524/13/1744103681_29991113.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/13/1744103681_78106913.jpg", "https://content2.flowwow-images.com/data/flowers/1000x1000/98/1744103681_60463898.jpg"] }
         ];
 
+        const DELIVERY_ZONES = {
+            "Moscow": { base: 0, perKm: 40 },
+            "Sankt-Peterburg": 600,
+            "Krasnodar": 750,
+            "Novosibirsk": 900,
+            "Yekaterinburg": 850,
+            "Kazan": 700,
+            "Nizhny Novgorod": 650,
+            "Rostov": 750,
+            "Samara": 700,
+            "Ufa": 750,
+            "Vladivostok": 1200
+        };
+
+        // STATE
         let cart = JSON.parse(localStorage.getItem('cart_v7')) || [];
         let favs = JSON.parse(localStorage.getItem('favs_v7')) || [];
         let selectedCart = new Set();
@@ -596,18 +617,11 @@
         let checkoutTotalPrice = 0;
         let currentDiscount = 0;
         let appliedPromoCode = "";
-
-        // ==========================================
-        // 🚀 ЛОГИКА ДОСТАВКИ v5.0 (SMART TIME & ICONS)
-        // ==========================================
-        
-        const WAREHOUSE_LAT = 55.755814; 
-        const WAREHOUSE_LON = 37.617635;
-        const DEFAULT_RUSSIA_PRICE = 850; 
-
         let deliveryPrice = 0; 
         let deliveryDaysEst = 0;
 
+        // --- HELPER FUNCTIONS ---
+        function deg2rad(deg) { return deg * (Math.PI/180); }
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             const R = 6371; 
             const dLat = deg2rad(lat2 - lat1);
@@ -616,8 +630,23 @@
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
             return R * c; 
         }
-        function deg2rad(deg) { return deg * (Math.PI/180); }
+        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
+        function formatPhone(input) {
+            let digits = input.value.replace(/\D/g, ''); const maxDigits = 11;
+            if (digits.length > maxDigits) digits = digits.substring(0, maxDigits);
+            let formatted = '';
+            if (digits.length === 0) { input.value = ''; return; }
+            if (digits.startsWith('8') || digits.startsWith('7')) digits = '7' + digits.substring(1);
+            else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits; digits = digits.substring(0, maxDigits); }
+            if (digits.length > 0) formatted += '+7';
+            if (digits.length > 1) { formatted += ' ('; formatted += digits.substring(1, 4); }
+            if (digits.length > 4) { formatted += ') '; formatted += digits.substring(4, 7); }
+            if (digits.length > 7) { formatted += '-'; formatted += digits.substring(7, 9); }
+            if (digits.length > 9) { formatted += '-'; formatted += digits.substring(9, 11); }
+            input.value = formatted;
+        }
 
+        // --- DELIVERY LOGIC ---
         function calculateDeliveryCost(lat, lon, city, region) {
             const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon);
             const realDist = Math.round(dist * 1.3);
@@ -627,7 +656,7 @@
             let infoTitle = "";
             let infoText = "";
 
-            // 1. КУРЬЕРСКАЯ ЗОНА (До 130 км)
+            // 1. COURIER ZONE (<= 130 km)
             if (realDist <= 130) {
                 type = "courier";
                 deliveryDaysEst = 0;
@@ -639,12 +668,16 @@
                 infoTitle = `${SVG_CAR} <span>Курьерская доставка (~${realDist} км)</span>`;
                 infoText = "Доступна экспресс-доставка день в день или к точной дате.";
             } 
-            // 2. ОТПРАВКА В РЕГИОНЫ (СДЭК)
+            // 2. CDEK ZONE (> 130 km)
             else {
                 type = "cdek";
                 deliveryDaysEst = Math.ceil(realDist / 600) + 2; 
-                price = 850; 
-
+                
+                let zonePrice = DEFAULT_RUSSIA_PRICE;
+                if(city && city.includes("Санкт-Петербург")) zonePrice = DELIVERY_ZONES["Sankt-Peterburg"];
+                else if(region && region.includes("Краснодар")) zonePrice = DELIVERY_ZONES["Krasnodar"];
+                
+                price = zonePrice; 
                 infoTitle = `${SVG_PLANE} <span>Доставка СДЭК (~${realDist} км)</span>`;
                 infoText = `Ориентировочный срок: ${deliveryDaysEst}-${deliveryDaysEst+2} дней. Пожалуйста, выберите дату с учетом этого срока.`;
             }
@@ -734,8 +767,7 @@
             }
         }
 
-        // ==========================================
-
+        // --- MODAL & NAVIGATION LOGIC ---
         function openInfo(type) {
             const modal = document.getElementById('info-modal');
             const title = document.getElementById('info-title');
@@ -747,7 +779,14 @@
                     <div class="info-block">
                         <div class="info-row"><span class="info-label">Магазин</span><span class="info-val">Cotton Flowers</span></div>
                         <div class="info-row"><span class="info-label">Телефон</span><span class="info-val">+7 (999) 000-00-00</span></div>
+                        <div class="info-row"><span class="info-label">Email</span><span class="info-val">shop@example.com</span></div>
                         <div class="info-row"><span class="info-label">Адрес</span><span class="info-val">г. Москва, ул. Цветочная, д. 1</span></div>
+                    </div>
+                    <div class="info-block">
+                        <h3 style="margin-top:0; margin-bottom:10px; font-size:15px">Реквизиты</h3>
+                        <div class="info-row"><span class="info-label">Статус</span><span class="info-val">Самозанятый</span></div>
+                        <div class="info-row"><span class="info-label">ФИО</span><span class="info-val">Иванов Иван Иванович</span></div>
+                        <div class="info-row"><span class="info-label">ИНН</span><span class="info-val">123456789012</span></div>
                     </div>
                 `;
             } else if (type === 'delivery') {
@@ -804,6 +843,9 @@
         }
 
         function closeInfo() { document.getElementById('info-modal').classList.remove('modal-active'); }
+        function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
+        function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
 
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
@@ -812,14 +854,6 @@
             tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
             tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
-
-        const isLightOnLoad = localStorage.getItem('theme') === 'light';
-        if(isLightOnLoad) {
-            document.body.classList.add('light-theme');
-            document.getElementById('theme-toggle').checked = true;
-        }
-        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
-        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
 
         function toggleLang() {
             const isEng = document.getElementById('lang-toggle').checked;
@@ -831,11 +865,56 @@
             }
         }
 
-        function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
-        
-        function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
-        
+        // --- CHECKOUT LOGIC ---
+        const addressInput = document.getElementById('address-input');
+        const suggestionsContainer = document.getElementById('address-suggestions');
+        let debounceTimeout;
+        if (addressInput) {
+            addressInput.addEventListener('input', () => {
+                clearTimeout(debounceTimeout);
+                const query = addressInput.value.trim();
+                if (query.length < 3) { suggestionsContainer.innerHTML = ''; return; }
+                debounceTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
+            });
+            addressInput.addEventListener('blur', () => { setTimeout(() => { suggestionsContainer.innerHTML = ''; }, 150); });
+        }
+
+        async function fetchSuggestions(query) {
+            if (DADATA_TOKEN === 'YOUR_DADATA_API_KEY') { suggestionsContainer.innerHTML = '<div class="suggestion-item" style="color:var(--red)">! Вставьте ключ DaData API</div>'; return; }
+            try {
+                const response = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", {
+                    method: "POST", mode: "cors",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token " + DADATA_TOKEN },
+                    body: JSON.stringify({ query: query, count: 5 })
+                });
+                const data = await response.json();
+                renderSuggestions(data.suggestions);
+            } catch (error) { suggestionsContainer.innerHTML = ''; }
+        }
+
+        function renderSuggestions(suggestions) {
+            suggestionsContainer.innerHTML = ''; if (!suggestions || suggestions.length === 0) return;
+            suggestions.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item'; div.textContent = s.value;
+                div.onclick = () => { 
+                    addressInput.value = s.value; 
+                    suggestionsContainer.innerHTML = ''; 
+                    addressInput.blur();
+                    const lat = parseFloat(s.data.geo_lat);
+                    const lon = parseFloat(s.data.geo_lon);
+                    const city = s.data.city || s.data.region;
+                    const region = s.data.region_with_type || "";
+                    if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city, region);
+                    else {
+                        document.getElementById('delivery-cost-val').innerText = "Уточнит менеджер";
+                        deliveryPrice = 0; updateCheckoutTotalUI();
+                    }
+                };
+                suggestionsContainer.appendChild(div);
+            });
+        }
+
         function openCheckoutModal() {
             if(selectedCart.size === 0) return;
             
@@ -846,7 +925,6 @@
             document.getElementById('promo-status').innerText = "";
             document.getElementById('checkout-total-price').innerText = checkoutTotalPrice; 
             
-            // Сброс чекбокса и инфо-панели
             const chk = document.getElementById('legal-check');
             chk.classList.remove('checked');
             document.getElementById('final-pay-btn').disabled = true;
@@ -863,7 +941,6 @@
         function toggleCheckoutSubmit() {
             const chk = document.getElementById('legal-check');
             const btn = document.getElementById('final-pay-btn');
-            
             if(chk.classList.contains('checked')) {
                 chk.classList.remove('checked');
                 btn.disabled = true;
@@ -878,9 +955,7 @@
         function applyPromo() {
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
             const statusDiv = document.getElementById('promo-status');
-            
             if(appliedPromoCode === code && code !== "") return;
-
             if (code === "COTTON") {
                 currentDiscount = 0.10;
                 appliedPromoCode = code;
@@ -896,8 +971,54 @@
             updateCheckoutTotalUI();
         }
 
-        function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
-        
+        function submitOrder() {
+            try {
+                const phoneInput = document.getElementById('phone-input');
+                const address = document.getElementById('address-input').value.trim();
+                const comment = document.getElementById('comment-input').value.trim();
+                const deliveryTime = document.getElementById('final-time-string').value; 
+                const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
+                
+                if (rawPhoneDigits.length !== 11) { tg.showAlert("Введите корректный номер телефона"); phoneInput.focus(); return; }
+                if (!address) { tg.showAlert("Заполните адрес доставки"); document.getElementById('address-input').focus(); return; }
+                
+                const cartItemsForBot = []; const grouped = {}; 
+                cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
+                Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
+                
+                const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', ');
+                
+                let productsTotal = checkoutTotalPrice;
+                if(currentDiscount > 0) productsTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
+                
+                const finalTotalWithDelivery = productsTotal + deliveryPrice;
+                const deliveryText = deliveryPrice > 0 ? `Доставка: ${deliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно";
+
+                const dataToSend = { 
+                    action: "checkout", 
+                    total: finalTotalWithDelivery, 
+                    items_text: [itemsText + `\n🚚 ${deliveryText}`], 
+                    cart_items: cartItemsForBot, 
+                    phone: phoneInput.value, 
+                    address: address, 
+                    comment: comment || "Нет комментария",
+                    delivery_time: deliveryTime,
+                    promo_code: appliedPromoCode
+                };
+                
+                cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
+                tg.sendData(JSON.stringify(dataToSend)); 
+                closeCheckoutModal();
+            } catch (e) {
+                tg.showAlert("Ошибка при отправке данных");
+                console.error(e);
+            }
+        }
+
+        // --- RENDER & INIT ---
+        function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
+        function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
+
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
@@ -914,8 +1035,6 @@
                     </div>
                 </div>`;
         }
-        function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
-        function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
 
         function toggleFav(id, e) {
             if(e) e.stopPropagation();
@@ -1036,126 +1155,6 @@
             updateCartQuantities(); 
         }
 
-        function formatPhone(input) {
-            let digits = input.value.replace(/\D/g, ''); const maxDigits = 11;
-            if (digits.length > maxDigits) digits = digits.substring(0, maxDigits);
-            let formatted = '';
-            if (digits.length === 0) { input.value = ''; return; }
-            if (digits.startsWith('8') || digits.startsWith('7')) digits = '7' + digits.substring(1);
-            else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits; digits = digits.substring(0, maxDigits); }
-            if (digits.length > 0) formatted += '+7';
-            if (digits.length > 1) { formatted += ' ('; formatted += digits.substring(1, 4); }
-            if (digits.length > 4) { formatted += ') '; formatted += digits.substring(4, 7); }
-            if (digits.length > 7) { formatted += '-'; formatted += digits.substring(7, 9); }
-            if (digits.length > 9) { formatted += '-'; formatted += digits.substring(9, 11); }
-            input.value = formatted;
-        }
-
-        const addressInput = document.getElementById('address-input');
-        const suggestionsContainer = document.getElementById('address-suggestions');
-        let debounceTimeout;
-        if (addressInput) {
-            addressInput.addEventListener('input', () => {
-                clearTimeout(debounceTimeout);
-                const query = addressInput.value.trim();
-                if (query.length < 3) { suggestionsContainer.innerHTML = ''; return; }
-                debounceTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
-            });
-            addressInput.addEventListener('blur', () => { setTimeout(() => { suggestionsContainer.innerHTML = ''; }, 150); });
-        }
-
-        async function fetchSuggestions(query) {
-            if (DADATA_TOKEN === 'YOUR_DADATA_API_KEY') { suggestionsContainer.innerHTML = '<div class="suggestion-item" style="color:var(--red)">! Вставьте ключ DaData API</div>'; return; }
-            try {
-                const response = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", {
-                    method: "POST", mode: "cors",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token " + DADATA_TOKEN },
-                    body: JSON.stringify({ query: query, count: 5 })
-                });
-                const data = await response.json();
-                renderSuggestions(data.suggestions);
-            } catch (error) { suggestionsContainer.innerHTML = ''; }
-        }
-
-        function renderSuggestions(suggestions) {
-            suggestionsContainer.innerHTML = ''; if (!suggestions || suggestions.length === 0) return;
-            suggestions.forEach(s => {
-                const div = document.createElement('div');
-                div.className = 'suggestion-item'; div.textContent = s.value;
-                
-                div.onclick = () => { 
-                    addressInput.value = s.value; 
-                    suggestionsContainer.innerHTML = ''; 
-                    addressInput.blur();
-                    const lat = parseFloat(s.data.geo_lat);
-                    const lon = parseFloat(s.data.geo_lon);
-                    const city = s.data.city || s.data.region;
-                    const region = s.data.region_with_type || "";
-                    
-                    if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city, region);
-                    else {
-                        document.getElementById('delivery-cost-val').innerText = "Уточнит менеджер";
-                        deliveryPrice = 0; updateCheckoutTotalUI();
-                    }
-                };
-                suggestionsContainer.appendChild(div);
-            });
-        }
-        
-        function submitOrder() {
-            try {
-                const phoneInput = document.getElementById('phone-input');
-                const address = document.getElementById('address-input').value.trim();
-                const comment = document.getElementById('comment-input').value.trim();
-                const deliveryTime = document.getElementById('final-time-string').value; // Get from hidden field
-                const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
-                
-                if (rawPhoneDigits.length !== 11) { tg.showAlert("Введите корректный номер телефона"); phoneInput.focus(); return; }
-                if (!address) { tg.showAlert("Заполните адрес доставки"); document.getElementById('address-input').focus(); return; }
-                
-                const cartItemsForBot = []; const grouped = {}; 
-                cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
-                Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
-                
-                const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', ');
-                
-                let productsTotal = checkoutTotalPrice;
-                if(currentDiscount > 0) {
-                    productsTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
-                }
-                const finalTotalWithDelivery = productsTotal + deliveryPrice;
-                const deliveryText = deliveryPrice > 0 ? `Доставка: ${deliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно";
-
-                const dataToSend = { 
-                    action: "checkout", 
-                    total: finalTotalWithDelivery, 
-                    items_text: [itemsText + `\n🚚 ${deliveryText}`], 
-                    cart_items: cartItemsForBot, 
-                    phone: phoneInput.value, 
-                    address: address, 
-                    comment: comment || "Нет комментария",
-                    delivery_time: deliveryTime,
-                    promo_code: appliedPromoCode
-                };
-                
-                cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
-                tg.sendData(JSON.stringify(dataToSend)); 
-                closeCheckoutModal();
-            } catch (e) {
-                tg.showAlert("Ошибка при отправке данных");
-                console.error(e);
-            }
-        }
-        
-        function clearFav() { if(confirm("Очистить избранное?")) { favs = []; save(); render(); renderFavs(); } }
-
-        function renderFavs() {
-            const list = db.filter(p => favs.includes(p.id));
-            const container = document.getElementById('fav-items');
-            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'flex';
-            container.innerHTML = list.map(p => drawCard(p)).join('');
-        }
-        
         function openModal(id) {
             currentId = id; const p = db.find(x => x.id === id);
             const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join('');
@@ -1195,6 +1194,14 @@
             document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;object-fit:cover">`;
         }
+
+        const isLightOnLoad = localStorage.getItem('theme') === 'light';
+        if(isLightOnLoad) {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-toggle').checked = true;
+        }
+        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
+        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
 
         function setupPTR(page) {
             const spinner = page.querySelector('.ptr-spinner');
@@ -1245,11 +1252,8 @@
             canvas.width = w * 2; canvas.height = h * 2;
             canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
             ctx.scale(2, 2);
-
             ctx.clearRect(0, 0, w, h);
-
             const needlePalette = ['#1a2f23', '#2d4a3e', '#416b5a', '#6b9c8a', '#8fbdaf']; 
-
             function drawBranch(startX, startY, angle, length, width, depth) {
                 if (depth === 0) return;
                 const endX = startX + Math.cos(angle) * length;
@@ -1294,17 +1298,14 @@
                     }
                 }
             }
-
             const mainY = h * 0.4;
             drawBranch(-20, mainY + 20, -0.2, w * 0.5, 4, 1);
             drawBranch(w, mainY + 30, 3.2, w * 0.6, 4, 1);
             drawBranch(-50, mainY, 0.1, w * 1.2, 5, 2);
-
             for(let i=0; i<w; i+=80) {
                drawBranch(i, mainY, 1.5, 60, 2, 1); 
                drawBranch(i + 40, mainY, -1.5, 40, 2, 1); 
             }
-            
             for(let i=0; i<w; i+=30) {
                 if(Math.random() > 0.3) continue;
                 const ly = mainY + (Math.random()-0.5)*20;
@@ -1316,7 +1317,6 @@
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
-
             const ballColors = [{c: '#b8860b', s: '#ffd700'}, {c: '#8b0000', s: '#ff4500'}, {c: '#191970', s: '#4169e1'}];
             const numBalls = 5;
             for (let i = 0; i < numBalls; i++) {
