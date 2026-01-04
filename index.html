@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 5.0: SMART DELIVERY TIME + DISTANCE CALCULATOR -->
+<!-- VERSION 6.0: TIME SLOTS + PROMO FIX + DELIVERY BUG FIX -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -255,23 +255,40 @@
         .custom-checkbox svg { width: 14px; height: 14px; stroke: white; opacity: 0; transition: 0.2s; }
         .custom-checkbox.checked svg { opacity: 1; }
         .legal-label { font-size: 12px; color: var(--text-sec); line-height: 1.4; cursor: pointer; }
+        .legal-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 600; }
         
         .delivery-note { background: rgba(231, 90, 124, 0.1); border: 1px solid rgba(231, 90, 124, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text); line-height: 1.4; display: flex; align-items: center; gap: 10px; }
 
-        /* --- NEW FOR V5.0: DELIVERY INFO --- */
         .delivery-details-box {
             background: var(--block);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 12px;
             margin-bottom: 15px;
-            display: none; /* Скрыт пока адрес не выбран */
+            display: none; 
         }
         .dd-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
         .dd-row:last-child { margin-bottom: 0; }
         .dd-label { color: var(--text-sec); }
         .dd-val { font-weight: 600; color: var(--text); }
         .dd-accent { color: var(--accent); }
+
+        /* --- NEW v6.0: DATE & TIME PICKER STYLE --- */
+        .date-scroll { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; scrollbar-width: none; padding-bottom: 5px; }
+        .date-scroll::-webkit-scrollbar { display: none; }
+        .date-chip { 
+            flex-shrink: 0; padding: 10px 16px; background: var(--block); border: 1px solid var(--border); 
+            border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; text-align: center; min-width: 70px;
+        }
+        .date-chip.selected { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 4px 10px rgba(231, 90, 124, 0.3); }
+        
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 5px; }
+        .time-slot { 
+            padding: 10px; background: var(--block); border: 1px solid var(--border); border-radius: 10px; 
+            color: var(--text); font-size: 13px; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
+        .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
     </style>
 </head>
 <body>
@@ -486,22 +503,28 @@
                     </div>
                 </div>
 
-                <!-- NEW: EXACT TIME INPUT -->
-                <div class="input-label">Дата и время доставки</div>
-                <div class="input-group">
-                    <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <!-- "datetime-local" lets user pick date and time -->
-                    <input type="datetime-local" class="checkout-input" id="delivery-datetime" required>
+                <!-- NEW v6.0: DATE SCROLL & TIME SLOTS -->
+                <div id="date-time-container">
+                    <div class="input-label">Дата доставки</div>
+                    <div class="date-scroll" id="date-scroll"></div>
+                    
+                    <div class="input-label">Интервал времени (10:00 - 00:00)</div>
+                    <div class="time-grid" id="time-grid"></div>
                     <div style="font-size:11px; color:var(--text-sec); margin-top:5px; margin-left:4px;">
-                        Мы автоматически рассчитали минимальное время доставки с учетом дороги и сборки.
+                        Недоступные интервалы скрыты (сборка 2ч + дорога).
                     </div>
+                </div>
+                <!-- HIDDEN REGIONAL INPUT (fallback) -->
+                <div id="regional-date-wrap" style="display:none">
+                     <div class="input-label">Дата отправки (СДЭК)</div>
+                     <input type="date" class="checkout-input" id="regional-date-input">
                 </div>
 
                 <div class="input-label">Комментарий</div>
                 <div class="input-group">
                     <textarea class="checkout-textarea" id="comment-input" placeholder="Текст записки..."></textarea>
                 </div>
-                <div class="input-label">Промокод</div>
+                <div class="input-label">Промокод (на первый заказ)</div>
                 <div class="promo-wrap">
                     <div style="position:relative; width:100%">
                          <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
@@ -520,7 +543,7 @@
                     <div class="custom-checkbox" id="legal-check">
                         <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                     </div>
-                    <div class="legal-label">Я согласен с условиями <span style="color:var(--accent); text-decoration:underline">оферты</span>, политикой конфиденциальности и получением рассылок об акциях.</div>
+                    <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">политикой конфиденциальности</span> и получением рассылок об акциях.</div>
                 </div>
 
                 <button type="submit" class="big-btn" id="final-pay-btn" disabled>ОПЛАТИТЬ</button>
@@ -600,8 +623,11 @@
         let currentDiscount = 0;
         let appliedPromoCode = "";
 
+        // Global variable to persist delivery price on modal close
+        let globalDeliveryPrice = 0;
+
         // ==========================================
-        // 🚀 ЛОГИКА ДОСТАВКИ v5.0 (SMART TIME)
+        // 🚀 ЛОГИКА ДОСТАВКИ v6.0 (TIME SLOTS)
         // ==========================================
         
         const WAREHOUSE_LAT = 55.755814; 
@@ -623,8 +649,12 @@
         };
         const DEFAULT_RUSSIA_PRICE = 850; 
 
-        let deliveryPrice = 0; 
         let deliveryDurationMinutes = 0;
+        let isRegionalDelivery = false;
+        
+        // Date/Time Selection Variables
+        let selectedDate = null;
+        let selectedTimeSlot = null;
 
         function deg2rad(deg) { return deg * (Math.PI/180); }
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -643,7 +673,6 @@
 
             document.getElementById('dd-distance').innerText = distKm + " км";
             
-            // Форматируем время в пути (часы минуты или дни)
             if (isRegional) {
                 document.getElementById('dd-time').innerText = "~ 5-7 дней (СДЭК)";
             } else {
@@ -657,42 +686,112 @@
 
             document.getElementById('dd-price').innerText = priceText;
 
-            // Настройка ограничителя даты
-            setupMinDateTime(durationMins, isRegional);
+            // Перерисовываем слоты
+            deliveryDurationMinutes = durationMins;
+            isRegionalDelivery = isRegional;
+            initDateScroll(); // Reset and init dates
         }
 
-        function setupMinDateTime(travelTimeMins, isRegional) {
-            const dateInput = document.getElementById('delivery-datetime');
-            const now = new Date();
+        // --- TIME SLOT LOGIC ---
+        function initDateScroll() {
+            const container = document.getElementById('date-scroll');
+            const regionalWrap = document.getElementById('regional-date-wrap');
+            const localWrap = document.getElementById('date-time-container');
             
-            let minDate = new Date();
-
-            if (isRegional) {
-                // Если регион - минимум +5 дней
-                minDate.setDate(now.getDate() + 5);
-                minDate.setHours(9, 0, 0, 0); // Ставим утро
+            if (isRegionalDelivery) {
+                regionalWrap.style.display = 'block';
+                localWrap.style.display = 'none';
+                return;
             } else {
-                // Если курьер: Сейчас + Сборка + Дорога + 15 мин запас
-                const totalDelay = ASSEMBLY_TIME_MINUTES + travelTimeMins + 15;
-                minDate.setMinutes(now.getMinutes() + totalDelay);
+                regionalWrap.style.display = 'none';
+                localWrap.style.display = 'block';
             }
 
-            // Форматируем в строку для input type="datetime-local" (YYYY-MM-DDTHH:MM)
-            // Учитываем часовой пояс (костыль для локального времени)
-            const tzOffset = minDate.getTimezoneOffset() * 60000; 
-            const localISOTime = (new Date(minDate - tzOffset)).toISOString().slice(0, 16);
+            container.innerHTML = '';
+            const today = new Date();
             
-            dateInput.min = localISOTime;
-            
-            // Если текущее значение меньше минимума или пустое - сбрасываем
-            if (!dateInput.value || dateInput.value < localISOTime) {
-                dateInput.value = localISOTime;
+            for (let i = 0; i < 14; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() + i);
+                
+                const chip = document.createElement('div');
+                chip.className = 'date-chip';
+                
+                // Text formatting
+                if (i === 0) chip.innerText = "Сегодня";
+                else if (i === 1) chip.innerText = "Завтра";
+                else {
+                    const opts = { day: 'numeric', month: 'short' };
+                    chip.innerText = date.toLocaleDateString('ru-RU', opts);
+                }
+
+                chip.onclick = () => selectDate(date, chip);
+                container.appendChild(chip);
+                
+                if (i === 0) selectDate(date, chip); // Default select today
             }
+        }
+
+        function selectDate(date, chipEl) {
+            selectedDate = date;
+            selectedTimeSlot = null;
+            
+            // UI
+            document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+            chipEl.classList.add('selected');
+            
+            renderTimeGrid();
+        }
+
+        function renderTimeGrid() {
+            const grid = document.getElementById('time-grid');
+            grid.innerHTML = '';
+            
+            // Work hours: 10:00 to 24:00 (intervals of 2 hours)
+            const intervals = [
+                {s: 10, e: 12}, {s: 12, e: 14}, {s: 14, e: 16}, 
+                {s: 16, e: 18}, {s: 18, e: 20}, {s: 20, e: 22}, {s: 22, e: 24}
+            ];
+
+            const now = new Date();
+            const minTime = new Date();
+            // Minimum time = Now + Assembly + Travel + 15min buffer
+            minTime.setMinutes(now.getMinutes() + ASSEMBLY_TIME_MINUTES + deliveryDurationMinutes + 15);
+
+            intervals.forEach(inv => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                const endStr = inv.e === 24 ? "00" : inv.e;
+                slotDiv.innerText = `${inv.s}:00 - ${endStr}:00`;
+                
+                // Validation Logic
+                let isDisabled = false;
+                
+                // Compare selected date + slot start hour VS minTime
+                const slotStartTime = new Date(selectedDate);
+                slotStartTime.setHours(inv.s, 0, 0, 0);
+
+                if (slotStartTime < minTime) {
+                    isDisabled = true;
+                }
+
+                if (isDisabled) {
+                    slotDiv.classList.add('disabled');
+                } else {
+                    slotDiv.onclick = () => {
+                        document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+                        slotDiv.classList.add('selected');
+                        selectedTimeSlot = `${inv.s}:00 - ${endStr}:00`;
+                    };
+                }
+                
+                grid.appendChild(slotDiv);
+            });
         }
 
         function calculateDeliveryCost(lat, lon, city, region) {
             const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon);
-            const realDist = Math.round(dist * 1.3); // +30% на дороги
+            const realDist = Math.round(dist * 1.3); 
 
             let price = 0;
             let text = "";
@@ -701,39 +800,24 @@
 
             // 1. КУРЬЕРСКАЯ ЗОНА (До 130 км)
             if (realDist <= 130) {
-                // Расчет времени:
-                // В городе (до 15км) средняя скорость 30 км/ч => 2 мин/км
-                // За городом (15+) средняя скорость 60 км/ч => 1 мин/км
-                if (realDist <= 15) {
-                    travelTime = realDist * 2.5; // пробки
-                } else {
-                    travelTime = (15 * 2.5) + ((realDist - 15) * 1.2);
-                }
+                if (realDist <= 15) travelTime = realDist * 2.5; 
+                else travelTime = (15 * 2.5) + ((realDist - 15) * 1.2);
                 
-                if (realDist <= 5) {
-                    price = 0; 
-                    text = `Бесплатно`;
-                } else if (realDist <= 15) {
-                    price = 500;
-                    text = `${price} ₽`;
-                } else {
-                    price = 500 + (realDist - 15) * 40; 
-                    text = `${price} ₽`;
-                }
+                if (realDist <= 5) { price = 0; text = `Бесплатно`; } 
+                else if (realDist <= 15) { price = 500; text = `${price} ₽`; } 
+                else { price = 500 + (realDist - 15) * 40; text = `${price} ₽`; }
             } 
-            // 2. ОТПРАВКА ПО РОССИИ
             else {
                 isRegional = true;
-                travelTime = 0; // Для регионов считаем днями
+                travelTime = 0; 
                 let zonePrice = DEFAULT_RUSSIA_PRICE;
                 if(city && city.includes("Санкт-Петербург")) zonePrice = DELIVERY_ZONES["Sankt-Peterburg"];
                 else if(region && region.includes("Краснодар")) zonePrice = DELIVERY_ZONES["Krasnodar"];
-                
                 price = zonePrice;
                 text = `~${price} ₽ (СДЭК)`;
             }
 
-            deliveryPrice = price;
+            globalDeliveryPrice = price; // Save globally
             updateCheckoutTotalUI();
             updateDeliveryInfoUI(realDist, travelTime, text, isRegional);
         }
@@ -742,10 +826,10 @@
             const totalSpan = document.getElementById('checkout-total-price');
             let basePrice = checkoutTotalPrice;
             if (currentDiscount > 0) basePrice = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
-            const final = basePrice + deliveryPrice;
+            const final = basePrice + globalDeliveryPrice;
             
             if (currentDiscount > 0) {
-                 totalSpan.innerHTML = `<s style="color:var(--text-sec);font-size:14px">${checkoutTotalPrice + deliveryPrice}</s> ${final}`;
+                 totalSpan.innerHTML = `<s style="color:var(--text-sec);font-size:14px">${checkoutTotalPrice + globalDeliveryPrice}</s> ${final}`;
             } else {
                 totalSpan.innerText = final;
             }
@@ -789,8 +873,8 @@
                     </div>
                 `;
             } else if (type === 'offer') {
-                title.innerText = 'Оферта';
-                content.innerHTML = `<div class="legal-text"><h3>Публичная оферта</h3>...</div>`;
+                title.innerText = 'Публичная Оферта';
+                content.innerHTML = `<div class="legal-text"><h3>Договор оферты</h3>Полный текст оферты...<br>ИП Иванова<br>ИНН 1234567890</div>`;
             }
             modal.classList.add('modal-active');
         }
@@ -831,14 +915,19 @@
         function openCheckoutModal() {
             if(selectedCart.size === 0) return;
             
-            // СБРОС
+            // RESET OR RESTORE
             currentDiscount = 0; appliedPromoCode = "";
-            deliveryPrice = 0; 
-            document.getElementById('delivery-details-box').style.display = 'none';
             document.getElementById('promo-input').value = "";
             document.getElementById('promo-status').innerText = "";
-            document.getElementById('checkout-total-price').innerText = checkoutTotalPrice; 
+            document.getElementById('checkout-total-price').innerText = checkoutTotalPrice + globalDeliveryPrice; 
             
+            // Если доставка уже была посчитана (пользователь вернулся назад), не сбрасываем цену в 0
+            if (globalDeliveryPrice === 0) {
+                 document.getElementById('delivery-details-box').style.display = 'none';
+            } else {
+                 // Оставляем как есть, так как адрес остался в input
+            }
+
             // Сброс чекбокса
             const chk = document.getElementById('legal-check');
             chk.classList.remove('checked');
@@ -871,6 +960,14 @@
             const statusDiv = document.getElementById('promo-status');
             
             if(appliedPromoCode === code && code !== "") return;
+            
+            // LOCAL CHECK: FIRST ORDER
+            if (localStorage.getItem('promo_used_v6')) {
+                statusDiv.innerText = "Промокод применялся ранее";
+                statusDiv.className = "promo-status promo-error";
+                tg.HapticFeedback.notificationOccurred('error');
+                return;
+            }
 
             if (code === "COTTON") {
                 currentDiscount = 0.10;
@@ -1033,7 +1130,7 @@
             let formatted = '';
             if (digits.length === 0) { input.value = ''; return; }
             if (digits.startsWith('8') || digits.startsWith('7')) digits = '7' + digits.substring(1);
-            else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits; digits = digits.substring(0, maxDigits); }
+            else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits.substring(0, maxDigits); }
             if (digits.length > 0) formatted += '+7';
             if (digits.length > 1) { formatted += ' ('; formatted += digits.substring(1, 4); }
             if (digits.length > 4) { formatted += ') '; formatted += digits.substring(4, 7); }
@@ -1088,7 +1185,7 @@
                     else {
                         document.getElementById('dd-price').innerText = "Уточнит менеджер";
                         document.getElementById('delivery-details-box').style.display = 'block';
-                        deliveryPrice = 0; updateCheckoutTotalUI();
+                        globalDeliveryPrice = 0; updateCheckoutTotalUI();
                     }
                 };
                 suggestionsContainer.appendChild(div);
@@ -1100,16 +1197,22 @@
                 const phoneInput = document.getElementById('phone-input');
                 const address = document.getElementById('address-input').value.trim();
                 const comment = document.getElementById('comment-input').value.trim();
-                
-                // NEW: Get Date Time
-                const deliveryDateTime = document.getElementById('delivery-datetime').value;
-                
                 const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
                 
                 if (rawPhoneDigits.length !== 11) { tg.showAlert("Введите корректный номер телефона"); phoneInput.focus(); return; }
                 if (!address) { tg.showAlert("Заполните адрес доставки"); document.getElementById('address-input').focus(); return; }
-                if (!deliveryDateTime) { tg.showAlert("Выберите время доставки"); return; }
                 
+                let deliveryTimeStr = "";
+                if (isRegionalDelivery) {
+                     const regDate = document.getElementById('regional-date-input').value;
+                     if(!regDate) { tg.showAlert("Выберите дату отправки"); return; }
+                     deliveryTimeStr = "Отправка СДЭК: " + regDate;
+                } else {
+                     if (!selectedDate || !selectedTimeSlot) { tg.showAlert("Выберите дату и интервал доставки"); return; }
+                     const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
+                     deliveryTimeStr = `${dateStr}, ${selectedTimeSlot}`;
+                }
+
                 const cartItemsForBot = []; const grouped = {}; 
                 cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
                 Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
@@ -1120,12 +1223,8 @@
                 if(currentDiscount > 0) {
                     productsTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
                 }
-                const finalTotalWithDelivery = productsTotal + deliveryPrice;
-                const deliveryText = deliveryPrice > 0 ? `Доставка: ${deliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно";
-
-                // Форматируем дату для отображения
-                const dateObj = new Date(deliveryDateTime);
-                const dateStr = dateObj.toLocaleString("ru-RU", { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+                const finalTotalWithDelivery = productsTotal + globalDeliveryPrice;
+                const deliveryText = globalDeliveryPrice > 0 ? `Доставка: ${globalDeliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно";
 
                 const dataToSend = { 
                     action: "checkout", 
@@ -1135,10 +1234,15 @@
                     phone: phoneInput.value, 
                     address: address, 
                     comment: comment || "Нет комментария",
-                    delivery_time: dateStr, // Отправляем красивую дату
+                    delivery_time: deliveryTimeStr, 
                     promo_code: appliedPromoCode
                 };
                 
+                // SAVE PROMO USAGE FLAG LOCALLY
+                if(appliedPromoCode === 'COTTON') {
+                    localStorage.setItem('promo_used_v6', 'true');
+                }
+
                 cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
                 tg.sendData(JSON.stringify(dataToSend)); 
                 closeCheckoutModal();
