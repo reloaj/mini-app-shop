@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 23.0: STICKY HEADER + GROUPED CARDS + GLASS FOOTER -->
+<!-- VERSION 24.0: OVERLAY BUTTONS + COMPACT STICKY HEADER + MERGED CARDS -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -29,8 +29,10 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            /* Супер прозрачный футер для модалки */
-            --footer-glass: rgba(28, 28, 30, 0.65); 
+            
+            /* Стеклянный футер (как просили) */
+            --footer-glass: rgba(28, 28, 30, 0.5); 
+            --glass-blur: blur(20px);
             
             --glass-btn: rgba(0, 0, 0, 0.3);
         }
@@ -46,7 +48,7 @@
             
             --header-glass: rgba(230, 240, 235, 0.6);
             --nav-glass: rgba(255, 255, 255, 0.7);
-            --footer-glass: rgba(255, 255, 255, 0.65);
+            --footer-glass: rgba(255, 255, 255, 0.6);
             
             --glass-btn: rgba(255, 255, 255, 0.6);
         }
@@ -188,35 +190,39 @@
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         
-        /* --- 1. STICKY TOP BAR --- */
+        /* --- 1. STICKY TOP BAR (COMPACT PANEL) --- */
         .modal-top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px; /* Big height initially */
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 15px; padding-top: env(safe-area-inset-top);
-            z-index: 50; transition: background 0.3s, backdrop-filter 0.3s, border-bottom 0.3s;
+            z-index: 50; 
+            background: transparent; /* Initially transparent on photo */
+            transition: all 0.3s ease;
             box-sizing: border-box;
         }
         
         /* State when scrolled down */
         .modal-top-bar.scrolled {
-            background: var(--header-glass);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: var(--block); /* Solid background */
+            height: 48px; /* Compact height (-20%) */
             border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
         
         /* Buttons inside the bar */
         .glass-btn {
             width: 40px; height: 40px; border-radius: 50%;
-            background: var(--glass-btn); backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); /* Glass on photo */
             display: flex; align-items: center; justify-content: center;
-            color: var(--text); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; border: 1px solid rgba(255,255,255,0.1);
             cursor: pointer; transition: all 0.3s;
         }
-        .light-theme .glass-btn { color: #000; }
         
-        /* When scrolled, buttons become transparent to blend with bar */
+        /* When scrolled: remove glass, adapt color to theme */
         .modal-top-bar.scrolled .glass-btn {
             background: transparent; border-color: transparent; backdrop-filter: none;
+            width: 32px; height: 32px; /* Smaller buttons */
+            color: var(--text);
         }
 
         .glass-btn:active { transform: scale(0.9); }
@@ -227,21 +233,24 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 70px 10px 140px 10px; /* Top padding for bar, Bottom for footer */
+            padding: 0 0 140px 0; /* No top padding (photo at top), Bottom for footer */
             box-sizing: border-box;
         }
 
-        /* CARD 1: PHOTO + PRICE + DELIVERY */
+        /* CARD 1: PHOTO + PRICE + DELIVERY (Unified) */
         .product-card-main {
             background: var(--block);
-            border-radius: 20px;
+            border-radius: 0 0 24px 24px; /* Rounded only at bottom initially */
             overflow: hidden;
             box-shadow: 0 4px 15px var(--shadow-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            margin-left: 8px; margin-right: 8px; margin-top: 0px;
+            border-radius: 16px; /* All rounded */
+            margin-top: 8px; /* Little gap from top edge */
         }
 
         .modal-slider-wrap { 
-            width: 100%; aspect-ratio: 1 / 1; 
+            width: 100%; aspect-ratio: 1 / 1.1; 
             overflow: hidden; position: relative; background: #000;
         }
         
@@ -254,7 +263,7 @@
         .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        .modal-info-inner { padding: 15px; }
+        .modal-info-inner { padding: 15px 15px 20px 15px; }
 
         .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
         .current-price { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
@@ -266,15 +275,16 @@
         /* CARD 2: TITLE + DESC */
         .product-card-desc {
             background: var(--block);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 20px;
+            margin: 0 8px;
             box-shadow: 0 4px 15px var(--shadow-color);
         }
 
-        .modal-title { font-size: 20px; font-weight: 700; line-height: 1.4; margin-bottom: 15px; color: var(--text); }
+        .modal-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 15px; color: var(--text); }
         
         .desc-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
-        .desc-text { font-size: 15px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+        .desc-text { font-size: 16px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
 
         /* Lightbox */
         #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
@@ -384,7 +394,7 @@
         .checkout-footer, .modal-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-top: 1px solid var(--border);
             padding: 15px 20px; z-index: 120;
             box-shadow: 0 -5px 20px var(--shadow-color);
@@ -576,7 +586,7 @@
 
     <!-- PRODUCT MODAL -->
     <div id="modal">
-        <!-- Sticky Top Bar -->
+        <!-- Sticky Top Bar (Starts Transparent, becomes Solid Panel) -->
         <div class="modal-top-bar" id="modal-top-bar">
             <div class="glass-btn" onclick="closeModal()">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
@@ -593,7 +603,7 @@
 
         <div class="modal-scroll-container" id="modal-scroll">
             
-            <!-- CARD 1: PHOTO + PRICE + INFO -->
+            <!-- CARD 1: PHOTO + PRICE + DELIVERY (UNIFIED) -->
             <div class="product-card-main">
                 <div class="modal-slider-wrap">
                     <div class="modal-slider" id="m-slider"></div>
