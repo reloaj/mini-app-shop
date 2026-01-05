@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 20.0: SELF-EMPLOYED LEGAL + GLASSY MODAL UI + IOS FIX -->
+<!-- VERSION 21.0: MARKETPLACE UI + SHARE BTN + CARD STYLING -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,13 +11,14 @@
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* --- ТЕМНАЯ ТЕМА --- */
+            /* --- COLORS --- */
             --bg: #000000;
             --block: #1C1C1E;
+            --block-sec: #2C2C2E; /* Secondary block bg for inner cards */
             --text: #FFFFFF;
             --text-sec: #8E8E93;
             --input-bg: #2C2C2E;
@@ -29,12 +30,15 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.85); /* Более прозрачный для модалки */
+            --footer-glass: rgba(28, 28, 30, 0.85);
+            
+            --glass-btn: rgba(0, 0, 0, 0.3);
         }
 
         body.light-theme {
             --bg: #F2F2F7;
             --block: #FFFFFF;
+            --block-sec: #F2F2F7;
             --text: #000000;
             --text-sec: #8E8E93;
             --input-bg: #E5E5EA;
@@ -44,6 +48,8 @@
             --header-glass: rgba(230, 240, 235, 0.6);
             --nav-glass: rgba(255, 255, 255, 0.7);
             --footer-glass: rgba(255, 255, 255, 0.85);
+            
+            --glass-btn: rgba(255, 255, 255, 0.6);
         }
 
         html { height: 100%; overflow: hidden; }
@@ -183,11 +189,34 @@
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         
-        /* --- OZON-STYLE PREMIUM PRODUCT MODAL --- */
+        /* --- PRODUCT MODAL STYLING (OZON STYLE) --- */
+        .modal-top-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 15px; z-index: 50; pointer-events: none;
+        }
+        .modal-top-bar .glass-btn { pointer-events: auto; }
+
+        .glass-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--glass-btn); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text); border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; transition: 0.2s;
+        }
+        .glass-btn:active { transform: scale(0.9); }
+        .glass-btn.active svg { fill: var(--red); stroke: var(--red); }
+
+        .modal-scroll-container {
+            width: 100%; height: 100%;
+            padding-bottom: 120px; box-sizing: border-box;
+        }
+
         .modal-slider-wrap { 
-            width: 100%; aspect-ratio: 1 / 1.1; /* Чуть выше квадрата */
-            overflow: hidden; position: relative; background: #000; 
-            /* No bottom border radius initially, content will overlap */
+            width: 100%; aspect-ratio: 1 / 1.15; 
+            overflow: hidden; position: relative; background: #000;
+            border-radius: 0 0 24px 24px; /* CARD-LIKE ROUNDING BOTTOM */
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
         
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
@@ -195,22 +224,31 @@
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Dots moved up to be visible on photo */
-        .modal-dots { position: absolute; bottom: 40px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
+        .modal-dots { position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
         .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        /* Content "rides" on the photo */
-        .modal-content { 
-            padding: 24px 20px 140px 20px; /* Big bottom padding for glassy footer */
-            max-width: 600px; margin: 0 auto; 
-            background: var(--bg); 
-            min-height: 400px; 
-            position: relative; 
-            top: -30px; /* OVERLAP EFFECT */
-            border-radius: 30px 30px 0 0; /* ROUNDED TOP CORNERS */
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        .modal-content { padding: 20px; margin-top: 10px; }
+        
+        .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
+        .current-price { font-size: 26px; font-weight: 800; color: var(--text); }
+        .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
+        .discount-badge { background: var(--red); color: white; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-bottom: 5px; }
+        
+        .modal-title { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 15px; }
+
+        .delivery-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--accent); font-weight: 500; font-size: 14px; }
+
+        /* DESCRIPTION CARD STYLE */
+        .desc-card {
+            background: var(--block-sec); 
+            border: 1px solid var(--border);
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 20px;
         }
+        .desc-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .desc-text { font-size: 14px; line-height: 1.5; color: var(--text-sec); }
 
         #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
@@ -511,28 +549,50 @@
 
     <!-- PRODUCT MODAL -->
     <div id="modal">
-        <div class="back-btn" onclick="closeModal()">
-            <svg class="icon" style="stroke:white" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
-        </div>
-        <div class="modal-slider-wrap">
-            <div class="modal-slider" id="m-slider"></div>
-            <div class="modal-dots" id="m-dots"></div>
-        </div>
-        <div class="modal-content">
-            <h1 id="m-title" style="margin: 0; font-size: 22px; line-height: 1.2;"></h1>
-            <div id="m-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0;"></div>
-            <p id="m-desc" style="line-height: 1.6; color: var(--text-sec); margin-bottom: 20px; font-size: 15px;"></p>
-            
-            <div class="delivery-note">
-                <svg class="icon" style="min-width:20px; color:var(--accent)" viewBox="0 0 24 24"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                <span>Доставка в регионы осуществляется <b>СДЭК</b>. Стоимость рассчитывается автоматически при оформлении, а время доставки зависит от ТК.</span>
+        <!-- Top Actions -->
+        <div class="modal-top-bar">
+            <div class="glass-btn" onclick="closeModal()">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
             </div>
-
-            <button class="fav-text-btn" id="m-fav-btn" onclick="toggleModalFav()">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                <span>В избранное</span>
-            </button>
+            <div style="display:flex; gap:10px">
+                <div class="glass-btn" id="m-fav-btn" onclick="toggleModalFav()">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </div>
+                <div class="glass-btn" onclick="shareProduct()">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                </div>
+            </div>
         </div>
+
+        <div class="modal-scroll-container">
+            <div class="modal-slider-wrap">
+                <div class="modal-slider" id="m-slider"></div>
+                <div class="modal-dots" id="m-dots"></div>
+            </div>
+            
+            <div class="modal-content">
+                <!-- Price & Discount Row -->
+                <div class="price-row">
+                    <div class="current-price" id="m-price"></div>
+                    <div class="old-price" id="m-old-price"></div>
+                    <div class="discount-badge" id="m-discount">-20%</div>
+                </div>
+
+                <h1 id="m-title" class="modal-title"></h1>
+
+                <div class="delivery-row">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg>
+                    <span>Доставка в регионы</span>
+                </div>
+                
+                <!-- Description Card -->
+                <div class="desc-card">
+                    <div class="desc-title">Описание</div>
+                    <p id="m-desc" class="desc-text"></p>
+                </div>
+            </div>
+        </div>
+
         <!-- GLASSY STICKY PRODUCT FOOTER -->
         <div class="modal-footer" id="modal-footer">
             <!-- Buttons injected by JS -->
@@ -1142,9 +1202,23 @@
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
         function updateModalFavBtn() {
             const btn = document.getElementById('m-fav-btn');
-            const span = btn.querySelector('span');
-            if(favs.includes(currentId)) { span.innerText='В избранном'; btn.classList.add('active'); }
-            else { span.innerText='В избранное'; btn.classList.remove('active'); }
+            const icon = btn.querySelector('svg');
+            if(favs.includes(currentId)) { btn.classList.add('active'); }
+            else { btn.classList.remove('active'); }
+        }
+
+        function shareProduct() {
+            const p = db.find(x => x.id === currentId);
+            const text = `Посмотри этот букет: ${p.name} - ${p.price}₽`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Cotton Flowers',
+                    text: text,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text));
+            }
         }
 
         function addOne(id, e) { 
@@ -1390,14 +1464,22 @@
             currentId = id; const p = db.find(x => x.id === id);
             const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join('');
             const dots = p.images.map((_, i) => `<div class="modal-dot ${i===0?'active':''}"></div>`).join('');
-            document.getElementById('m-slider').innerHTML = slides; document.getElementById('m-dots').innerHTML = dots;
-            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
-            updateModalFavBtn(); 
             
-            // RENDER PREMIUM FOOTER
+            document.getElementById('m-slider').innerHTML = slides; 
+            document.getElementById('m-dots').innerHTML = dots;
+            document.getElementById('m-title').innerText = p.name;
+            
+            // FAKE DISCOUNT LOGIC FOR DEMO
+            document.getElementById('m-price').innerText = p.price + ' ₽'; 
+            document.getElementById('m-old-price').innerText = Math.round(p.price * 1.2) + ' ₽';
+            
+            document.getElementById('m-desc').innerText = p.desc;
+            updateModalFavBtn(); 
             updateModalButtons(id);
 
             const modal = document.getElementById('modal'); modal.classList.add('modal-active');
+            
+            // Setup slider indicator logic
             const slider = document.getElementById('m-slider');
             slider.onscroll = () => {
                 const index = Math.round(slider.scrollLeft / slider.offsetWidth);
