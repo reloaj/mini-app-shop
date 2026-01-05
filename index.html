@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 14.0: PREMIUM PRODUCT MODAL + BUY NOW LOGIC + LEGAL TEXT FIX -->
+<!-- VERSION 15.0: PREMIUM MODAL UI + FULL LEGAL TEXTS + STICKY MODAL FOOTER -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -183,7 +183,6 @@
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         
-        /* PREMIUM ROUNDED SLIDER */
         .modal-slider-wrap { 
             width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; background: #000; 
             border-radius: 0 0 24px 24px; /* ROUNDED BOTTOM */
@@ -203,7 +202,6 @@
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
 
-        /* MODAL CONTENT PADDING FOR FOOTER */
         .modal-content { padding: 24px 20px 100px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; position: relative; top: -10px; }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         
@@ -309,29 +307,55 @@
             background: var(--footer-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            padding: 15px 20px; z-index: 120;
+            padding: 15px 20px; z-index: 150;
             box-shadow: 0 -5px 20px var(--shadow-color);
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
+            
+            /* Animation for hiding */
             transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
             will-change: transform;
         }
         
-        .checkout-footer.hidden { transform: translateY(120%); }
-        #order-form { padding-bottom: 160px; }
-        .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
-
-        /* --- NEW v14.0: PRODUCT MODAL FOOTER BUTTONS --- */
-        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+        .checkout-footer.hidden {
+            transform: translateY(120%);
+        }
         
+        /* FIX OVERLAP: Force scroll area to be larger than footer */
+        #order-form { padding-bottom: 160px; }
+        
+        /* STATIC FOOTER (MARKETPLACE EFFECT) */
+        .static-footer-block {
+            margin-top: 30px;
+            padding-bottom: 30px; 
+        }
+        
+        /* PRODUCT MODAL FOOTER STYLE v14.0 */
+        .modal-footer { 
+            display: flex; gap: 10px; align-items: center; justify-content: space-between; 
+            padding: 10px; /* Smaller padding for modal */
+            border-radius: 0 0 20px 20px; /* Match modal content radius */
+            box-shadow: 0 0px 20px var(--shadow-color); /* Subtle shadow */
+            transform: translateY(0); /* Default state */
+            transition: none; /* No transition for modal footer */
+            will-change: unset;
+            position: absolute; bottom: 0; left: 0; width: 100%; z-index: 130; /* Above modal content */
+        }
+        
+        .modal-footer.hidden { /* Should not happen in modal, but good practice */
+            transform: translateY(120%);
+        }
+
         .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
         .buy-now { background: var(--block); color: var(--text); border: 1px solid var(--border); }
+        .buy-now:active { background: var(--input-bg); }
         .add-cart { background: var(--accent); color: white; }
         .add-cart:active { transform: scale(0.96); }
 
         .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box;}
-        .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+        .modal-qty-btn:active { background: var(--green); }
         .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
 </head>
@@ -518,7 +542,7 @@
         </div>
         <!-- PREMIUM STICKY PRODUCT FOOTER -->
         <div class="modal-footer" id="modal-footer">
-            <!-- Buttons injected by JS -->
+            <!-- Buttons will be injected here by JS -->
         </div>
     </div>
 
@@ -1390,7 +1414,7 @@
             };
         }
         
-        // --- NEW: PREMIUM MODAL LOGIC v14.0 ---
+        // --- PREMIUM MODAL LOGIC v14.0 ---
         function updateModalButtons(id) {
             const footer = document.getElementById('modal-footer');
             const qty = cart.filter(x => x === id).length;
@@ -1612,7 +1636,7 @@
         updateCartQuantities();
 
         // ---------------------------------------------
-        // NEW v12.0: MARKETPLACE EFFECT (STICKY + STATIC)
+        // NEW v14.0: MARKETPLACE EFFECT (STICKY + STATIC)
         // ---------------------------------------------
         const stickyFooter = document.getElementById('sticky-footer');
         const staticPayBlock = document.getElementById('static-pay-block');
