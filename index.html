@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 13.0: FULL LEGAL COMPLIANCE (YUKASSA READY) -->
+<!-- VERSION 14.0: PREMIUM PRODUCT MODAL + BUY NOW LOGIC + LEGAL TEXT FIX -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -178,14 +178,18 @@
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
         /* MODALS */
-        /* Z-INDEX MANAGEMENT: Checkout is 100, Info must be higher to overlay it */
         #modal, #settings-modal, #checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
-        
-        /* INFO MODAL - Higher Z-Index */
         #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 150; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
-        .modal-slider-wrap { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; background: #000; }
+        
+        /* PREMIUM ROUNDED SLIDER */
+        .modal-slider-wrap { 
+            width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; background: #000; 
+            border-radius: 0 0 24px 24px; /* ROUNDED BOTTOM */
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .modal-slider::-webkit-scrollbar { display: none; }
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
@@ -199,11 +203,13 @@
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
 
-        .modal-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; border-radius: 20px 20px 0 0; position: relative; top: -20px; }
+        /* MODAL CONTENT PADDING FOR FOOTER */
+        .modal-content { padding: 24px 20px 100px 20px; max-width: 600px; margin: 0 auto; background: var(--bg); min-height: 300px; position: relative; top: -10px; }
         .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         
         .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
+        
         .big-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 90, 124, 0.3); transition: all 0.3s; }
         .big-btn:disabled { background: var(--input-bg); color: var(--text-sec); box-shadow: none; cursor: not-allowed; opacity: 0.6; }
 
@@ -297,33 +303,36 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER STYLE (v13.0) --- */
-        .checkout-footer {
+        /* --- STICKY FOOTER STYLE --- */
+        .checkout-footer, .modal-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            padding: 15px 20px; z-index: 120; /* Lower than Info Modal */
+            padding: 15px 20px; z-index: 120;
             box-shadow: 0 -5px 20px var(--shadow-color);
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
-            
-            /* Animation for hiding */
             transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
             will-change: transform;
         }
         
-        .checkout-footer.hidden {
-            transform: translateY(120%);
-        }
-        
+        .checkout-footer.hidden { transform: translateY(120%); }
         #order-form { padding-bottom: 160px; }
+        .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
+
+        /* --- NEW v14.0: PRODUCT MODAL FOOTER BUTTONS --- */
+        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
         
-        .static-footer-block {
-            margin-top: 30px;
-            padding-bottom: 30px; 
-        }
+        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .buy-now { background: var(--block); color: var(--text); border: 1px solid var(--border); }
+        .add-cart { background: var(--accent); color: white; }
+        .add-cart:active { transform: scale(0.96); }
+
+        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box;}
+        .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -417,7 +426,6 @@
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
 
-                <!-- NEW LEGAL ITEMS -->
                 <div class="settings-item" onclick="openInfo('offer')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -507,7 +515,10 @@
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 <span>В избранное</span>
             </button>
-            <button class="big-btn" onclick="addCurrentToCart()">Добавить в корзину</button>
+        </div>
+        <!-- PREMIUM STICKY PRODUCT FOOTER -->
+        <div class="modal-footer" id="modal-footer">
+            <!-- Buttons injected by JS -->
         </div>
     </div>
 
@@ -593,7 +604,7 @@
                         <div class="custom-checkbox legal-check-icon">
                             <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                         </div>
-                        <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('privacy')">политикой конфиденциальности</span> и <span class="legal-link" onclick="event.stopPropagation(); openInfo('newsletter')">получением рассылок</span>.</div>
+                        <div class="legal-label">Я согласен с <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">условиями оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('privacy')">политикой конфиденциальности</span> и <span class="legal-link" onclick="event.stopPropagation(); openInfo('newsletter')">получением рассылок</span>.</div>
                     </div>
                     <button type="button" class="big-btn final-pay-btn-class" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
                 </div>
@@ -606,7 +617,7 @@
                     <div class="custom-checkbox legal-check-icon">
                         <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                     </div>
-                    <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>...</div>
+                    <div class="legal-label">Я согласен с <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">условиями оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('privacy')">политикой конфиденциальности</span> и <span class="legal-link" onclick="event.stopPropagation(); openInfo('newsletter')">получением рассылок</span>.</div>
                 </div>
                 <button type="button" class="big-btn final-pay-btn-class" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
             </div>
@@ -1015,7 +1026,7 @@
         }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('modal-active'); }
 
-        // --- LEGAL CHECKBOX LOGIC v12.0 (SYNCED) ---
+        // --- LEGAL CHECKBOX LOGIC v14.0 (SYNCED & FIXED TEXT) ---
         function toggleCheckoutSubmit() {
             isLegalChecked = !isLegalChecked;
             updateLegalVisuals();
@@ -1119,8 +1130,24 @@
             else { span.innerText='В избранное'; btn.classList.remove('active'); }
         }
 
-        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartQuantities(); tg.HapticFeedback.impactOccurred('light'); }
-        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartQuantities(); } }
+        function addOne(id, e) { 
+            if(e) e.stopPropagation(); 
+            cart.push(id); save(); 
+            updateCartQuantities(); 
+            // If Modal is open for this product, refresh its footer
+            if(currentId === id) updateModalButtons(id);
+            tg.HapticFeedback.impactOccurred('light'); 
+        }
+        
+        function removeOne(id) { 
+            const idx = cart.indexOf(id); 
+            if (idx > -1) { 
+                cart.splice(idx, 1); save(); 
+                updateCartQuantities(); 
+                // If Modal is open for this product, refresh its footer
+                if(currentId === id) updateModalButtons(id);
+            } 
+        }
         
         function updateTotalAndButtons() {
             const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
@@ -1286,7 +1313,6 @@
                 
                 let deliveryTimeStr = "";
                 if (isRegionalDelivery) {
-                     // For regional, we just need the selected date, time slot is irrelevant
                      if (!selectedDate) { tg.showAlert("Выберите дату отправки"); return; }
                      const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
                      deliveryTimeStr = "Отправка СДЭК: " + dateStr;
@@ -1350,6 +1376,10 @@
             document.getElementById('m-slider').innerHTML = slides; document.getElementById('m-dots').innerHTML = dots;
             document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
             updateModalFavBtn(); 
+            
+            // RENDER PREMIUM FOOTER
+            updateModalButtons(id);
+
             const modal = document.getElementById('modal'); modal.classList.add('modal-active');
             const slider = document.getElementById('m-slider');
             slider.onscroll = () => {
@@ -1359,6 +1389,49 @@
                 if(dotEls[index]) dotEls[index].classList.add('active');
             };
         }
+        
+        // --- NEW: PREMIUM MODAL LOGIC v14.0 ---
+        function updateModalButtons(id) {
+            const footer = document.getElementById('modal-footer');
+            const qty = cart.filter(x => x === id).length;
+            
+            if (qty > 0) {
+                footer.innerHTML = `
+                    <button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button>
+                    <div class="modal-qty-ctrl">
+                        <div class="modal-qty-btn" onclick="removeOne(${id})">−</div>
+                        <div class="modal-qty-val">${qty}</div>
+                        <div class="modal-qty-btn" onclick="addOne(${id})">+</div>
+                    </div>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button>
+                    <button class="action-btn add-cart" onclick="addOne(${id})">В корзину</button>
+                `;
+            }
+        }
+
+        function buyNow(id) {
+            // 1. Add if not in cart
+            const inCart = cart.includes(id);
+            if (!inCart) {
+                addOne(id); 
+            }
+            
+            // 2. Close Product Modal
+            closeModal();
+            
+            // 3. Select this item specifically for checkout
+            selectedCart.add(id);
+            updateTotalAndButtons();
+            
+            // 4. Open Checkout
+            setTimeout(() => {
+                openCheckoutModal();
+            }, 300);
+        }
+
         function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
         function addCurrentToCart() { addOne(currentId); closeModal(); }
 
