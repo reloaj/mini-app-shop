@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 21.0: MARKETPLACE UI + SHARE BTN + CARD STYLING -->
+<!-- VERSION 22.0: FIXED SCROLL, ROUNDED CORNERS, OZON STYLE LAYOUT -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,7 +18,6 @@
             /* --- COLORS --- */
             --bg: #000000;
             --block: #1C1C1E;
-            --block-sec: #2C2C2E; /* Secondary block bg for inner cards */
             --text: #FFFFFF;
             --text-sec: #8E8E93;
             --input-bg: #2C2C2E;
@@ -30,7 +29,7 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.85);
+            --footer-glass: rgba(28, 28, 30, 0.95);
             
             --glass-btn: rgba(0, 0, 0, 0.3);
         }
@@ -38,7 +37,6 @@
         body.light-theme {
             --bg: #F2F2F7;
             --block: #FFFFFF;
-            --block-sec: #F2F2F7;
             --text: #000000;
             --text-sec: #8E8E93;
             --input-bg: #E5E5EA;
@@ -47,7 +45,7 @@
             
             --header-glass: rgba(230, 240, 235, 0.6);
             --nav-glass: rgba(255, 255, 255, 0.7);
-            --footer-glass: rgba(255, 255, 255, 0.85);
+            --footer-glass: rgba(255, 255, 255, 0.95);
             
             --glass-btn: rgba(255, 255, 255, 0.6);
         }
@@ -184,39 +182,28 @@
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
         /* MODALS */
-        #modal, #settings-modal, #checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
+        #modal, #settings-modal, #checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: hidden; }
         #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 150; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         
-        /* --- PRODUCT MODAL STYLING (OZON STYLE) --- */
-        .modal-top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 15px; z-index: 50; pointer-events: none;
-        }
-        .modal-top-bar .glass-btn { pointer-events: auto; }
-
-        .glass-btn {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: var(--glass-btn); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text); border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer; transition: 0.2s;
-        }
-        .glass-btn:active { transform: scale(0.9); }
-        .glass-btn.active svg { fill: var(--red); stroke: var(--red); }
-
+        /* --- OZON-STYLE LAYOUT FIXES --- */
+        
+        /* Scrollable container inside the fixed modal */
         .modal-scroll-container {
             width: 100%; height: 100%;
-            padding-bottom: 120px; box-sizing: border-box;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 10px 10px 140px 10px; /* Big bottom padding for footer */
+            box-sizing: border-box;
         }
 
+        /* Image Wrapper with Rounded Corners (Like Grid) */
         .modal-slider-wrap { 
-            width: 100%; aspect-ratio: 1 / 1.15; 
+            width: 100%; aspect-ratio: 1 / 1; 
             overflow: hidden; position: relative; background: #000;
-            border-radius: 0 0 24px 24px; /* CARD-LIKE ROUNDING BOTTOM */
+            border-radius: 14px; /* Matches grid card */
             box-shadow: 0 4px 20px var(--shadow-color);
+            margin-bottom: 15px;
         }
         
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
@@ -224,32 +211,43 @@
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        .modal-dots { position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
+        /* Buttons overlay on top of image */
+        .modal-btns-overlay {
+            position: absolute; top: 10px; left: 10px; right: 10px;
+            display: flex; justify-content: space-between; z-index: 20; pointer-events: none;
+        }
+        .modal-btns-overlay .glass-btn { pointer-events: auto; }
+
+        .glass-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; cursor: pointer; transition: 0.2s;
+        }
+        .light-theme .glass-btn { background: rgba(255, 255, 255, 0.6); color: #000; }
+        .glass-btn:active { transform: scale(0.9); }
+        .glass-btn.active svg { fill: var(--red); stroke: var(--red); }
+        
+        .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
         .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        .modal-content { padding: 20px; margin-top: 10px; }
-        
+        /* Content Blocks */
+        .modal-info-block { padding: 0 6px; }
+
         .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
-        .current-price { font-size: 26px; font-weight: 800; color: var(--text); }
-        .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
-        .discount-badge { background: var(--red); color: white; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-bottom: 5px; }
+        .current-price { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
+        .old-price { font-size: 15px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 3px; }
+        .discount-badge { background: var(--red); color: white; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-bottom: 4px; }
         
-        .modal-title { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 15px; }
+        .delivery-row { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; color: var(--accent); font-weight: 500; font-size: 13px; background: rgba(231, 90, 124, 0.1); width: fit-content; padding: 4px 10px; border-radius: 8px;}
 
-        .delivery-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--accent); font-weight: 500; font-size: 14px; }
+        .modal-title { font-size: 18px; font-weight: 600; line-height: 1.4; margin-bottom: 15px; color: var(--text); }
+        
+        .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .desc-text { font-size: 14px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
-        /* DESCRIPTION CARD STYLE */
-        .desc-card {
-            background: var(--block-sec); 
-            border: 1px solid var(--border);
-            border-radius: 16px; 
-            padding: 16px; 
-            margin-bottom: 20px;
-        }
-        .desc-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-        .desc-text { font-size: 14px; line-height: 1.5; color: var(--text-sec); }
-
+        /* Lightbox */
         #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
@@ -549,28 +547,28 @@
 
     <!-- PRODUCT MODAL -->
     <div id="modal">
-        <!-- Top Actions -->
-        <div class="modal-top-bar">
-            <div class="glass-btn" onclick="closeModal()">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
-            </div>
-            <div style="display:flex; gap:10px">
-                <div class="glass-btn" id="m-fav-btn" onclick="toggleModalFav()">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                </div>
-                <div class="glass-btn" onclick="shareProduct()">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                </div>
-            </div>
-        </div>
-
         <div class="modal-scroll-container">
+            <!-- Image with Buttons Overlay -->
             <div class="modal-slider-wrap">
+                <div class="modal-btns-overlay">
+                    <div class="glass-btn" onclick="closeModal()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+                    </div>
+                    <div style="display:flex; gap:10px">
+                        <div class="glass-btn" id="m-fav-btn" onclick="toggleModalFav()">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        </div>
+                        <div class="glass-btn" onclick="shareProduct()">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal-slider" id="m-slider"></div>
                 <div class="modal-dots" id="m-dots"></div>
             </div>
             
-            <div class="modal-content">
+            <div class="modal-info-block">
                 <!-- Price & Discount Row -->
                 <div class="price-row">
                     <div class="current-price" id="m-price"></div>
@@ -578,18 +576,15 @@
                     <div class="discount-badge" id="m-discount">-20%</div>
                 </div>
 
-                <h1 id="m-title" class="modal-title"></h1>
-
                 <div class="delivery-row">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg>
+                    <svg class="icon icon-sm" style="stroke-width:2.5" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg>
                     <span>Доставка в регионы</span>
                 </div>
-                
-                <!-- Description Card -->
-                <div class="desc-card">
-                    <div class="desc-title">Описание</div>
-                    <p id="m-desc" class="desc-text"></p>
-                </div>
+
+                <h1 id="m-title" class="modal-title"></h1>
+
+                <div class="desc-title">Описание</div>
+                <p id="m-desc" class="desc-text"></p>
             </div>
         </div>
 
