@@ -1,4 +1,5 @@
-<!-- VERSION 7.0: STICKY FOOTER + BEAUTIFUL CDEK DATES + PRICE X2 -->
+<!-- START OF FILE сайт.html -->
+<!-- VERSION 8.0: FIX OVERLAP BUG + UPDATED COMMENTS HINT -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -28,7 +29,7 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.9);
+            --footer-glass: rgba(28, 28, 30, 0.95); /* Чуть плотнее фон */
         }
 
         body.light-theme {
@@ -42,7 +43,7 @@
             
             --header-glass: rgba(230, 240, 235, 0.6);
             --nav-glass: rgba(255, 255, 255, 0.7);
-            --footer-glass: rgba(255, 255, 255, 0.9);
+            --footer-glass: rgba(255, 255, 255, 0.95);
         }
 
         html { height: 100%; overflow: hidden; }
@@ -304,8 +305,8 @@
             border-radius: 24px 24px 0 0;
         }
         
-        /* Add padding to checkout scroll area so content isn't hidden behind footer */
-        #checkout-modal { padding-bottom: 140px; }
+        /* FIX OVERLAP (v8.0): Force scroll area to be larger than footer */
+        #order-form { padding-bottom: 160px; }
     </style>
 </head>
 <body>
@@ -536,7 +537,7 @@
 
                 <div class="input-label">Комментарий к заказу</div>
                 <div class="input-group">
-                    <textarea class="checkout-textarea" id="comment-input" placeholder="Пожелания, текст открытки, ваш номер телефона для связи..."></textarea>
+                    <textarea class="checkout-textarea" id="comment-input" placeholder="Напишите здесь пожелания, текст открытки, ваш номер телефона для связи..."></textarea>
                 </div>
                 <div class="input-label">Промокод (на первый заказ)</div>
                 <div class="promo-wrap">
@@ -644,7 +645,7 @@
         let globalDeliveryPrice = 0;
 
         // ==========================================
-        // 🚀 ЛОГИКА ДОСТАВКИ v7.0 (CDEK X2 + DATES)
+        // 🚀 ЛОГИКА ДОСТАВКИ v8.0 (CDEK X2 + DATES)
         // ==========================================
         
         const WAREHOUSE_LAT = 55.755814; 
