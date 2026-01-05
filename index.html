@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 9.0: SMART KEYBOARD HANDLING (HIDE FOOTER ON TYPING) -->
+<!-- VERSION 10.0: KEYBOARD DETECTION VIA RESIZE (BEST UX) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -292,7 +292,7 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER STYLE (v9.0) --- */
+        /* --- STICKY FOOTER STYLE (v10.0) --- */
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
@@ -304,16 +304,16 @@
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
             
-            /* Animation for hiding */
+            /* Плавная анимация скрытия */
             transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
-        /* Hiding class */
+        /* Класс скрытия - сдвигаем вниз */
         .checkout-footer.hidden {
             transform: translateY(110%);
         }
         
-        /* FIX OVERLAP: Force scroll area to be larger than footer */
+        /* Отступ для контента, чтобы не скрывался под футером */
         #order-form { padding-bottom: 160px; }
     </style>
 </head>
@@ -1475,27 +1475,27 @@
         updateCartQuantities();
 
         // ---------------------------------------------
-        // NEW v9.0: HIDE FOOTER ON KEYBOARD OPEN
+        // NEW v10.0: SMART FOOTER HIDE ON RESIZE (KEYBOARD)
         // ---------------------------------------------
-        const inputs = document.querySelectorAll('.checkout-input, .checkout-textarea');
         const footer = document.getElementById('sticky-footer');
+        let initialHeight = window.innerHeight;
 
-        if(inputs && footer) {
-            inputs.forEach(input => {
-                input.addEventListener('focus', () => {
-                    footer.classList.add('hidden');
-                });
-                input.addEventListener('blur', () => {
-                    // Small timeout to prevent flickering if switching between fields
-                    setTimeout(() => {
-                        // Check if focus moved to another input, if not, show footer
-                        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-                            footer.classList.remove('hidden');
-                        }
-                    }, 100);
-                });
-            });
-        }
+        // Обновляем "эталонную" высоту только если она увеличилась (например, при скрытии панели навигации браузера)
+        // или если ориентация изменилась
+        window.addEventListener('resize', () => {
+            if (!footer) return;
+            
+            const currentHeight = window.innerHeight;
+            
+            // Если высота стала меньше на 20% (выехала клавиатура)
+            if (currentHeight < initialHeight * 0.8) {
+                footer.classList.add('hidden');
+            } else {
+                footer.classList.remove('hidden');
+                // Обновляем эталон, если экран "вырос" (скрылся бар браузера)
+                if(currentHeight > initialHeight) initialHeight = currentHeight;
+            }
+        });
     </script>
 </body>
 </html>
