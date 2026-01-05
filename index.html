@@ -1,5 +1,5 @@
-<!-- START OF FILE сайт.html -->
-<!-- VERSION 15.0: SELF-EMPLOYED LEGAL + OZON STYLE CARD + FLOATING GLASS FOOTER -->
+<!-- START OF FILE site.html -->
+<!-- VERSION 20.0: SELF-EMPLOYED LEGAL + GLASSY MODAL UI + IOS FIX -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -29,7 +29,7 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.85); /* Более прозрачный */
+            --footer-glass: rgba(28, 28, 30, 0.85); /* Более прозрачный для модалки */
         }
 
         body.light-theme {
@@ -183,43 +183,41 @@
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         
-        /* OZON STYLE: ROUNDED IMAGE CARD */
+        /* --- OZON-STYLE PREMIUM PRODUCT MODAL --- */
         .modal-slider-wrap { 
-            width: calc(100% - 24px); 
-            margin: 12px auto 0 auto;
-            aspect-ratio: 1 / 1; 
-            overflow: hidden; 
-            position: relative; 
-            background: #000; 
-            border-radius: 24px; /* ALL CORNERS ROUNDED */
-            box-shadow: 0 4px 20px var(--shadow-color);
+            width: 100%; aspect-ratio: 1 / 1.1; /* Чуть выше квадрата */
+            overflow: hidden; position: relative; background: #000; 
+            /* No bottom border radius initially, content will overlap */
         }
         
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .modal-slider::-webkit-scrollbar { display: none; }
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
         .modal-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
-        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; }
+        
+        /* Dots moved up to be visible on photo */
+        .modal-dots { position: absolute; bottom: 40px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
+        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
+
+        /* Content "rides" on the photo */
+        .modal-content { 
+            padding: 24px 20px 140px 20px; /* Big bottom padding for glassy footer */
+            max-width: 600px; margin: 0 auto; 
+            background: var(--bg); 
+            min-height: 400px; 
+            position: relative; 
+            top: -30px; /* OVERLAP EFFECT */
+            border-radius: 30px 30px 0 0; /* ROUNDED TOP CORNERS */
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
 
         #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
 
-        /* MODAL CONTENT: SEPARATED FROM IMAGE */
-        .modal-content { 
-            padding: 20px; 
-            padding-bottom: 120px; /* Space for floating footer */
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: var(--bg); 
-            min-height: 300px; 
-            /* No negative margin - separate block */
-        }
-        
-        .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 120; }
+        .back-btn { position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
         
         .fav-text-btn { width: 100%; padding: 14px; background: var(--block); border: 1px solid var(--border); color: var(--text); border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .fav-text-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(231, 90, 124, 0.1); }
@@ -317,47 +315,39 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER (CHECKOUT) --- */
-        .checkout-footer {
+        /* --- STICKY FOOTER STYLE --- */
+        .checkout-footer, .modal-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
             padding: 15px 20px; z-index: 120;
             box-shadow: 0 -5px 20px var(--shadow-color);
-            padding-bottom: env(safe-area-inset-bottom);
+            /* IOS FIX: Extra padding + safe area */
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
             transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
             will-change: transform;
         }
+        
         .checkout-footer.hidden { transform: translateY(120%); }
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
 
-        /* --- FLOATING GLASS MODAL FOOTER (PRODUCT) v15.0 --- */
-        .modal-footer { 
-            position: fixed; 
-            bottom: 20px; /* Floating up */
-            left: 10px; right: 10px; width: auto; 
-            background: var(--footer-glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 10px 15px; 
-            padding-bottom: max(10px, env(safe-area-inset-bottom)); /* iOS Safe Area */
-            z-index: 120;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            display: flex; gap: 10px; align-items: center; justify-content: space-between;
-            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-        }
+        /* --- GLASSY PRODUCT MODAL FOOTER BUTTONS --- */
+        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
         
         .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .buy-now { background: var(--block); color: var(--text); border: 1px solid var(--border); }
-        .add-cart { background: var(--accent); color: white; }
+        
+        /* Transparent/Glassy style for secondary button */
+        .buy-now { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(5px); }
+        .buy-now:active { background: rgba(255,255,255,0.2); }
+        
+        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4); }
         .add-cart:active { transform: scale(0.96); }
 
-        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box;}
+        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4);}
         .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
         .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
@@ -487,7 +477,7 @@
 
                 <div class="settings-item" onclick="openSettings()">
                     <div class="settings-left">
-                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         <span>Настройки</span>
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
@@ -543,8 +533,10 @@
                 <span>В избранное</span>
             </button>
         </div>
-        <!-- FLOATING GLASS FOOTER -->
-        <div class="modal-footer" id="modal-footer"></div>
+        <!-- GLASSY STICKY PRODUCT FOOTER -->
+        <div class="modal-footer" id="modal-footer">
+            <!-- Buttons injected by JS -->
+        </div>
     </div>
 
     <!-- LIGHTBOX -->
@@ -724,165 +716,973 @@
         let globalDeliveryPrice = 0;
         let isLegalChecked = false;
 
-        // ... (Geo Logic Same as v14) ...
+        // ==========================================
+        // 🚀 ЛОГИКА ДОСТАВКИ
+        // ==========================================
+        
         const WAREHOUSE_LAT = 55.755814; 
         const WAREHOUSE_LON = 37.617635;
-        const ASSEMBLY_TIME_MINUTES = 120; 
-        const DELIVERY_ZONES = { "Moscow": { base: 0, perKm: 40 }, "Sankt-Peterburg": 600, "Krasnodar": 750, "Novosibirsk": 900, "Yekaterinburg": 850, "Kazan": 700, "Nizhny Novgorod": 650, "Rostov": 750, "Samara": 700, "Ufa": 750, "Vladivostok": 1200 };
+        const ASSEMBLY_TIME_MINUTES = 120; // 2 часа на сборку
+
+        const DELIVERY_ZONES = {
+            "Moscow": { base: 0, perKm: 40 },
+            "Sankt-Peterburg": 600,
+            "Krasnodar": 750,
+            "Novosibirsk": 900,
+            "Yekaterinburg": 850,
+            "Kazan": 700,
+            "Nizhny Novgorod": 650,
+            "Rostov": 750,
+            "Samara": 700,
+            "Ufa": 750,
+            "Vladivostok": 1200
+        };
         const DEFAULT_RUSSIA_PRICE = 850; 
+
         let deliveryDurationMinutes = 0;
         let isRegionalDelivery = false;
+        
+        // Date/Time Selection Variables
         let selectedDate = null;
         let selectedTimeSlot = null;
 
         function deg2rad(deg) { return deg * (Math.PI/180); }
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-            const R = 6371; const dLat = deg2rad(lat2 - lat1); const dLon = deg2rad(lon2 - lon1);
+            const R = 6371; 
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            return R * c; 
         }
 
         function updateDeliveryInfoUI(distKm, durationMins, priceText, isRegional) {
             const box = document.getElementById('delivery-details-box');
             box.style.display = 'block';
+
             document.getElementById('dd-distance').innerText = distKm + " км";
-            if (isRegional) { document.getElementById('dd-time').innerText = "~ 5-7 дней (СДЭК)"; } 
-            else { const hours = Math.floor(durationMins / 60); const mins = Math.floor(durationMins % 60); document.getElementById('dd-time').innerText = (hours > 0 ? hours + " ч. " : "") + mins + " мин."; }
+            
+            if (isRegional) {
+                document.getElementById('dd-time').innerText = "~ 5-7 дней (СДЭК)";
+            } else {
+                const hours = Math.floor(durationMins / 60);
+                const mins = Math.floor(durationMins % 60);
+                let timeStr = "";
+                if(hours > 0) timeStr += hours + " ч. ";
+                timeStr += mins + " мин.";
+                document.getElementById('dd-time').innerText = timeStr;
+            }
+
             document.getElementById('dd-price').innerText = priceText;
-            deliveryDurationMinutes = durationMins; isRegionalDelivery = isRegional; initDateScroll(); 
+
+            deliveryDurationMinutes = durationMins;
+            isRegionalDelivery = isRegional;
+            initDateScroll(); 
         }
 
+        // --- TIME SLOT LOGIC ---
         function initDateScroll() {
-            const container = document.getElementById('date-scroll'); const timeBlock = document.getElementById('time-block');
-            if (isRegionalDelivery) { timeBlock.style.display = 'none'; document.getElementById('date-label').innerText = "Дата отправки (СДЭК)"; } 
-            else { timeBlock.style.display = 'block'; document.getElementById('date-label').innerText = "Дата доставки"; }
-            container.innerHTML = ''; const today = new Date();
+            const container = document.getElementById('date-scroll');
+            const timeBlock = document.getElementById('time-block');
+            
+            // Если регион (СДЭК) - скрываем выбор времени
+            if (isRegionalDelivery) {
+                timeBlock.style.display = 'none';
+                document.getElementById('date-label').innerText = "Дата отправки (СДЭК)";
+            } else {
+                timeBlock.style.display = 'block';
+                document.getElementById('date-label').innerText = "Дата доставки";
+            }
+
+            container.innerHTML = '';
+            const today = new Date();
+            
             for (let i = 0; i < 14; i++) {
-                const date = new Date(); date.setDate(today.getDate() + i);
-                const chip = document.createElement('div'); chip.className = 'date-chip';
-                if (i === 0) chip.innerText = "Сегодня"; else if (i === 1) chip.innerText = "Завтра"; else { chip.innerText = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); }
-                chip.onclick = () => selectDate(date, chip); container.appendChild(chip);
+                const date = new Date();
+                date.setDate(today.getDate() + i);
+                
+                const chip = document.createElement('div');
+                chip.className = 'date-chip';
+                
+                if (i === 0) chip.innerText = "Сегодня";
+                else if (i === 1) chip.innerText = "Завтра";
+                else {
+                    const opts = { day: 'numeric', month: 'short' };
+                    chip.innerText = date.toLocaleDateString('ru-RU', opts);
+                }
+
+                chip.onclick = () => selectDate(date, chip);
+                container.appendChild(chip);
+                
                 if (i === 0) selectDate(date, chip); 
             }
         }
 
         function selectDate(date, chipEl) {
-            selectedDate = date; selectedTimeSlot = null;
-            document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected')); chipEl.classList.add('selected');
-            if (!isRegionalDelivery) renderTimeGrid();
+            selectedDate = date;
+            selectedTimeSlot = null;
+            
+            document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+            chipEl.classList.add('selected');
+            
+            if (!isRegionalDelivery) {
+                renderTimeGrid();
+            }
         }
 
         function renderTimeGrid() {
-            const grid = document.getElementById('time-grid'); grid.innerHTML = '';
-            const intervals = [{s: 10, e: 12}, {s: 12, e: 14}, {s: 14, e: 16}, {s: 16, e: 18}, {s: 18, e: 20}, {s: 20, e: 22}, {s: 22, e: 24}];
-            const now = new Date(); const minTime = new Date(); minTime.setMinutes(now.getMinutes() + ASSEMBLY_TIME_MINUTES + deliveryDurationMinutes + 15);
+            const grid = document.getElementById('time-grid');
+            grid.innerHTML = '';
+            
+            const intervals = [
+                {s: 10, e: 12}, {s: 12, e: 14}, {s: 14, e: 16}, 
+                {s: 16, e: 18}, {s: 18, e: 20}, {s: 20, e: 22}, {s: 22, e: 24}
+            ];
+
+            const now = new Date();
+            const minTime = new Date();
+            minTime.setMinutes(now.getMinutes() + ASSEMBLY_TIME_MINUTES + deliveryDurationMinutes + 15);
+
             intervals.forEach(inv => {
-                const slotDiv = document.createElement('div'); slotDiv.className = 'time-slot';
-                const endStr = inv.e === 24 ? "00" : inv.e; slotDiv.innerText = `${inv.s}:00 - ${endStr}:00`;
-                const slotStartTime = new Date(selectedDate); slotStartTime.setHours(inv.s, 0, 0, 0);
-                if (slotStartTime < minTime) slotDiv.classList.add('disabled');
-                else { slotDiv.onclick = () => { document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected')); slotDiv.classList.add('selected'); selectedTimeSlot = `${inv.s}:00 - ${endStr}:00`; }; }
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                const endStr = inv.e === 24 ? "00" : inv.e;
+                slotDiv.innerText = `${inv.s}:00 - ${endStr}:00`;
+                
+                let isDisabled = false;
+                const slotStartTime = new Date(selectedDate);
+                slotStartTime.setHours(inv.s, 0, 0, 0);
+
+                if (slotStartTime < minTime) {
+                    isDisabled = true;
+                }
+
+                if (isDisabled) {
+                    slotDiv.classList.add('disabled');
+                } else {
+                    slotDiv.onclick = () => {
+                        document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+                        slotDiv.classList.add('selected');
+                        selectedTimeSlot = `${inv.s}:00 - ${endStr}:00`;
+                    };
+                }
+                
                 grid.appendChild(slotDiv);
             });
         }
 
         function calculateDeliveryCost(lat, lon, city, region) {
-            const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon); const realDist = Math.round(dist * 1.3); 
-            let price = 0; let text = ""; let travelTime = 0; let isRegional = false;
+            const dist = getDistanceFromLatLonInKm(WAREHOUSE_LAT, WAREHOUSE_LON, lat, lon);
+            const realDist = Math.round(dist * 1.3); 
+
+            let price = 0;
+            let text = "";
+            let travelTime = 0;
+            let isRegional = false;
+
+            // 1. КУРЬЕРСКАЯ ЗОНА (До 130 км)
             if (realDist <= 130) {
-                if (realDist <= 15) travelTime = realDist * 2.5; else travelTime = (15 * 2.5) + ((realDist - 15) * 1.2);
-                if (realDist <= 5) { price = 0; text = `Бесплатно`; } else if (realDist <= 15) { price = 500; text = `${price} ₽`; } else { price = 500 + (realDist - 15) * 40; text = `${price} ₽`; }
-            } else {
-                isRegional = true; travelTime = 0; 
+                if (realDist <= 15) travelTime = realDist * 2.5; 
+                else travelTime = (15 * 2.5) + ((realDist - 15) * 1.2);
+                
+                if (realDist <= 5) { price = 0; text = `Бесплатно`; } 
+                else if (realDist <= 15) { price = 500; text = `${price} ₽`; } 
+                else { price = 500 + (realDist - 15) * 40; text = `${price} ₽`; }
+            } 
+            else {
+                isRegional = true;
+                travelTime = 0; 
                 let zonePrice = DEFAULT_RUSSIA_PRICE;
-                if(city && city.includes("Санкт-Петербург")) zonePrice = DELIVERY_ZONES["Sankt-Peterburg"]; else if(region && region.includes("Краснодар")) zonePrice = DELIVERY_ZONES["Krasnodar"];
-                price = zonePrice * 2; text = `~${price} ₽ (СДЭК)`;
+                if(city && city.includes("Санкт-Петербург")) zonePrice = DELIVERY_ZONES["Sankt-Peterburg"];
+                else if(region && region.includes("Краснодар")) zonePrice = DELIVERY_ZONES["Krasnodar"];
+                
+                // PRICE X2 LOGIC FOR CDEK
+                price = zonePrice * 2;
+                
+                text = `~${price} ₽ (СДЭК)`;
             }
-            globalDeliveryPrice = price; updateCheckoutTotalUI(); updateDeliveryInfoUI(realDist, travelTime, text, isRegional);
+
+            globalDeliveryPrice = price; // Save globally
+            updateCheckoutTotalUI();
+            updateDeliveryInfoUI(realDist, travelTime, text, isRegional);
         }
 
         function updateCheckoutTotalUI() {
-            const totalSpan = document.getElementById('checkout-total-price'); let basePrice = checkoutTotalPrice;
+            const totalSpan = document.getElementById('checkout-total-price');
+            let basePrice = checkoutTotalPrice;
             if (currentDiscount > 0) basePrice = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
             const final = basePrice + globalDeliveryPrice;
-            if (currentDiscount > 0) totalSpan.innerHTML = `<s style="color:var(--text-sec);font-size:14px">${checkoutTotalPrice + globalDeliveryPrice}</s> ${final}`; else totalSpan.innerText = final;
+            
+            if (currentDiscount > 0) {
+                 totalSpan.innerHTML = `<s style="color:var(--text-sec);font-size:14px">${checkoutTotalPrice + globalDeliveryPrice}</s> ${final}`;
+            } else {
+                totalSpan.innerText = final;
+            }
         }
 
+        // ==========================================
+
         function openInfo(type) {
-            const modal = document.getElementById('info-modal'); const title = document.getElementById('info-title'); const content = document.getElementById('info-content');
+            const modal = document.getElementById('info-modal');
+            const title = document.getElementById('info-title');
+            const content = document.getElementById('info-content');
+            
             if (type === 'contacts') {
                 title.innerText = 'Контакты';
-                content.innerHTML = `<div class="info-block"><div class="info-row"><span class="info-label">Магазин</span><span class="info-val">Cotton Flowers</span></div><div class="info-row"><span class="info-label">Телефон</span><span class="info-val">+7 (999) 000-00-00</span></div><div class="info-row"><span class="info-label">Адрес</span><span class="info-val">г. Москва, ул. Цветочная, д. 1</span></div></div>`;
+                content.innerHTML = `
+                    <div class="info-block">
+                        <div class="info-row"><span class="info-label">Магазин</span><span class="info-val">Cotton Flowers</span></div>
+                        <div class="info-row"><span class="info-label">Телефон</span><span class="info-val">+7 (999) 000-00-00</span></div>
+                        <div class="info-row"><span class="info-label">Адрес</span><span class="info-val">г. Москва, ул. Цветочная, д. 1</span></div>
+                    </div>
+                `;
             } else if (type === 'delivery') {
-                title.innerText = 'Доставка';
-                content.innerHTML = `<div class="legal-text"><h3>📦 Упаковка</h3><ul><li>Жесткие коробки.</li><li>Аквабоксы.</li></ul><h3>🚚 Курьер</h3>По Москве и области (до 130 км).<h3>✈️ СДЭК</h3>В регионы (от 130 км).</div>`;
+                title.innerText = 'Доставка и Упаковка';
+                content.innerHTML = `
+                    <div class="legal-text">
+                        <h3>📦 Бережная упаковка</h3>
+                        Мы понимаем, как важно, чтобы букет приехал в идеальном состоянии. 
+                        <ul>
+                            <li>Все букеты отправляются в жестких транспортировочных коробках.</li>
+                            <li>Живые цветы устанавливаются в аквабокс с водой.</li>
+                            <li>Сухоцветы фиксируются, чтобы не осыпались в пути.</li>
+                        </ul>
+
+                        <h3>🚚 Курьерская доставка</h3>
+                        Действует по Москве и области (до 130 км).
+                        Минимальное время доставки рассчитывается автоматически исходя из расстояния.
+
+                        <h3>✈️ Отправка в регионы (СДЭК)</h3>
+                        Для адресов далее 130 км мы используем СДЭК.
+                        Средний срок: 5-7 дней.
+                    </div>
+                `;
             } else if (type === 'offer') {
                 title.innerText = 'Публичная Оферта';
-                content.innerHTML = `<div class="legal-text"><h3>Оферта (для Самозанятых)</h3><p>Настоящая оферта является предложением Плательщика налога на профессиональный доход (Самозанятого) заключить договор купли-продажи.</p><p>1. Продавец — физическое лицо, применяющее специальный налоговый режим «Налог на профессиональный доход».</p><p>2. Чек формируется в приложении «Мой налог» и направляется покупателю электронно.</p><p>ИНН: [ВАШ ИНН]</p></div>`;
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Публичная оферта интернет-магазина Cotton Flowers</h3>
+                    <p>Настоящая оферта является официальным предложением <b>Самозанятого [ВАШИ ДАННЫЕ]</b> (далее - «Продавец») заключить договор купли-продажи товаров дистанционным способом.</p>
+                    <p>1. Общие положения<br>1.1. Заказ Покупателем товара, размещенного на сайте, означает, что Покупатель согласен со всеми условиями настоящей Оферты.<br>1.2. Продавец имеет право вносить изменения в Оферту без уведомления Покупателя.</p>
+                    <p>2. Оформление Заказа<br>2.1. Заказ товара осуществляется Покупателем через сервис Telegram Web App.<br>2.2. При регистрации на сайте Покупатель обязуется предоставить следующую регистрационную информацию: имя, адрес доставки, телефон.</p>
+                    <p>3. Доставка и оплата<br>3.1. Стоимость доставки рассчитывается индивидуально.<br>3.2. Оплата производится банковской картой через сервис ЮKassa. Самозанятый формирует чек в приложении «Мой налог» и отправляет его покупателю по запросу.</p>
+                    <p><b>Реквизиты продавца:</b><br>Самозанятый [ВАШИ ДАННЫЕ]<br>ИНН: 000000000000</p>
+                </div>`;
             } else if (type === 'privacy') {
-                title.innerText = 'Конфиденциальность';
-                content.innerHTML = `<div class="legal-text"><h3>Обработка данных</h3><p>Сбор и обработка персональных данных осуществляется физическим лицом (Самозанятым) исключительно в целях исполнения заказа.</p><p>Данные не передаются третьим лицам, за исключением служб доставки.</p></div>`;
+                title.innerText = 'Политика конфиденциальности';
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Политика в отношении обработки персональных данных</h3>
+                    <p>1. Общие положения<br>Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального закона от 27.07.2006. №152-ФЗ «О персональных данных» и определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных, предпринимаемые Самозанятым [ВАШИ ДАННЫЕ].</p>
+                    <p>2. Оператор может обрабатывать следующие персональные данные Пользователя:<br>- Фамилия, имя, отчество;<br>- Номер телефона;<br>- Адрес доставки.</p>
+                    <p>3. Цели обработки персональных данных<br>- Информирование Пользователя посредством отправки электронных писем;<br>- Заключение, исполнение и прекращение гражданско-правовых договоров.</p>
+                </div>`;
             } else if (type === 'newsletter') {
-                title.innerText = 'Рассылка';
-                content.innerHTML = `<div class="legal-text"><h3>Согласие</h3><p>Нажимая кнопку оплаты, вы соглашаетесь на получение сервисных уведомлений о статусе заказа и информационных сообщений о новинках (не чаще 1 раза в неделю).</p></div>`;
+                title.innerText = 'Согласие на рассылку';
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Согласие на получение рассылки</h3>
+                    <p>Пользователь, оставляя свои данные в веб-приложении Cotton Flowers, выражает свое согласие на получение рекламной и информационной рассылки.</p>
+                    <p>1. Рассылка может приходить в виде:<br>- Сообщений в Telegram;<br>- SMS-сообщений.</p>
+                    <p>2. Отказ от рассылки<br>Пользователь в любой момент может отказаться от получения рассылки, направив сообщение в службу поддержки.</p>
+                </div>`;
             }
             modal.classList.add('modal-active');
         }
 
         function closeInfo() { document.getElementById('info-modal').classList.remove('modal-active'); }
-        function toggleTheme() { document.body.classList.toggle('light-theme'); const isLight = document.body.classList.contains('light-theme'); localStorage.setItem('theme', isLight ? 'light' : 'dark'); tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000'); tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E'); }
-        const isLightOnLoad = localStorage.getItem('theme') === 'light'; if(isLightOnLoad) { document.body.classList.add('light-theme'); document.getElementById('theme-toggle').checked = true; } tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000'); tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
-        function toggleLang() { const isEng = document.getElementById('lang-toggle').checked; const titles = document.querySelectorAll('.nav-text'); if(isEng) { titles[0].innerText = 'Catalog'; titles[1].innerText = 'Cart'; titles[2].innerText = 'Saved'; titles[3].innerText = 'Profile'; } else { titles[0].innerText = 'Каталог'; titles[1].innerText = 'Корзина'; titles[2].innerText = 'Избранное'; titles[3].innerText = 'Профиль'; } }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
+            tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
+        }
+
+        const isLightOnLoad = localStorage.getItem('theme') === 'light';
+        if(isLightOnLoad) {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-toggle').checked = true;
+        }
+        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
+        tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
+
+        function toggleLang() {
+            const isEng = document.getElementById('lang-toggle').checked;
+            const titles = document.querySelectorAll('.nav-text');
+            if(isEng) {
+                titles[0].innerText = 'Catalog'; titles[1].innerText = 'Cart'; titles[2].innerText = 'Saved'; titles[3].innerText = 'Profile';
+            } else {
+                titles[0].innerText = 'Каталог'; titles[1].innerText = 'Корзина'; titles[2].innerText = 'Избранное'; titles[3].innerText = 'Профиль';
+            }
+        }
+
         function openSupport() { tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`); }
+        
         function openSettings() { document.getElementById('settings-modal').classList.add('modal-active'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('modal-active'); }
         
-        function openCheckoutModal() { if(selectedCart.size === 0) return; currentDiscount = 0; appliedPromoCode = ""; document.getElementById('promo-input').value = ""; document.getElementById('promo-status').innerText = ""; document.getElementById('checkout-total-price').innerText = checkoutTotalPrice + globalDeliveryPrice; if (globalDeliveryPrice === 0) { document.getElementById('delivery-details-box').style.display = 'none'; } isLegalChecked = false; updateLegalVisuals(); document.getElementById('checkout-modal').classList.add('modal-active'); const addressInput = document.getElementById('address-input'); addressInput.focus(); }
+        function openCheckoutModal() {
+            if(selectedCart.size === 0) return;
+            
+            // RESET OR RESTORE
+            currentDiscount = 0; appliedPromoCode = "";
+            document.getElementById('promo-input').value = "";
+            document.getElementById('promo-status').innerText = "";
+            document.getElementById('checkout-total-price').innerText = checkoutTotalPrice + globalDeliveryPrice; 
+            
+            if (globalDeliveryPrice === 0) {
+                 document.getElementById('delivery-details-box').style.display = 'none';
+            }
+
+            // RESET STATE
+            isLegalChecked = false;
+            updateLegalVisuals();
+
+            document.getElementById('checkout-modal').classList.add('modal-active'); 
+            const addressInput = document.getElementById('address-input');
+            addressInput.focus();
+        }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('modal-active'); }
-        function toggleCheckoutSubmit() { isLegalChecked = !isLegalChecked; updateLegalVisuals(); if (isLegalChecked) tg.HapticFeedback.notificationOccurred('success'); else tg.HapticFeedback.impactOccurred('light'); }
-        function updateLegalVisuals() { const checkboxes = document.querySelectorAll('.legal-check-icon'); const buttons = document.querySelectorAll('.final-pay-btn-class'); checkboxes.forEach(cb => { if(isLegalChecked) cb.classList.add('checked'); else cb.classList.remove('checked'); }); buttons.forEach(btn => { btn.disabled = !isLegalChecked; }); }
-        
-        function applyPromo() { const code = document.getElementById('promo-input').value.trim().toUpperCase(); const statusDiv = document.getElementById('promo-status'); if(appliedPromoCode === code && code !== "") return; if (localStorage.getItem('promo_used_v6')) { statusDiv.innerText = "Промокод применялся ранее"; statusDiv.className = "promo-status promo-error"; tg.HapticFeedback.notificationOccurred('error'); return; } if (code === "COTTON") { currentDiscount = 0.10; appliedPromoCode = code; statusDiv.innerText = "Скидка 10% применена"; statusDiv.className = "promo-status promo-success"; tg.HapticFeedback.notificationOccurred('success'); } else { currentDiscount = 0; appliedPromoCode = ""; statusDiv.innerText = "Неверный промокод"; statusDiv.className = "promo-status promo-error"; tg.HapticFeedback.notificationOccurred('error'); } updateCheckoutTotalUI(); }
+
+        // --- LEGAL CHECKBOX LOGIC v14.0 (SYNCED & FIXED TEXT) ---
+        function toggleCheckoutSubmit() {
+            isLegalChecked = !isLegalChecked;
+            updateLegalVisuals();
+            
+            if (isLegalChecked) tg.HapticFeedback.notificationOccurred('success');
+            else tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function updateLegalVisuals() {
+            const checkboxes = document.querySelectorAll('.legal-check-icon');
+            const buttons = document.querySelectorAll('.final-pay-btn-class');
+            
+            checkboxes.forEach(cb => {
+                if(isLegalChecked) cb.classList.add('checked');
+                else cb.classList.remove('checked');
+            });
+            
+            buttons.forEach(btn => {
+                btn.disabled = !isLegalChecked;
+            });
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promo-input').value.trim().toUpperCase();
+            const statusDiv = document.getElementById('promo-status');
+            
+            if(appliedPromoCode === code && code !== "") return;
+            
+            if (localStorage.getItem('promo_used_v6')) {
+                statusDiv.innerText = "Промокод применялся ранее";
+                statusDiv.className = "promo-status promo-error";
+                tg.HapticFeedback.notificationOccurred('error');
+                return;
+            }
+
+            if (code === "COTTON") {
+                currentDiscount = 0.10;
+                appliedPromoCode = code;
+                statusDiv.innerText = "Скидка 10% применена";
+                statusDiv.className = "promo-status promo-success";
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                currentDiscount = 0; appliedPromoCode = "";
+                statusDiv.innerText = "Неверный промокод";
+                statusDiv.className = "promo-status promo-error";
+                tg.HapticFeedback.notificationOccurred('error');
+            }
+            updateCheckoutTotalUI();
+        }
+
         function save() { localStorage.setItem('cart_v7', JSON.stringify(cart)); localStorage.setItem('favs_v7', JSON.stringify(favs)); }
-        function drawCard(p) { const isFav = favs.includes(p.id); const activeClass = isFav ? 'is-active' : ''; let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join(''); return `<div class="card" onclick="openModal(${p.id})"><div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div><div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div><div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div><div class="cart-btn" onclick="addOne(${p.id}, event)"><svg class="icon icon-sm" style="stroke:white" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-5 2a2 2 0 110-4 2 2 0 010 4z"/></svg></div></div>`; }
+        
+        function drawCard(p) {
+            const isFav = favs.includes(p.id);
+            const activeClass = isFav ? 'is-active' : '';
+            let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+            return `
+                <div class="card" onclick="openModal(${p.id})">
+                    <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
+                    <div class="cart-btn" onclick="addOne(${p.id}, event)">
+                        <svg class="icon icon-sm" style="stroke:white" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-5 2a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                    </div>
+                </div>`;
+        }
         function render(list = db, containerId = 'grid') { document.getElementById(containerId).innerHTML = list.map(p => drawCard(p)).join(''); }
         function doSearch(val) { render(db.filter(p => p.name.toLowerCase().includes(val.toLowerCase()))); }
-        function toggleFav(id, e) { if(e) e.stopPropagation(); const idx = favs.indexOf(id); const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`); const onFavPage = document.getElementById('p-fav').classList.contains('active'); if(idx < 0) { favs.push(id); if(homeBtn) { homeBtn.classList.add('is-active','active-anim'); setTimeout(()=>homeBtn.classList.remove('active-anim'),300); } if(onFavPage) { renderFavs(); } tg.HapticFeedback.impactOccurred('medium'); } else { favs.splice(idx, 1); tg.HapticFeedback.impactOccurred('light'); if(onFavPage) { const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`); if (cardToRemove) { cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s'; cardToRemove.style.opacity = '0'; cardToRemove.style.transform = 'scale(0.8)'; setTimeout(() => { cardToRemove.remove(); if (favs.length === 0) document.getElementById('fav-empty').style.display = 'flex'; }, 300); } } if(homeBtn) homeBtn.classList.remove('is-active'); } save(); if(currentId === id) updateModalFavBtn(); }
+
+        function toggleFav(id, e) {
+            if(e) e.stopPropagation();
+            const idx = favs.indexOf(id);
+            const homeBtn = document.querySelector(`#p-home #fav-btn-${id}`);
+            const onFavPage = document.getElementById('p-fav').classList.contains('active');
+            if(idx < 0) { 
+                favs.push(id); 
+                if(homeBtn) { homeBtn.classList.add('is-active','active-anim'); setTimeout(()=>homeBtn.classList.remove('active-anim'),300); } 
+                if(onFavPage) { renderFavs(); }
+                tg.HapticFeedback.impactOccurred('medium'); 
+            } else { 
+                favs.splice(idx, 1); tg.HapticFeedback.impactOccurred('light'); 
+                if(onFavPage) {
+                    const cardToRemove = document.querySelector(`#fav-items .card[onclick="openModal(${id})"]`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.3s, transform 0.3s'; cardToRemove.style.opacity = '0'; cardToRemove.style.transform = 'scale(0.8)';
+                        setTimeout(() => { cardToRemove.remove(); if (favs.length === 0) document.getElementById('fav-empty').style.display = 'flex'; }, 300);
+                    }
+                } 
+                if(homeBtn) homeBtn.classList.remove('is-active');
+            }
+            save(); if(currentId === id) updateModalFavBtn(); 
+        }
+
         function toggleModalFav() { toggleFav(currentId, { stopPropagation: ()=>{} }); }
-        function updateModalFavBtn() { const btn = document.getElementById('m-fav-btn'); const span = btn.querySelector('span'); if(favs.includes(currentId)) { span.innerText='В избранном'; btn.classList.add('active'); } else { span.innerText='В избранное'; btn.classList.remove('active'); } }
-        function addOne(id, e) { if(e) e.stopPropagation(); cart.push(id); save(); updateCartQuantities(); if(currentId === id) updateModalButtons(id); tg.HapticFeedback.impactOccurred('light'); }
-        function removeOne(id) { const idx = cart.indexOf(id); if (idx > -1) { cart.splice(idx, 1); save(); updateCartQuantities(); if(currentId === id) updateModalButtons(id); } }
-        function updateTotalAndButtons() { const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1); const ids = Object.keys(grouped).map(Number); let selectedTotal = 0; ids.forEach(id => { if(selectedCart.has(id)) { const product = db.find(x => x.id == id); if (product) selectedTotal += product.price * grouped[id]; } }); checkoutTotalPrice = selectedTotal; document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none'; document.getElementById('checkout-btn').disabled = selectedCart.size === 0; document.getElementById('total-price').innerText = selectedTotal; }
-        function toggleCartSelect(id) { const itemElement = document.getElementById('cart-item-' + id); const circle = itemElement ? itemElement.querySelector('.check-circle') : null; if(selectedCart.has(id)) { selectedCart.delete(id); if (circle) circle.classList.remove('checked'); } else { selectedCart.add(id); if (circle) circle.classList.add('checked'); } updateTotalAndButtons(); }
-        function toggleAllCart() { const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1); const uniqueIds = Object.keys(grouped).map(Number); let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0; if(shouldSelectAll) uniqueIds.forEach(id => selectedCart.add(id)); else selectedCart.clear(); uniqueIds.forEach(id => { const itemElement = document.getElementById('cart-item-' + id); const circle = itemElement ? itemElement.querySelector('.check-circle') : null; if (circle) shouldSelectAll ? circle.classList.add('checked') : circle.classList.remove('checked'); }); updateTotalAndButtons(); }
-        function deleteSelectedCart() { if(selectedCart.size === 0) return; if(confirm("Удалить выбранные?")) { cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList(); } }
-        function updateCartQuantities() { const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1); const ids = Object.keys(grouped).map(Number); const badge = document.getElementById('badge'); badge.style.display = cart.length ? 'block' : 'none'; if (badge.innerText != cart.length) { badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s'; } ids.forEach(id => { const qtyValElement = document.querySelector(`#cart-item-${id} .qty-val`); if (qtyValElement) qtyValElement.innerText = grouped[id]; }); const currentRows = document.getElementById('cart-items').children.length; if (currentRows !== ids.length) renderCartList(); else updateTotalAndButtons(); }
-        function renderCartList() { const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1); const ids = Object.keys(grouped).map(Number); if (!ids.length) { document.getElementById('cart-items').innerHTML = ''; document.getElementById('cart-empty').style.display = 'flex'; document.getElementById('cart-footer').style.display = 'none'; selectedCart.clear(); } else { document.getElementById('cart-empty').style.display = 'none'; document.getElementById('cart-footer').style.display = 'block'; document.getElementById('cart-items').innerHTML = ids.map(id => { const p = db.find(x => x.id == id); const isChecked = selectedCart.has(id) ? 'checked' : ''; return `<div class="list-row" id="cart-item-${id}"><div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div><img src="${p.images[0]}" class="list-img"><div style="flex:1; min-width: 0;" onclick="openModal(${id})"><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${p.price} ₽</div></div><div class="qty-ctrl"><div class="qty-btn" onclick="removeOne(${p.id})">−</div><div class="qty-val">${grouped[id]}</div><div class="qty-btn" onclick="addOne(${p.id})">+</div></div></div>`; }).join(''); } updateCartQuantities(); }
+        function updateModalFavBtn() {
+            const btn = document.getElementById('m-fav-btn');
+            const span = btn.querySelector('span');
+            if(favs.includes(currentId)) { span.innerText='В избранном'; btn.classList.add('active'); }
+            else { span.innerText='В избранное'; btn.classList.remove('active'); }
+        }
+
+        function addOne(id, e) { 
+            if(e) e.stopPropagation(); 
+            cart.push(id); save(); 
+            updateCartQuantities(); 
+            // If Modal is open for this product, refresh its footer
+            if(currentId === id) updateModalButtons(id);
+            tg.HapticFeedback.impactOccurred('light'); 
+        }
         
-        function formatPhone(input) { let digits = input.value.replace(/\D/g, ''); const maxDigits = 11; if (digits.length > maxDigits) digits = digits.substring(0, maxDigits); let formatted = ''; if (digits.length === 0) { input.value = ''; return; } if (digits.startsWith('8') || digits.startsWith('7')) digits = '7' + digits.substring(1); else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits.substring(0, maxDigits); } if (digits.length > 0) formatted += '+7'; if (digits.length > 1) { formatted += ' ('; formatted += digits.substring(1, 4); } if (digits.length > 4) { formatted += ') '; formatted += digits.substring(4, 7); } if (digits.length > 7) { formatted += '-'; formatted += digits.substring(7, 9); } if (digits.length > 9) { formatted += '-'; formatted += digits.substring(9, 11); } input.value = formatted; }
-        const addressInput = document.getElementById('address-input'); const suggestionsContainer = document.getElementById('address-suggestions'); let debounceTimeout; if (addressInput) { addressInput.addEventListener('input', () => { clearTimeout(debounceTimeout); const query = addressInput.value.trim(); if (query.length < 3) { suggestionsContainer.innerHTML = ''; return; } debounceTimeout = setTimeout(() => { fetchSuggestions(query); }, 300); }); addressInput.addEventListener('blur', () => { setTimeout(() => { suggestionsContainer.innerHTML = ''; }, 150); }); }
-        async function fetchSuggestions(query) { if (DADATA_TOKEN === 'YOUR_DADATA_API_KEY') { suggestionsContainer.innerHTML = '<div class="suggestion-item" style="color:var(--red)">! Вставьте ключ DaData API</div>'; return; } try { const response = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", { method: "POST", mode: "cors", headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token " + DADATA_TOKEN }, body: JSON.stringify({ query: query, count: 5 }) }); const data = await response.json(); renderSuggestions(data.suggestions); } catch (error) { suggestionsContainer.innerHTML = ''; } }
-        function renderSuggestions(suggestions) { suggestionsContainer.innerHTML = ''; if (!suggestions || suggestions.length === 0) return; suggestions.forEach(s => { const div = document.createElement('div'); div.className = 'suggestion-item'; div.textContent = s.value; div.onclick = () => { addressInput.value = s.value; suggestionsContainer.innerHTML = ''; addressInput.blur(); const lat = parseFloat(s.data.geo_lat); const lon = parseFloat(s.data.geo_lon); const city = s.data.city || s.data.region; const region = s.data.region_with_type || ""; if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city, region); else { document.getElementById('dd-price').innerText = "Уточнит менеджер"; document.getElementById('delivery-details-box').style.display = 'block'; globalDeliveryPrice = 0; updateCheckoutTotalUI(); } }; suggestionsContainer.appendChild(div); }); }
+        function removeOne(id) { 
+            const idx = cart.indexOf(id); 
+            if (idx > -1) { 
+                cart.splice(idx, 1); save(); 
+                updateCartQuantities(); 
+                // If Modal is open for this product, refresh its footer
+                if(currentId === id) updateModalButtons(id);
+            } 
+        }
         
-        function submitOrder() { try { const phoneInput = document.getElementById('phone-input'); const address = document.getElementById('address-input').value.trim(); const comment = document.getElementById('comment-input').value.trim(); const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); if (rawPhoneDigits.length !== 11) { tg.showAlert("Введите корректный номер телефона"); phoneInput.focus(); return; } if (!address) { tg.showAlert("Заполните адрес доставки"); document.getElementById('address-input').focus(); return; } let deliveryTimeStr = ""; if (isRegionalDelivery) { if (!selectedDate) { tg.showAlert("Выберите дату отправки"); return; } const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'}); deliveryTimeStr = "Отправка СДЭК: " + dateStr; } else { if (!selectedDate || !selectedTimeSlot) { tg.showAlert("Выберите дату и интервал доставки"); return; } const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'}); deliveryTimeStr = `${dateStr}, ${selectedTimeSlot}`; } const cartItemsForBot = []; const grouped = {}; cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; }); Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); }); const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', '); let productsTotal = checkoutTotalPrice; if(currentDiscount > 0) { productsTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount)); } const finalTotalWithDelivery = productsTotal + globalDeliveryPrice; const deliveryText = globalDeliveryPrice > 0 ? `Доставка: ${globalDeliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно"; const dataToSend = { action: "checkout", total: finalTotalWithDelivery, items_text: [itemsText + `\n🚚 ${deliveryText}`], cart_items: cartItemsForBot, phone: phoneInput.value, address: address, comment: comment || "Нет комментария", delivery_time: deliveryTimeStr, promo_code: appliedPromoCode }; if(appliedPromoCode === 'COTTON') { localStorage.setItem('promo_used_v6', 'true'); } cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList(); tg.sendData(JSON.stringify(dataToSend)); closeCheckoutModal(); } catch (e) { tg.showAlert("Ошибка при отправке данных"); console.error(e); } }
-        function openModal(id) { currentId = id; const p = db.find(x => x.id === id); const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join(''); const dots = p.images.map((_, i) => `<div class="modal-dot ${i===0?'active':''}"></div>`).join(''); document.getElementById('m-slider').innerHTML = slides; document.getElementById('m-dots').innerHTML = dots; document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc; updateModalFavBtn(); updateModalButtons(id); const modal = document.getElementById('modal'); modal.classList.add('modal-active'); const slider = document.getElementById('m-slider'); slider.onscroll = () => { const index = Math.round(slider.scrollLeft / slider.offsetWidth); const dotEls = document.querySelectorAll('.modal-dot'); dotEls.forEach(d => d.classList.remove('active')); if(dotEls[index]) dotEls[index].classList.add('active'); }; }
-        function updateModalButtons(id) { const footer = document.getElementById('modal-footer'); const qty = cart.filter(x => x === id).length; if (qty > 0) { footer.innerHTML = `<button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button><div class="modal-qty-ctrl"><div class="modal-qty-btn" onclick="removeOne(${id})">−</div><div class="modal-qty-val">${qty}</div><div class="modal-qty-btn" onclick="addOne(${id})">+</div></div>`; } else { footer.innerHTML = `<button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button><button class="action-btn add-cart" onclick="addOne(${id})">В корзину</button>`; } }
-        function buyNow(id) { const inCart = cart.includes(id); if (!inCart) { addOne(id); } closeModal(); selectedCart.add(id); updateTotalAndButtons(); setTimeout(() => { openCheckoutModal(); }, 300); }
+        function updateTotalAndButtons() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+            let selectedTotal = 0;
+            ids.forEach(id => { if(selectedCart.has(id)) { const product = db.find(x => x.id == id); if (product) selectedTotal += product.price * grouped[id]; } });
+            checkoutTotalPrice = selectedTotal; 
+            document.getElementById('cart-del-btn').style.display = selectedCart.size > 0 ? 'flex' : 'none';
+            document.getElementById('checkout-btn').disabled = selectedCart.size === 0;
+            document.getElementById('total-price').innerText = selectedTotal;
+        }
+        
+        function toggleCartSelect(id) {
+            const itemElement = document.getElementById('cart-item-' + id);
+            const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+            if(selectedCart.has(id)) { selectedCart.delete(id); if (circle) circle.classList.remove('checked'); } 
+            else { selectedCart.add(id); if (circle) circle.classList.add('checked'); }
+            updateTotalAndButtons();
+        }
+
+        function toggleAllCart() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const uniqueIds = Object.keys(grouped).map(Number);
+            let shouldSelectAll = selectedCart.size !== uniqueIds.length || uniqueIds.length === 0;
+            if(shouldSelectAll) uniqueIds.forEach(id => selectedCart.add(id)); else selectedCart.clear();
+            uniqueIds.forEach(id => {
+                const itemElement = document.getElementById('cart-item-' + id);
+                const circle = itemElement ? itemElement.querySelector('.check-circle') : null;
+                if (circle) shouldSelectAll ? circle.classList.add('checked') : circle.classList.remove('checked');
+            });
+            updateTotalAndButtons();
+        }
+
+        function deleteSelectedCart() {
+            if(selectedCart.size === 0) return;
+            if(confirm("Удалить выбранные?")) { cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList(); }
+        }
+        
+        function updateCartQuantities() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+            const badge = document.getElementById('badge');
+            badge.style.display = cart.length ? 'block' : 'none'; 
+            if (badge.innerText != cart.length) { badge.innerText = cart.length; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pop 0.3s'; }
+            ids.forEach(id => { const qtyValElement = document.querySelector(`#cart-item-${id} .qty-val`); if (qtyValElement) qtyValElement.innerText = grouped[id]; });
+            const currentRows = document.getElementById('cart-items').children.length;
+            if (currentRows !== ids.length) renderCartList(); else updateTotalAndButtons();
+        }
+        
+        function renderCartList() {
+            const grouped = {}; cart.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+            const ids = Object.keys(grouped).map(Number);
+            if (!ids.length) {
+                document.getElementById('cart-items').innerHTML = '';
+                document.getElementById('cart-empty').style.display = 'flex';
+                document.getElementById('cart-footer').style.display = 'none';
+                selectedCart.clear();
+            } else {
+                document.getElementById('cart-empty').style.display = 'none';
+                document.getElementById('cart-footer').style.display = 'block';
+                document.getElementById('cart-items').innerHTML = ids.map(id => {
+                    const p = db.find(x => x.id == id);
+                    const isChecked = selectedCart.has(id) ? 'checked' : '';
+                    return `
+                        <div class="list-row" id="cart-item-${id}">
+                            <div class="check-circle ${isChecked}" onclick="toggleCartSelect(${id})">
+                                <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <img src="${p.images[0]}" class="list-img">
+                            <div style="flex:1; min-width: 0;" onclick="openModal(${id})">
+                                <div class="cart-item-name">${p.name}</div>
+                                <div class="cart-item-price">${p.price} ₽</div>
+                            </div>
+                            <div class="qty-ctrl">
+                                <div class="qty-btn" onclick="removeOne(${p.id})">−</div>
+                                <div class="qty-val">${grouped[id]}</div>
+                                <div class="qty-btn" onclick="addOne(${p.id})">+</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            updateCartQuantities(); 
+        }
+
+        function formatPhone(input) {
+            let digits = input.value.replace(/\D/g, ''); const maxDigits = 11;
+            if (digits.length > maxDigits) digits = digits.substring(0, maxDigits);
+            let formatted = '';
+            if (digits.length === 0) { input.value = ''; return; }
+            if (digits.startsWith('8') || digits.startsWith('7')) digits = '7' + digits.substring(1);
+            else if (digits.length > 1 && !digits.startsWith('7')) { digits = '7' + digits.substring(0, maxDigits); }
+            if (digits.length > 0) formatted += '+7';
+            if (digits.length > 1) { formatted += ' ('; formatted += digits.substring(1, 4); }
+            if (digits.length > 4) { formatted += ') '; formatted += digits.substring(4, 7); }
+            if (digits.length > 7) { formatted += '-'; formatted += digits.substring(7, 9); }
+            if (digits.length > 9) { formatted += '-'; formatted += digits.substring(9, 11); }
+            input.value = formatted;
+        }
+
+        const addressInput = document.getElementById('address-input');
+        const suggestionsContainer = document.getElementById('address-suggestions');
+        let debounceTimeout;
+        if (addressInput) {
+            addressInput.addEventListener('input', () => {
+                clearTimeout(debounceTimeout);
+                const query = addressInput.value.trim();
+                if (query.length < 3) { suggestionsContainer.innerHTML = ''; return; }
+                debounceTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
+            });
+            addressInput.addEventListener('blur', () => { setTimeout(() => { suggestionsContainer.innerHTML = ''; }, 150); });
+        }
+
+        async function fetchSuggestions(query) {
+            if (DADATA_TOKEN === 'YOUR_DADATA_API_KEY') { suggestionsContainer.innerHTML = '<div class="suggestion-item" style="color:var(--red)">! Вставьте ключ DaData API</div>'; return; }
+            try {
+                const response = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", {
+                    method: "POST", mode: "cors",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token " + DADATA_TOKEN },
+                    body: JSON.stringify({ query: query, count: 5 })
+                });
+                const data = await response.json();
+                renderSuggestions(data.suggestions);
+            } catch (error) { suggestionsContainer.innerHTML = ''; }
+        }
+
+        function renderSuggestions(suggestions) {
+            suggestionsContainer.innerHTML = ''; if (!suggestions || suggestions.length === 0) return;
+            suggestions.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item'; div.textContent = s.value;
+                
+                // GEO LOGIC
+                div.onclick = () => { 
+                    addressInput.value = s.value; 
+                    suggestionsContainer.innerHTML = ''; 
+                    addressInput.blur();
+                    const lat = parseFloat(s.data.geo_lat);
+                    const lon = parseFloat(s.data.geo_lon);
+                    const city = s.data.city || s.data.region;
+                    const region = s.data.region_with_type || "";
+                    
+                    if (!isNaN(lat) && !isNaN(lon)) calculateDeliveryCost(lat, lon, city, region);
+                    else {
+                        document.getElementById('dd-price').innerText = "Уточнит менеджер";
+                        document.getElementById('delivery-details-box').style.display = 'block';
+                        globalDeliveryPrice = 0; updateCheckoutTotalUI();
+                    }
+                };
+                suggestionsContainer.appendChild(div);
+            });
+        }
+        
+        function submitOrder() {
+            try {
+                const phoneInput = document.getElementById('phone-input');
+                const address = document.getElementById('address-input').value.trim();
+                const comment = document.getElementById('comment-input').value.trim();
+                const rawPhoneDigits = phoneInput.value.replace(/\D/g, ''); 
+                
+                if (rawPhoneDigits.length !== 11) { tg.showAlert("Введите корректный номер телефона"); phoneInput.focus(); return; }
+                if (!address) { tg.showAlert("Заполните адрес доставки"); document.getElementById('address-input').focus(); return; }
+                
+                let deliveryTimeStr = "";
+                if (isRegionalDelivery) {
+                     if (!selectedDate) { tg.showAlert("Выберите дату отправки"); return; }
+                     const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
+                     deliveryTimeStr = "Отправка СДЭК: " + dateStr;
+                } else {
+                     if (!selectedDate || !selectedTimeSlot) { tg.showAlert("Выберите дату и интервал доставки"); return; }
+                     const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
+                     deliveryTimeStr = `${dateStr}, ${selectedTimeSlot}`;
+                }
+
+                const cartItemsForBot = []; const grouped = {}; 
+                cart.filter(id => selectedCart.has(id)).forEach(id => { grouped[id] = (grouped[id] || 0) + 1; });
+                Object.keys(grouped).forEach(id => { cartItemsForBot.push({ id: parseInt(id), qty: grouped[id] }); });
+                
+                const itemsText = Object.keys(grouped).map(id => { const product = db.find(x => x.id == id); return `${product.name} x${grouped[id]}`; }).join(', ');
+                
+                let productsTotal = checkoutTotalPrice;
+                if(currentDiscount > 0) {
+                    productsTotal = Math.floor(checkoutTotalPrice * (1 - currentDiscount));
+                }
+                const finalTotalWithDelivery = productsTotal + globalDeliveryPrice;
+                const deliveryText = globalDeliveryPrice > 0 ? `Доставка: ${globalDeliveryPrice} ₽` : "Доставка: Индивидуально/Бесплатно";
+
+                const dataToSend = { 
+                    action: "checkout", 
+                    total: finalTotalWithDelivery, 
+                    items_text: [itemsText + `\n🚚 ${deliveryText}`], 
+                    cart_items: cartItemsForBot, 
+                    phone: phoneInput.value, 
+                    address: address, 
+                    comment: comment || "Нет комментария",
+                    delivery_time: deliveryTimeStr, 
+                    promo_code: appliedPromoCode
+                };
+                
+                if(appliedPromoCode === 'COTTON') {
+                    localStorage.setItem('promo_used_v6', 'true');
+                }
+
+                cart = cart.filter(id => !selectedCart.has(id)); selectedCart.clear(); save(); renderCartList();
+                tg.sendData(JSON.stringify(dataToSend)); 
+                closeCheckoutModal();
+            } catch (e) {
+                tg.showAlert("Ошибка при отправке данных");
+                console.error(e);
+            }
+        }
+        
+        function clearFav() { if(confirm("Очистить избранное?")) { favs = []; save(); render(); renderFavs(); } }
+
+        function renderFavs() {
+            const list = db.filter(p => favs.includes(p.id));
+            const container = document.getElementById('fav-items');
+            document.getElementById('fav-empty').style.display = list.length ? 'none' : 'flex';
+            container.innerHTML = list.map(p => drawCard(p)).join('');
+        }
+        
+        function openModal(id) {
+            currentId = id; const p = db.find(x => x.id === id);
+            const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join('');
+            const dots = p.images.map((_, i) => `<div class="modal-dot ${i===0?'active':''}"></div>`).join('');
+            document.getElementById('m-slider').innerHTML = slides; document.getElementById('m-dots').innerHTML = dots;
+            document.getElementById('m-title').innerText = p.name; document.getElementById('m-price').innerText = p.price + ' ₽'; document.getElementById('m-desc').innerText = p.desc;
+            updateModalFavBtn(); 
+            
+            // RENDER PREMIUM FOOTER
+            updateModalButtons(id);
+
+            const modal = document.getElementById('modal'); modal.classList.add('modal-active');
+            const slider = document.getElementById('m-slider');
+            slider.onscroll = () => {
+                const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+                const dotEls = document.querySelectorAll('.modal-dot');
+                dotEls.forEach(d => d.classList.remove('active'));
+                if(dotEls[index]) dotEls[index].classList.add('active');
+            };
+        }
+        
+        // --- NEW: PREMIUM MODAL LOGIC v14.0 ---
+        function updateModalButtons(id) {
+            const footer = document.getElementById('modal-footer');
+            const qty = cart.filter(x => x === id).length;
+            
+            if (qty > 0) {
+                footer.innerHTML = `
+                    <button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button>
+                    <div class="modal-qty-ctrl">
+                        <div class="modal-qty-btn" onclick="removeOne(${id})">−</div>
+                        <div class="modal-qty-val">${qty}</div>
+                        <div class="modal-qty-btn" onclick="addOne(${id})">+</div>
+                    </div>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <button class="action-btn buy-now" onclick="buyNow(${id})">Купить сейчас</button>
+                    <button class="action-btn add-cart" onclick="addOne(${id})">В корзину</button>
+                `;
+            }
+        }
+
+        function buyNow(id) {
+            // 1. Add if not in cart
+            const inCart = cart.includes(id);
+            if (!inCart) {
+                addOne(id); 
+            }
+            
+            // 2. Close Product Modal
+            closeModal();
+            
+            // 3. Select this item specifically for checkout
+            selectedCart.add(id);
+            updateTotalAndButtons();
+            
+            // 4. Open Checkout
+            setTimeout(() => {
+                openCheckoutModal();
+            }, 300);
+        }
+
         function closeModal() { document.getElementById('modal').classList.remove('modal-active'); }
         function addCurrentToCart() { addOne(currentId); closeModal(); }
-        const lightbox = document.getElementById('lightbox'); const lightboxImg = document.getElementById('lightbox-img'); let currentScale = 1; let initialDist = 0; let initialScale = 1; function openLightbox(src) { lightboxImg.src = src; lightbox.style.display = 'flex'; setTimeout(() => lightbox.classList.add('visible'), 10); currentScale = 1; lightboxImg.style.transform = `scale(1)`; } function closeLightbox() { lightbox.classList.remove('visible'); setTimeout(() => { lightbox.style.display = 'none'; }, 300); } lightbox.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); initialScale = currentScale; } }); lightbox.addEventListener('touchmove', (e) => { if (e.touches.length === 2) { const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); const delta = dist / initialDist; currentScale = Math.min(Math.max(1, initialScale * delta), 4); lightboxImg.style.transform = `scale(${currentScale})`; e.preventDefault(); } }); let touchStartY = 0; lightbox.addEventListener('touchstart', e => { if(e.touches.length===1) touchStartY = e.touches[0].clientY; }); lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        let currentScale = 1; let initialDist = 0; let initialScale = 1;
+        function openLightbox(src) { lightboxImg.src = src; lightbox.style.display = 'flex'; setTimeout(() => lightbox.classList.add('visible'), 10); currentScale = 1; lightboxImg.style.transform = `scale(1)`; }
+        function closeLightbox() { lightbox.classList.remove('visible'); setTimeout(() => { lightbox.style.display = 'none'; }, 300); }
+        lightbox.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); initialScale = currentScale; } });
+        lightbox.addEventListener('touchmove', (e) => { if (e.touches.length === 2) { const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); const delta = dist / initialDist; currentScale = Math.min(Math.max(1, initialScale * delta), 4); lightboxImg.style.transform = `scale(${currentScale})`; e.preventDefault(); } });
+        let touchStartY = 0; lightbox.addEventListener('touchstart', e => { if(e.touches.length===1) touchStartY = e.touches[0].clientY; });
+        lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
+
+        function go(id, btn) {
+            document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
+            if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
+        }
+
+        if(tg.initDataUnsafe?.user) {
+            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+            if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;object-fit:cover">`;
+        }
+
+        function setupPTR(page) {
+            const spinner = page.querySelector('.ptr-spinner');
+            if(!spinner) return;
+            let startY = 0;
+            page.addEventListener('touchstart', e => { 
+                if(page.scrollTop === 0) startY = e.touches[0].clientY; 
+            }, { passive: false });
+            page.addEventListener('touchmove', e => {
+                const diff = e.touches[0].clientY - startY;
+                if(diff > 0 && page.scrollTop <= 0) { 
+                    if (e.cancelable) e.preventDefault();
+                    if(diff < 80) spinner.style.height = diff + 'px'; 
+                }
+            }, { passive: false });
+            page.addEventListener('touchend', e => {
+                if(parseInt(spinner.style.height) > 60) { 
+                    tg.HapticFeedback.impactOccurred('medium'); 
+                    setTimeout(() => { 
+                        if(page.id === 'p-home') render(); if(page.id === 'p-cart') renderCartList(); if(page.id === 'p-fav') renderFavs(); 
+                        spinner.style.height = '0px'; 
+                    }, 500); 
+                } else { spinner.style.height = '0px'; }
+            });
+        }
         
-        // FOOTER AND KEYBOARD LOGIC (SAME AS V12)
+        function createSnowflake() {
+            const snowContainer = document.getElementById('snow-container');
+            if(!snowContainer) return;
+            const snow = document.createElement('div');
+            snow.classList.add('snowflake');
+            snow.innerText = '❄';
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.animationDuration = Math.random() * 3 + 4 + 's';
+            snow.style.opacity = Math.random() * 0.7 + 0.3;
+            snow.style.fontSize = Math.random() * 10 + 10 + 'px';
+            snowContainer.appendChild(snow);
+            setTimeout(() => { snow.remove(); }, 7000);
+        }
+        setInterval(createSnowflake, 300);
+
+        function drawRealisticNobilis() {
+            const canvas = document.getElementById('header-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.parentElement.offsetWidth;
+            const h = canvas.parentElement.offsetHeight;
+            canvas.width = w * 2; canvas.height = h * 2;
+            canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+            ctx.scale(2, 2);
+
+            ctx.clearRect(0, 0, w, h);
+
+            const needlePalette = ['#1a2f23', '#2d4a3e', '#416b5a', '#6b9c8a', '#8fbdaf']; 
+
+            function drawBranch(startX, startY, angle, length, width, depth) {
+                if (depth === 0) return;
+                const endX = startX + Math.cos(angle) * length;
+                const endY = startY + Math.sin(angle) * length;
+                const steps = length / 2;
+                for (let i = 0; i < steps; i++) {
+                    const t = i / steps;
+                    const cx = startX + (endX - startX) * t;
+                    const cy = startY + (endY - startY) * t;
+                    for (let layer = 0; layer < 3; layer++) {
+                        const needleAngle = angle + (Math.random() - 0.5) * 2.5;
+                        const needleLen = 10 + Math.random() * 15;
+                        const color = needlePalette[Math.floor(Math.random() * (layer + 2))];
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.lineTo(cx + Math.cos(needleAngle) * needleLen, cy + Math.sin(needleAngle) * needleLen);
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 1.5;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                        if(layer === 2 && Math.random() > 0.7) {
+                            ctx.beginPath();
+                            const tipX = cx + Math.cos(needleAngle) * needleLen;
+                            const tipY = cy + Math.sin(needleAngle) * needleLen;
+                            ctx.moveTo(tipX - Math.cos(needleAngle)*3, tipY - Math.sin(needleAngle)*3);
+                            ctx.lineTo(tipX, tipY);
+                            ctx.strokeStyle = "rgba(255,255,255,0.6)";
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                if (depth > 1) {
+                    const subBranches = 3;
+                    for (let i = 0; i < subBranches; i++) {
+                        const subAngle = angle + (Math.random() - 0.5) * 1.5;
+                        const subLen = length * 0.6;
+                        const pos = Math.random();
+                        const sx = startX + (endX - startX) * pos;
+                        const sy = startY + (endY - startY) * pos;
+                        drawBranch(sx, sy, subAngle, subLen, width * 0.7, depth - 1);
+                    }
+                }
+            }
+
+            const mainY = h * 0.4;
+            drawBranch(-20, mainY + 20, -0.2, w * 0.5, 4, 1);
+            drawBranch(w, mainY + 30, 3.2, w * 0.6, 4, 1);
+            drawBranch(-50, mainY, 0.1, w * 1.2, 5, 2);
+
+            for(let i=0; i<w; i+=80) {
+               drawBranch(i, mainY, 1.5, 60, 2, 1); 
+               drawBranch(i + 40, mainY, -1.5, 40, 2, 1); 
+            }
+            
+            for(let i=0; i<w; i+=30) {
+                if(Math.random() > 0.3) continue;
+                const ly = mainY + (Math.random()-0.5)*20;
+                ctx.beginPath();
+                ctx.arc(i, ly, 3, 0, Math.PI*2);
+                ctx.fillStyle = Math.random() > 0.5 ? "#ffcc00" : "#ff4500"; 
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            const ballColors = [{c: '#b8860b', s: '#ffd700'}, {c: '#8b0000', s: '#ff4500'}, {c: '#191970', s: '#4169e1'}];
+            const numBalls = 5;
+            for (let i = 0; i < numBalls; i++) {
+                const x = (w / numBalls) * i + (w / numBalls) / 2 + (Math.random()-0.5)*30;
+                const y = mainY + 15;
+                const maxDrop = h - y - 15; 
+                const drop = Math.min(15 + Math.random() * 20, maxDrop);
+                const r = 8 + Math.random() * 4;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, y + drop);
+                ctx.strokeStyle = "rgba(255,255,255,0.5)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                const color = ballColors[Math.floor(Math.random() * ballColors.length)];
+                const grad = ctx.createRadialGradient(x - r/3, y + drop - r/3, r/4, x, y + drop, r);
+                grad.addColorStop(0, color.s);
+                grad.addColorStop(1, color.c);
+                ctx.beginPath();
+                ctx.arc(x, y + drop, r, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = color.s;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        window.addEventListener('load', drawRealisticNobilis);
+        window.addEventListener('resize', drawRealisticNobilis);
+        document.querySelectorAll('.page').forEach(page => setupPTR(page));
+        render();
+        updateCartQuantities();
+
+        // ---------------------------------------------
+        // NEW v12.0: MARKETPLACE EFFECT (STICKY + STATIC)
+        // ---------------------------------------------
         const stickyFooter = document.getElementById('sticky-footer');
         const staticPayBlock = document.getElementById('static-pay-block');
         let initialHeight = window.innerHeight;
-        document.addEventListener('click', (e) => { const tag = e.target.tagName; if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') { if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) { document.activeElement.blur(); } } });
-        window.addEventListener('resize', () => { if (!stickyFooter) return; const currentHeight = window.innerHeight; if (currentHeight < initialHeight * 0.8) { stickyFooter.classList.add('hidden'); } else { checkScrollVisibility(); if(currentHeight > initialHeight) initialHeight = currentHeight; } });
-        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { stickyFooter.classList.add('hidden'); } else { if (window.innerHeight > initialHeight * 0.8) { stickyFooter.classList.remove('hidden'); } } }); }, { threshold: 0.1 });
+
+        // 1. KEYBOARD DISMISS ON TAP (OUTSIDE INPUTS)
+        document.addEventListener('click', (e) => {
+            const tag = e.target.tagName;
+            // If click is NOT on an input/textarea/button, dismiss keyboard
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') {
+                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                    document.activeElement.blur();
+                }
+            }
+        });
+
+        // 2. KEYBOARD DETECTION (RESIZE)
+        window.addEventListener('resize', () => {
+            if (!stickyFooter) return;
+            const currentHeight = window.innerHeight;
+            
+            if (currentHeight < initialHeight * 0.8) {
+                stickyFooter.classList.add('hidden'); // Hide on keyboard open
+            } else {
+                // If keyboard closed, check scroll position to decide visibility
+                checkScrollVisibility();
+                if(currentHeight > initialHeight) initialHeight = currentHeight;
+            }
+        });
+
+        // 3. INTERSECTION OBSERVER (HIDE STICKY WHEN STATIC IS VISIBLE)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    stickyFooter.classList.add('hidden'); // Hide sticky when static is visible
+                } else {
+                    // Only show if keyboard is NOT open
+                    if (window.innerHeight > initialHeight * 0.8) {
+                        stickyFooter.classList.remove('hidden');
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
         if(staticPayBlock) observer.observe(staticPayBlock);
-        function checkScrollVisibility() { if(!staticPayBlock) return; const rect = staticPayBlock.getBoundingClientRect(); const isVisible = (rect.top >= 0) && (rect.bottom <= window.innerHeight); if (!isVisible) stickyFooter.classList.remove('hidden'); }
-        
-        window.addEventListener('load', drawRealisticNobilis); window.addEventListener('resize', drawRealisticNobilis); document.querySelectorAll('.page').forEach(page => setupPTR(page)); render(); updateCartQuantities();
+
+        // Helper to re-check visibility manually
+        function checkScrollVisibility() {
+            if(!staticPayBlock) return;
+            const rect = staticPayBlock.getBoundingClientRect();
+            const isVisible = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+            if (!isVisible) stickyFooter.classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
