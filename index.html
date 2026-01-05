@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 12.0: TAP TO DISMISS KEYBOARD + MARKETPLACE FOOTER EFFECT -->
+<!-- VERSION 13.0: FULL LEGAL COMPLIANCE (YUKASSA READY) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -178,7 +178,12 @@
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
         /* MODALS */
-        #modal, #settings-modal, #checkout-modal, #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
+        /* Z-INDEX MANAGEMENT: Checkout is 100, Info must be higher to overlay it */
+        #modal, #settings-modal, #checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
+        
+        /* INFO MODAL - Higher Z-Index */
+        #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 150; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
+
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
         .modal-slider-wrap { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; background: #000; }
         .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
@@ -292,13 +297,13 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER STYLE (v12.0) --- */
+        /* --- STICKY FOOTER STYLE (v13.0) --- */
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            padding: 15px 20px; z-index: 150;
+            padding: 15px 20px; z-index: 120; /* Lower than Info Modal */
             box-shadow: 0 -5px 20px var(--shadow-color);
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
@@ -313,13 +318,11 @@
             transform: translateY(120%);
         }
         
-        /* FIX OVERLAP: Force scroll area to be larger than footer */
-        #order-form { padding-bottom: 120px; }
+        #order-form { padding-bottom: 160px; }
         
-        /* --- STATIC FOOTER (MARKETPLACE EFFECT) --- */
         .static-footer-block {
             margin-top: 30px;
-            padding-bottom: 30px; /* Space at end */
+            padding-bottom: 30px; 
         }
     </style>
 </head>
@@ -414,10 +417,27 @@
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
 
+                <!-- NEW LEGAL ITEMS -->
                 <div class="settings-item" onclick="openInfo('offer')">
                     <div class="settings-left">
                         <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span>Публичная оферта</span>
+                    </div>
+                    <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                </div>
+
+                <div class="settings-item" onclick="openInfo('privacy')">
+                    <div class="settings-left">
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <span>Политика конфиденциальности</span>
+                    </div>
+                    <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                </div>
+
+                <div class="settings-item" onclick="openInfo('newsletter')">
+                    <div class="settings-left">
+                        <svg class="icon settings-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Согласие на рассылку</span>
                     </div>
                     <svg class="icon icon-sm settings-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
@@ -573,7 +593,7 @@
                         <div class="custom-checkbox legal-check-icon">
                             <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                         </div>
-                        <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">политикой конфиденциальности</span> и получением рассылок об акциях.</div>
+                        <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('privacy')">политикой конфиденциальности</span> и <span class="legal-link" onclick="event.stopPropagation(); openInfo('newsletter')">получением рассылок</span>.</div>
                     </div>
                     <button type="button" class="big-btn final-pay-btn-class" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
                 </div>
@@ -708,7 +728,6 @@
             return R * c; 
         }
 
-        // Обновляет UI блока доставки
         function updateDeliveryInfoUI(distKm, durationMins, priceText, isRegional) {
             const box = document.getElementById('delivery-details-box');
             box.style.display = 'block';
@@ -912,7 +931,30 @@
                 `;
             } else if (type === 'offer') {
                 title.innerText = 'Публичная Оферта';
-                content.innerHTML = `<div class="legal-text"><h3>Договор оферты</h3>Полный текст оферты...<br>ИП Иванова<br>ИНН 1234567890</div>`;
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Публичная оферта интернет-магазина Cotton Flowers</h3>
+                    <p>Настоящая оферта является официальным предложением ИП [ВАШИ ДАННЫЕ] (далее - «Продавец») заключить договор купли-продажи товаров дистанционным способом.</p>
+                    <p>1. Общие положения<br>1.1. Заказ Покупателем товара, размещенного на сайте, означает, что Покупатель согласен со всеми условиями настоящей Оферты.<br>1.2. Продавец имеет право вносить изменения в Оферту без уведомления Покупателя.</p>
+                    <p>2. Оформление Заказа<br>2.1. Заказ товара осуществляется Покупателем через сервис Telegram Web App.<br>2.2. При регистрации на сайте Покупатель обязуется предоставить следующую регистрационную информацию: имя, адрес доставки, телефон.</p>
+                    <p>3. Доставка и оплата<br>3.1. Стоимость доставки рассчитывается индивидуально.<br>3.2. Оплата производится банковской картой через сервис ЮKassa.</p>
+                    <p>ИП [ВАШИ ДАННЫЕ]<br>ИНН: 0000000000<br>ОГРНИП: 000000000000000</p>
+                </div>`;
+            } else if (type === 'privacy') {
+                title.innerText = 'Политика конфиденциальности';
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Политика в отношении обработки персональных данных</h3>
+                    <p>1. Общие положения<br>Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального закона от 27.07.2006. №152-ФЗ «О персональных данных» и определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных, предпринимаемые ИП [ВАШИ ДАННЫЕ].</p>
+                    <p>2. Оператор может обрабатывать следующие персональные данные Пользователя:<br>- Фамилия, имя, отчество;<br>- Номер телефона;<br>- Адрес доставки.</p>
+                    <p>3. Цели обработки персональных данных<br>- Информирование Пользователя посредством отправки электронных писем;<br>- Заключение, исполнение и прекращение гражданско-правовых договоров.</p>
+                </div>`;
+            } else if (type === 'newsletter') {
+                title.innerText = 'Согласие на рассылку';
+                content.innerHTML = `<div class="legal-text">
+                    <h3>Согласие на получение рассылки</h3>
+                    <p>Пользователь, оставляя свои данные в веб-приложении Cotton Flowers, выражает свое согласие на получение рекламной и информационной рассылки.</p>
+                    <p>1. Рассылка может приходить в виде:<br>- Сообщений в Telegram;<br>- SMS-сообщений.</p>
+                    <p>2. Отказ от рассылки<br>Пользователь в любой момент может отказаться от получения рассылки, направив сообщение в службу поддержки.</p>
+                </div>`;
             }
             modal.classList.add('modal-active');
         }
@@ -1244,6 +1286,7 @@
                 
                 let deliveryTimeStr = "";
                 if (isRegionalDelivery) {
+                     // For regional, we just need the selected date, time slot is irrelevant
                      if (!selectedDate) { tg.showAlert("Выберите дату отправки"); return; }
                      const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
                      deliveryTimeStr = "Отправка СДЭК: " + dateStr;
