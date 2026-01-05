@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 24.0: OVERLAY BUTTONS + COMPACT STICKY HEADER + MERGED CARDS -->
+<!-- VERSION 25.0: FIXED CHECKOUT SCROLL + MARKETPLACE CARD UI -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -29,8 +29,6 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            
-            /* Стеклянный футер (как просили) */
             --footer-glass: rgba(28, 28, 30, 0.5); 
             --glass-blur: blur(20px);
             
@@ -184,11 +182,25 @@
         .nav-item.active .nav-icon { stroke: var(--accent); }
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
-        /* MODALS */
-        #modal, #settings-modal, #checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; overflow-y: hidden; }
-        #info-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 150; overflow-y: auto; touch-action: pan-y; overscroll-behavior-y: contain; }
+        /* MODAL COMMON */
+        #modal, #settings-modal, #checkout-modal, #info-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 100; 
+        }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
+
+        /* --- FIXED SCROLLING BUG --- */
+        
+        /* 1. Product Modal: Hidden overflow (uses internal scroll) */
+        #modal { overflow-y: hidden; }
+
+        /* 2. Checkout & Settings: Standard scrolling */
+        #checkout-modal, #settings-modal, #info-modal {
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            overscroll-behavior-y: contain;
+        }
         
         /* --- 1. STICKY TOP BAR (COMPACT PANEL) --- */
         .modal-top-bar {
