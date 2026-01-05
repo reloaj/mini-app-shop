@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 8.0: FIX OVERLAP BUG + UPDATED COMMENTS HINT -->
+<!-- VERSION 9.0: SMART KEYBOARD HANDLING (HIDE FOOTER ON TYPING) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -29,7 +29,7 @@
             
             --header-glass: rgba(20, 30, 25, 0.4); 
             --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.95); /* Чуть плотнее фон */
+            --footer-glass: rgba(28, 28, 30, 0.95);
         }
 
         body.light-theme {
@@ -292,7 +292,7 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER STYLE (v7.0) --- */
+        /* --- STICKY FOOTER STYLE (v9.0) --- */
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
@@ -303,9 +303,17 @@
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
+            
+            /* Animation for hiding */
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
-        /* FIX OVERLAP (v8.0): Force scroll area to be larger than footer */
+        /* Hiding class */
+        .checkout-footer.hidden {
+            transform: translateY(110%);
+        }
+        
+        /* FIX OVERLAP: Force scroll area to be larger than footer */
         #order-form { padding-bottom: 160px; }
     </style>
 </head>
@@ -556,7 +564,7 @@
             </form>
             
             <!-- STICKY FOOTER -->
-            <div class="checkout-footer">
+            <div class="checkout-footer" id="sticky-footer">
                 <!-- LEGAL CHECKBOX -->
                 <div class="legal-row" onclick="toggleCheckoutSubmit()">
                     <div class="custom-checkbox" id="legal-check">
@@ -645,7 +653,7 @@
         let globalDeliveryPrice = 0;
 
         // ==========================================
-        // 🚀 ЛОГИКА ДОСТАВКИ v8.0 (CDEK X2 + DATES)
+        // 🚀 ЛОГИКА ДОСТАВКИ
         // ==========================================
         
         const WAREHOUSE_LAT = 55.755814; 
@@ -1465,6 +1473,29 @@
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
         render();
         updateCartQuantities();
+
+        // ---------------------------------------------
+        // NEW v9.0: HIDE FOOTER ON KEYBOARD OPEN
+        // ---------------------------------------------
+        const inputs = document.querySelectorAll('.checkout-input, .checkout-textarea');
+        const footer = document.getElementById('sticky-footer');
+
+        if(inputs && footer) {
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    footer.classList.add('hidden');
+                });
+                input.addEventListener('blur', () => {
+                    // Small timeout to prevent flickering if switching between fields
+                    setTimeout(() => {
+                        // Check if focus moved to another input, if not, show footer
+                        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                            footer.classList.remove('hidden');
+                        }
+                    }, 100);
+                });
+            });
+        }
     </script>
 </body>
 </html>
