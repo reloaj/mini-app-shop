@@ -1,5 +1,5 @@
 <!-- START OF FILE сайт.html -->
-<!-- VERSION 10.0: KEYBOARD DETECTION VIA RESIZE (BEST UX) -->
+<!-- VERSION 12.0: TAP TO DISMISS KEYBOARD + MARKETPLACE FOOTER EFFECT -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -292,7 +292,7 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* --- STICKY FOOTER STYLE (v10.0) --- */
+        /* --- STICKY FOOTER STYLE (v12.0) --- */
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
@@ -304,17 +304,23 @@
             box-sizing: border-box;
             border-radius: 24px 24px 0 0;
             
-            /* Плавная анимация скрытия */
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Animation for hiding */
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            will-change: transform;
         }
         
-        /* Класс скрытия - сдвигаем вниз */
         .checkout-footer.hidden {
-            transform: translateY(110%);
+            transform: translateY(120%);
         }
         
-        /* Отступ для контента, чтобы не скрывался под футером */
-        #order-form { padding-bottom: 160px; }
+        /* FIX OVERLAP: Force scroll area to be larger than footer */
+        #order-form { padding-bottom: 120px; }
+        
+        /* --- STATIC FOOTER (MARKETPLACE EFFECT) --- */
+        .static-footer-block {
+            margin-top: 30px;
+            padding-bottom: 30px; /* Space at end */
+        }
     </style>
 </head>
 <body>
@@ -561,19 +567,28 @@
                     К оплате: <span id="checkout-total-price" style="color: var(--accent)">0</span> ₽
                 </div>
 
-            </form>
-            
-            <!-- STICKY FOOTER -->
-            <div class="checkout-footer" id="sticky-footer">
-                <!-- LEGAL CHECKBOX -->
-                <div class="legal-row" onclick="toggleCheckoutSubmit()">
-                    <div class="custom-checkbox" id="legal-check">
-                        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                <!-- STATIC FOOTER BLOCK (MARKETPLACE EFFECT) -->
+                <div class="static-footer-block" id="static-pay-block">
+                    <div class="legal-row" onclick="toggleCheckoutSubmit()">
+                        <div class="custom-checkbox legal-check-icon">
+                            <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">политикой конфиденциальности</span> и получением рассылок об акциях.</div>
                     </div>
-                    <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>, <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">политикой конфиденциальности</span> и получением рассылок об акциях.</div>
+                    <button type="button" class="big-btn final-pay-btn-class" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
                 </div>
 
-                <button type="button" class="big-btn" id="final-pay-btn" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
+            </form>
+            
+            <!-- STICKY FOOTER (HIDDEN WHEN SCROLLED TO BOTTOM) -->
+            <div class="checkout-footer" id="sticky-footer">
+                <div class="legal-row" onclick="toggleCheckoutSubmit()">
+                    <div class="custom-checkbox legal-check-icon">
+                        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="legal-label">Я согласен с условиями <span class="legal-link" onclick="event.stopPropagation(); openInfo('offer')">оферты</span>...</div>
+                </div>
+                <button type="button" class="big-btn final-pay-btn-class" disabled onclick="submitOrder()">ОПЛАТИТЬ</button>
             </div>
         </div>
     </div>
@@ -651,6 +666,7 @@
         let appliedPromoCode = "";
 
         let globalDeliveryPrice = 0;
+        let isLegalChecked = false;
 
         // ==========================================
         // 🚀 ЛОГИКА ДОСТАВКИ
@@ -947,10 +963,9 @@
                  document.getElementById('delivery-details-box').style.display = 'none';
             }
 
-            // Сброс чекбокса
-            const chk = document.getElementById('legal-check');
-            chk.classList.remove('checked');
-            document.getElementById('final-pay-btn').disabled = true;
+            // RESET STATE
+            isLegalChecked = false;
+            updateLegalVisuals();
 
             document.getElementById('checkout-modal').classList.add('modal-active'); 
             const addressInput = document.getElementById('address-input');
@@ -958,20 +973,27 @@
         }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('modal-active'); }
 
-        // LEGAL CHECKBOX LOGIC
+        // --- LEGAL CHECKBOX LOGIC v12.0 (SYNCED) ---
         function toggleCheckoutSubmit() {
-            const chk = document.getElementById('legal-check');
-            const btn = document.getElementById('final-pay-btn');
+            isLegalChecked = !isLegalChecked;
+            updateLegalVisuals();
             
-            if(chk.classList.contains('checked')) {
-                chk.classList.remove('checked');
-                btn.disabled = true;
-                tg.HapticFeedback.impactOccurred('light');
-            } else {
-                chk.classList.add('checked');
-                btn.disabled = false;
-                tg.HapticFeedback.notificationOccurred('success');
-            }
+            if (isLegalChecked) tg.HapticFeedback.notificationOccurred('success');
+            else tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function updateLegalVisuals() {
+            const checkboxes = document.querySelectorAll('.legal-check-icon');
+            const buttons = document.querySelectorAll('.final-pay-btn-class');
+            
+            checkboxes.forEach(cb => {
+                if(isLegalChecked) cb.classList.add('checked');
+                else cb.classList.remove('checked');
+            });
+            
+            buttons.forEach(btn => {
+                btn.disabled = !isLegalChecked;
+            });
         }
 
         function applyPromo() {
@@ -1222,7 +1244,6 @@
                 
                 let deliveryTimeStr = "";
                 if (isRegionalDelivery) {
-                     // For regional, we just need the selected date, time slot is irrelevant
                      if (!selectedDate) { tg.showAlert("Выберите дату отправки"); return; }
                      const dateStr = selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long'});
                      deliveryTimeStr = "Отправка СДЭК: " + dateStr;
@@ -1475,27 +1496,60 @@
         updateCartQuantities();
 
         // ---------------------------------------------
-        // NEW v10.0: SMART FOOTER HIDE ON RESIZE (KEYBOARD)
+        // NEW v12.0: MARKETPLACE EFFECT (STICKY + STATIC)
         // ---------------------------------------------
-        const footer = document.getElementById('sticky-footer');
+        const stickyFooter = document.getElementById('sticky-footer');
+        const staticPayBlock = document.getElementById('static-pay-block');
         let initialHeight = window.innerHeight;
 
-        // Обновляем "эталонную" высоту только если она увеличилась (например, при скрытии панели навигации браузера)
-        // или если ориентация изменилась
+        // 1. KEYBOARD DISMISS ON TAP (OUTSIDE INPUTS)
+        document.addEventListener('click', (e) => {
+            const tag = e.target.tagName;
+            // If click is NOT on an input/textarea/button, dismiss keyboard
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') {
+                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                    document.activeElement.blur();
+                }
+            }
+        });
+
+        // 2. KEYBOARD DETECTION (RESIZE)
         window.addEventListener('resize', () => {
-            if (!footer) return;
-            
+            if (!stickyFooter) return;
             const currentHeight = window.innerHeight;
             
-            // Если высота стала меньше на 20% (выехала клавиатура)
             if (currentHeight < initialHeight * 0.8) {
-                footer.classList.add('hidden');
+                stickyFooter.classList.add('hidden'); // Hide on keyboard open
             } else {
-                footer.classList.remove('hidden');
-                // Обновляем эталон, если экран "вырос" (скрылся бар браузера)
+                // If keyboard closed, check scroll position to decide visibility
+                checkScrollVisibility();
                 if(currentHeight > initialHeight) initialHeight = currentHeight;
             }
         });
+
+        // 3. INTERSECTION OBSERVER (HIDE STICKY WHEN STATIC IS VISIBLE)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    stickyFooter.classList.add('hidden'); // Hide sticky when static is visible
+                } else {
+                    // Only show if keyboard is NOT open
+                    if (window.innerHeight > initialHeight * 0.8) {
+                        stickyFooter.classList.remove('hidden');
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        if(staticPayBlock) observer.observe(staticPayBlock);
+
+        // Helper to re-check visibility manually
+        function checkScrollVisibility() {
+            if(!staticPayBlock) return;
+            const rect = staticPayBlock.getBoundingClientRect();
+            const isVisible = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+            if (!isVisible) stickyFooter.classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
