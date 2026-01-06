@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 25.0: FIXED CHECKOUT SCROLL + MARKETPLACE CARD UI -->
+<!-- VERSION 26.0: DEEP LINK SHARE + NO FLICKER + COURIER ICON + SMOOTH HEADER -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -191,34 +191,32 @@
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
 
         /* --- FIXED SCROLLING BUG --- */
-        
-        /* 1. Product Modal: Hidden overflow (uses internal scroll) */
         #modal { overflow-y: hidden; }
-
-        /* 2. Checkout & Settings: Standard scrolling */
         #checkout-modal, #settings-modal, #info-modal {
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
         }
         
-        /* --- 1. STICKY TOP BAR (COMPACT PANEL) --- */
+        /* --- 1. STICKY TOP BAR (SMOOTH & ROUNDED) --- */
         .modal-top-bar {
             position: absolute; top: 0; left: 0; width: 100%; height: 60px; /* Big height initially */
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 15px; padding-top: env(safe-area-inset-top);
             z-index: 50; 
             background: transparent; /* Initially transparent on photo */
-            transition: all 0.3s ease;
+            /* SMOOTH TRANSITION FOR APPEARANCE */
+            transition: background 0.4s ease, border-bottom 0.4s ease, height 0.4s ease, border-radius 0.4s ease;
             box-sizing: border-box;
+            border-radius: 0 0 24px 24px; /* ROUNDED BOTTOM CORNERS */
         }
         
         /* State when scrolled down */
         .modal-top-bar.scrolled {
-            background: var(--block); /* Solid background */
-            height: 48px; /* Compact height (-20%) */
+            background: var(--block); /* Solid background appears slowly */
+            height: 52px; /* Slightly compact */
             border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
         
         /* Buttons inside the bar */
@@ -233,7 +231,7 @@
         /* When scrolled: remove glass, adapt color to theme */
         .modal-top-bar.scrolled .glass-btn {
             background: transparent; border-color: transparent; backdrop-filter: none;
-            width: 32px; height: 32px; /* Smaller buttons */
+            width: 34px; height: 34px; /* Smaller buttons */
             color: var(--text);
         }
 
@@ -282,7 +280,9 @@
         .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
         .discount-badge { background: var(--red); color: white; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 5px; }
         
-        .delivery-row { display: flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; font-size: 13px; background: rgba(231, 90, 124, 0.1); width: fit-content; padding: 6px 12px; border-radius: 8px;}
+        .delivery-row { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--text); }
+        .delivery-row svg { flex-shrink: 0; color: var(--accent); }
+        .delivery-sub { font-size: 12px; color: var(--text-sec); margin-left: 34px; margin-top: -4px; margin-bottom: 10px; }
 
         /* CARD 2: TITLE + DESC */
         .product-card-desc {
@@ -630,8 +630,13 @@
                     </div>
 
                     <div class="delivery-row">
+                        <svg class="icon icon-sm" style="stroke-width:2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <span>Доставка по Москве и области</span>
+                    </div>
+
+                    <div class="delivery-row">
                         <svg class="icon icon-sm" style="stroke-width:2.5" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg>
-                        <span>Доставка в регионы</span>
+                        <span>Доставка в регионы (СДЭК)</span>
                     </div>
                 </div>
             </div>
@@ -805,6 +810,9 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
+        // 👇 ВАШ БОТ (ВСТАВЬТЕ ЮЗЕРНЕЙМ БЕЗ @)
+        const BOT_USERNAME = 'ВАШ_БОТ'; // Пример: 'FlowerShopBot'
+        
         const SUPPORT_USERNAME = 'DUROV'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
 
@@ -1260,17 +1268,16 @@
         }
 
         function shareProduct() {
+            if(!BOT_USERNAME || BOT_USERNAME === 'ВАШ_БОТ') {
+                tg.showAlert("Ошибка: Юзернейм бота не настроен в коде (строка ~1230)");
+                return;
+            }
+            // Generate deep link to open specific product
+            const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=product_${currentId}`;
             const p = db.find(x => x.id === currentId);
             const text = `Посмотри этот букет: ${p.name} - ${p.price}₽`;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Cotton Flowers',
-                    text: text,
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text));
-            }
+            
+            tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(text));
         }
 
         function addOne(id, e) { 
@@ -1620,6 +1627,9 @@
         lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
 
         function go(id, btn) {
+            // FIX FLICKERING: Check if already active
+            if (document.getElementById('p-' + id).classList.contains('active')) return;
+
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
@@ -1629,6 +1639,19 @@
             document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
             if(tg.initDataUnsafe.user.photo_url) document.getElementById('u-ava').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%;height:100%;object-fit:cover">`;
         }
+
+        // DEEP LINKING HANDLER (Opens product if link is t.me/bot/app?startapp=product_1)
+        window.addEventListener('load', () => {
+            drawRealisticNobilis();
+            const startParam = tg.initDataUnsafe?.start_param;
+            if (startParam && startParam.startsWith('product_')) {
+                const prodId = parseInt(startParam.split('_')[1]);
+                if (!isNaN(prodId)) {
+                    // Slight delay to ensure render is ready
+                    setTimeout(() => openModal(prodId), 300);
+                }
+            }
+        });
 
         function setupPTR(page) {
             const spinner = page.querySelector('.ptr-spinner');
@@ -1779,7 +1802,6 @@
             }
         }
 
-        window.addEventListener('load', drawRealisticNobilis);
         window.addEventListener('resize', drawRealisticNobilis);
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
         render();
