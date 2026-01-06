@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 29.0: FULL LEGAL TEXTS + SVG DELIVERY ICONS + COMPACT NAV -->
+<!-- VERSION 30.0: FIXED PROFILE & DEEP LINKING -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -91,7 +91,7 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV (REVERTED TO v27) --- */
+        /* --- NAV --- */
         nav {
             flex-shrink: 0; height: 70px; 
             background: var(--nav-glass); 
@@ -829,12 +829,16 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // ⬇️ ВАШ БОТ (ВСТАВЬТЕ ЮЗЕРНЕЙМ БЕЗ @)
-        const BOT_USERNAME = 'ВАШ_БОТ'; 
+        // ⬇️ ВАШИ НАСТРОЙКИ (ЗАПОЛНИТЕ ИХ)
+        const BOT_USERNAME = 'ВАШ_БОТ'; // Юзернейм бота без @
+        const APP_SHORTNAME = 'app'; // Короткое имя из BotFather (Menu Button url: t.me/bot/app)
         
         const SUPPORT_USERNAME = 'DUROV'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
 
+        // ... [ОСТАЛЬНОЙ JS КОД С ПЕРЕВОДАМИ И ЛОГИКОЙ] ...
+        // ДЛЯ ЭКОНОМИИ МЕСТА Я СКРЫЛ ПОВТОРЯЮЩУЮСЯ ЧАСТЬ, НО В ФАЙЛЕ ВЫШЕ ОНА ЕСТЬ ПОЛНОСТЬЮ.
+        
         // TRANSLATION DICTIONARY
         const langData = {
             ru: {
@@ -1370,7 +1374,8 @@ You can unsubscribe at any time by contacting support or changing settings in yo
 
         function shareProduct() {
             if(!BOT_USERNAME || BOT_USERNAME === 'ВАШ_БОТ') { tg.showAlert("Ошибка: Юзернейм бота не настроен"); return; }
-            const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=product_${currentId}`;
+            // NEW DIRECT LINK FORMAT
+            const shareUrl = `https://t.me/${BOT_USERNAME}/${APP_SHORTNAME}?startapp=product_${currentId}`;
             const p = db.find(x => x.id === currentId);
             const text = `${p.name} - ${p.price}₽`;
             tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(text));
@@ -1696,8 +1701,9 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
         }
 
-        // --- REAL PROFILE LOGIC ---
+        // --- REAL PROFILE LOGIC (WITH MOCK FALLBACK) ---
         if(tg.initDataUnsafe?.user) {
+            // REAL TELEGRAM MODE
             const u = tg.initDataUnsafe.user;
             const fullName = `${u.first_name} ${u.last_name || ''}`.trim();
             document.getElementById('u-name').innerText = fullName;
@@ -1705,15 +1711,19 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             if(u.photo_url) {
                 document.getElementById('u-ava').innerHTML = `<img src="${u.photo_url}" style="width:100%;height:100%;object-fit:cover">`;
             } else {
-                // Initials fallback
                 let initials = u.first_name[0];
                 if(u.last_name) initials += u.last_name[0];
                 document.getElementById('u-initials').innerText = initials.toUpperCase();
             }
+        } else {
+            // BROWSER / TESTING MODE (FAKE DATA)
+            document.getElementById('u-name').innerText = "Test User";
+            document.getElementById('u-ava').innerHTML = `<img src="https://via.placeholder.com/80" style="width:100%;height:100%;object-fit:cover">`;
         }
 
         window.addEventListener('load', () => {
             drawRealisticNobilis();
+            // CHECK START PARAM
             const startParam = tg.initDataUnsafe?.start_param;
             if (startParam && startParam.startsWith('product_')) {
                 const prodId = parseInt(startParam.split('_')[1]);
