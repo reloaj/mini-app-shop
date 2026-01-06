@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 28.0: PREMIUM UI + FULL TRANSLATION + REAL PROFILE -->
+<!-- VERSION 29.0: FULL LEGAL TEXTS + SVG DELIVERY ICONS + COMPACT NAV -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -91,23 +91,22 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV --- */
+        /* --- NAV (REVERTED TO v27) --- */
         nav {
-            flex-shrink: 0; height: 85px; 
+            flex-shrink: 0; height: 70px; 
             background: var(--nav-glass); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: flex-start; z-index: 50;
-            padding-top: 10px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute; bottom: 0; left: 0; width: 100%;
             border-radius: 24px 24px 0 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
         }
 
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 75px; padding-bottom: 100px; box-sizing: border-box;
+            padding-top: 75px; padding-bottom: 90px; box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
@@ -181,7 +180,7 @@
         .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; stroke: #636366; stroke-width: 2; transition: stroke 0.2s; }
         .nav-item.active { color: var(--accent); }
         .nav-item.active .nav-icon { stroke: var(--accent); }
-        .badge { position: absolute; top: 4px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
+        .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
@@ -358,27 +357,42 @@
             border: 1px solid var(--border);
         }
 
-        .compact-text {
+        /* TEXT STYLING: LEFT ALIGN, LEGIBLE */
+        .legal-text {
             color: var(--text-sec);
-            font-size: 13px;
-            line-height: 1.4;
+            font-size: 14px;
+            line-height: 1.5;
             white-space: pre-wrap;
+            text-align: left; /* FIX: Left Align */
         }
         
-        .compact-text h3 {
-            font-size: 15px;
+        .legal-text h3 {
+            font-size: 16px;
             font-weight: 700;
             color: var(--text);
-            margin-top: 12px;
-            margin-bottom: 6px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            text-align: left;
         }
-        .compact-text h3:first-child { margin-top: 0; }
+        .legal-text h3:first-child { margin-top: 0; }
+        .legal-text b { color: var(--text); }
         
         .info-block { display: flex; flex-direction: column; gap: 8px; }
         .info-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; border-bottom: 1px solid var(--border); }
         .info-row:last-child { border-bottom: none; }
         .info-label { color: var(--text-sec); }
         .info-val { font-weight: 500; text-align: right; max-width: 65%; color: var(--text); word-break: break-all; }
+
+        /* DELIVERY ICONS GRID */
+        .delivery-svg-list { display: flex; flex-direction: column; gap: 15px; }
+        .delivery-svg-item { display: flex; gap: 15px; align-items: flex-start; }
+        .delivery-icon-box { 
+            width: 44px; height: 44px; border-radius: 50%; 
+            background: rgba(231, 90, 124, 0.1); display: flex; align-items: center; justify-content: center; 
+            flex-shrink: 0; color: var(--accent);
+        }
+        .delivery-text-box h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 600; color: var(--text); }
+        .delivery-text-box p { margin: 0; font-size: 13px; color: var(--text-sec); line-height: 1.4; }
 
         .legal-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0; }
         .custom-checkbox { width: 20px; height: 20px; border: 2px solid var(--text-sec); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: 0.2s; }
@@ -517,7 +531,7 @@
         <div id="p-prof" class="page">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
             <div style="text-align: center; padding: 40px 20px;">
-                <!-- NEW: REAL PROFILE IMAGE -->
+                <!-- REAL PROFILE IMAGE -->
                 <div style="width: 80px; height: 80px; background: var(--block); border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--border); overflow:hidden" id="u-ava">
                     <!-- JS will inject image here -->
                     <span id="u-initials" style="font-size:24px; font-weight:700; color:var(--text-sec)">CF</span>
@@ -824,16 +838,11 @@
         // TRANSLATION DICTIONARY
         const langData = {
             ru: {
-                // Nav
                 nav_catalog: "Каталог", nav_cart: "Корзина", nav_fav: "Избранное", nav_profile: "Профиль",
-                // Headers
                 cart: "Корзина", fav: "Избранное",
-                // Empty States
                 cart_empty: "Корзина пуста", fav_empty: "Нет избранных товаров",
-                // Buttons
                 delete: "Удалить", select_all: "Выбрать все", clear: "Очистить", 
                 total: "Итого:", order_btn: "ОФОРМИТЬ ЗАКАЗ",
-                // Profile Menu
                 menu_delivery: "Доставка и упаковка",
                 menu_contacts: "Контакты и реквизиты",
                 menu_offer: "Публичная оферта",
@@ -841,12 +850,9 @@
                 menu_newsletter: "Согласие на рассылку",
                 menu_support: "Поддержка в Telegram",
                 menu_settings: "Настройки",
-                // Settings
                 title_settings: "Настройки", st_light: "Светлая тема",
-                // Modal Product
                 del_moscow: "Доставка по Москве и области", del_russia: "Доставка в регионы (СДЭК)", desc_title: "Описание",
                 btn_buy: "Купить сейчас", btn_add: "В корзину",
-                // Checkout
                 checkout_title: "Оформление", label_phone: "Телефон получателя", label_address: "Адрес доставки",
                 ph_address: "Город, Улица, Дом",
                 dd_dist: "Расстояние:", dd_time: "Время в пути:", dd_price: "Доставка:",
@@ -858,16 +864,11 @@
                 btn_pay: "ОПЛАТИТЬ", search_ph: "Поиск цветов..."
             },
             en: {
-                // Nav
                 nav_catalog: "Catalog", nav_cart: "Cart", nav_fav: "Saved", nav_profile: "Profile",
-                // Headers
                 cart: "Shopping Cart", fav: "Favorites",
-                // Empty States
                 cart_empty: "Your cart is empty", fav_empty: "No saved items",
-                // Buttons
                 delete: "Delete", select_all: "Select All", clear: "Clear", 
                 total: "Total:", order_btn: "CHECKOUT",
-                // Profile Menu
                 menu_delivery: "Delivery & Packaging",
                 menu_contacts: "Contacts & Details",
                 menu_offer: "Public Offer",
@@ -875,12 +876,9 @@
                 menu_newsletter: "Newsletter Consent",
                 menu_support: "Support in Telegram",
                 menu_settings: "Settings",
-                // Settings
                 title_settings: "Settings", st_light: "Light Theme",
-                // Modal Product
                 del_moscow: "Delivery in Moscow & Area", del_russia: "Regional Delivery (CDEK)", desc_title: "Description",
                 btn_buy: "Buy Now", btn_add: "Add to Cart",
-                // Checkout
                 checkout_title: "Checkout", label_phone: "Recipient Phone", label_address: "Delivery Address",
                 ph_address: "City, Street, House",
                 dd_dist: "Distance:", dd_time: "Travel Time:", dd_price: "Delivery:",
@@ -1050,7 +1048,7 @@
             const title = document.getElementById('info-title');
             const content = document.getElementById('info-content');
             
-            // RU CONTENT
+            // RU CONTENT - FULL LEGAL TEXTS + SVG ICONS
             const ruContent = {
                 contacts: `<div class="info-card">
                     <div class="info-block">
@@ -1062,45 +1060,75 @@
                     </div>
                 </div>`,
                 delivery: `<div class="info-card">
-                    <div class="compact-text">
-                        <h3>📦 Бережная упаковка</h3>
-                        Мы понимаем, как важно, чтобы букет приехал в идеальном состоянии.
-                        • Жесткие коробки.
-                        • Аквабоксы для живых цветов.
-                        • Фиксация сухоцветов.
-
-                        <h3>🚚 Курьерская доставка</h3>
-                        Москва и область (до 130 км).
-                        Мгновенный расчет стоимости и времени.
-
-                        <h3>✈️ Отправка в регионы (СДЭК)</h3>
-                        Далее 130 км. Средний срок: 5-7 дней.
+                    <div class="delivery-svg-list">
+                        <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M20 7h-9a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2V9a2 2 0 00-2-2zM9 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="12" y1="13" x2="12" y2="13.01" stroke-width="3"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Бережная упаковка</h4>
+                                <p>Мы отправляем букеты в прочных коробках. Живые цветы стоят в аквабоксе с водой, сухоцветы надежно зафиксированы.</p>
+                            </div>
+                        </div>
+                        <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Курьерская доставка</h4>
+                                <p>Действует по Москве и области (до 130 км). Стоимость рассчитывается мгновенно при вводе адреса.</p>
+                            </div>
+                        </div>
+                        <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Доставка в регионы</h4>
+                                <p>Отправляем СДЭКом по всей России. Средний срок доставки: 5-7 дней.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>`,
-                offer: `<div class="info-card"><div class="compact-text">
-                    <h3>Публичная оферта</h3>
-                    Настоящая оферта является официальным предложением Самозанятого [ВАШИ ДАННЫЕ] (далее - «Продавец») заключить договор купли-продажи товаров дистанционным способом.
+                offer: `<div class="info-card"><div class="legal-text">
+<h3>1. Общие положения</h3>
+1.1. Настоящая публичная оферта является официальным предложением самозанятого гражданина [ВАШИ ДАННЫЕ] (далее — «Продавец») заключить договор купли-продажи товаров дистанционным способом с любым физическим лицом (далее — «Покупатель»).
+1.2. Оформляя заказ в Веб-приложении, Покупатель подтверждает свое согласие с условиями настоящей Оферты.
 
-                    1. Заказ товара через приложение означает согласие с Офертой.
-                    2. Цены указаны в рублях.
-                    3. Оплата производится картой через ЮKassa.
-                    
-                    <b>Реквизиты:</b>
-                    Самозанятый [ВАШИ ДАННЫЕ]
-                    ИНН: 000000000000
-                </div></div>`,
-                privacy: `<div class="info-card"><div class="compact-text">
-                    <h3>Политика конфиденциальности</h3>
-                    Мы уважаем вашу приватность.
+<h3>2. Предмет договора</h3>
+2.1. Продавец обязуется передать в собственность Покупателя Товар (цветы, композиции), а Покупатель обязуется оплатить и принять Товар.
+2.2. Информация о Товаре (состав, фото) представлена в каталоге. Поскольку цветы являются природным материалом, итоговая композиция может незначительно отличаться от фото.
 
-                    1. Мы собираем только: Имя, Телефон, Адрес.
-                    2. Данные нужны только для доставки заказа.
-                    3. Мы не передаем данные третьим лицам.
+<h3>3. Стоимость и Оплата</h3>
+3.1. Цены указаны в рублях. Стоимость доставки рассчитывается отдельно.
+3.2. Оплата производится банковской картой через сервис ЮKassa.
+3.3. Чек формируется в приложении «Мой налог» и высылается Покупателю в электронном виде по запросу.
+
+<h3>4. Доставка и Возврат</h3>
+4.1. Доставка осуществляется курьерской службой или транспортной компанией СДЭК.
+4.2. <b>Внимание!</b> Цветы и растения входят в перечень товаров надлежащего качества, не подлежащих возврату и обмену (Постановление Правительства РФ №55 от 19.01.1998).
+4.3. Претензии по качеству принимаются в течение 24 часов с момента получения Товара при наличии фотофиксации недостатков.
+
+<h3>5. Реквизиты</h3>
+Самозанятый [ВАШИ ДАННЫЕ]
+ИНН: 000000000000
                 </div></div>`,
-                newsletter: `<div class="info-card"><div class="compact-text">
-                    <h3>Согласие на рассылку</h3>
-                    Оформляя заказ, вы соглашаетесь на получение сервисных сообщений (статус заказа) и редких новостей о скидках.
-                    Вы можете отписаться в любой момент через настройки бота.
+                privacy: `<div class="info-card"><div class="legal-text">
+<h3>1. Сбор данных</h3>
+Мы собираем персональные данные (Имя, Телефон, Адрес доставки) исключительно с целью исполнения договора купли-продажи и доставки Товара.
+
+<h3>2. Использование данных</h3>
+2.1. Мы используем ваши данные для связи по статусу заказа.
+2.2. Данные передаются курьерской службе или транспортной компании (СДЭК) для осуществления доставки.
+2.3. Мы не передаем ваши данные третьим лицам в рекламных целях без вашего согласия.
+
+<h3>3. Безопасность</h3>
+Мы принимаем необходимые меры для защиты ваших данных в соответствии с Федеральным законом №152-ФЗ «О персональных данных».
+                </div></div>`,
+                newsletter: `<div class="info-card"><div class="legal-text">
+<h3>Согласие на получение рассылки</h3>
+Оформляя заказ или нажимая кнопку «Подписаться», вы даете согласие на получение информационных и рекламных сообщений от магазина Cotton Flowers.
+
+<b>Что мы отправляем:</b>
+• Уведомления о статусе вашего заказа.
+• Информацию о новых коллекциях и сезонных предложениях (не чаще 2 раз в месяц).
+• Персональные промокоды.
+
+Вы имеете право отказаться от получения рассылки в любой момент, написав в службу поддержки или изменив настройки в профиле.
                 </div></div>`
             };
 
@@ -1116,45 +1144,71 @@
                     </div>
                 </div>`,
                 delivery: `<div class="info-card">
-                    <div class="compact-text">
-                        <h3>📦 Careful Packaging</h3>
-                        We ensure bouquets arrive perfectly.
-                        • Rigid boxes.
-                        • Aqua-boxes for fresh flowers.
-                        • Fixation for dried flowers.
-
-                        <h3>🚚 Courier Delivery</h3>
-                        Moscow & region (up to 130 km).
-                        Instant calculation of cost and time.
-
-                        <h3>✈️ Regional Shipping (CDEK)</h3>
-                        Beyond 130 km. Avg time: 5-7 days.
+                    <div class="delivery-svg-list">
+                        <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M20 7h-9a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2V9a2 2 0 00-2-2zM9 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="12" y1="13" x2="12" y2="13.01" stroke-width="3"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Careful Packaging</h4>
+                                <p>We ship bouquets in sturdy boxes. Fresh flowers are in aqua boxes, dried flowers are fixed securely.</p>
+                            </div>
+                        </div>
+                        <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Courier Delivery</h4>
+                                <p>Moscow & region (up to 130 km). Cost calculated instantly by address.</p>
+                            </div>
+                        </div>
+                         <div class="delivery-svg-item">
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg></div>
+                            <div class="delivery-text-box">
+                                <h4>Regional Shipping</h4>
+                                <p>Shipping via CDEK across Russia. Average time: 5-7 days.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>`,
-                offer: `<div class="info-card"><div class="compact-text">
-                    <h3>Public Offer</h3>
-                    This offer is an official proposal by Self-Employed [YOUR DATA] to conclude a sales contract.
+                offer: `<div class="info-card"><div class="legal-text">
+<h3>1. General Provisions</h3>
+1.1. This public offer is an official proposal by Self-Employed [YOUR DATA] (hereinafter - "Seller") to conclude a sales contract remotely.
+1.2. Ordering in the Web App implies acceptance of this Offer.
 
-                    1. Ordering implies acceptance of terms.
-                    2. Prices are in Rubles.
-                    3. Payment via YuKassa.
-                    
-                    <b>Details:</b>
-                    Self-Employed [YOUR DATA]
-                    Tax ID: 000000000000
-                </div></div>`,
-                privacy: `<div class="info-card"><div class="compact-text">
-                    <h3>Privacy Policy</h3>
-                    We respect your privacy.
+<h3>2. Subject of Agreement</h3>
+2.1. The Seller undertakes to transfer the Goods (flowers, compositions) to the Buyer.
+2.2. Flowers are natural materials, so the final composition may differ slightly from the photo.
 
-                    1. We collect only: Name, Phone, Address.
-                    2. Data is used strictly for delivery.
-                    3. We do not share data with third parties.
+<h3>3. Price and Payment</h3>
+3.1. Prices are in Rubles. Delivery cost is calculated separately.
+3.2. Payment is made via bank card (YuKassa).
+3.3. Receipt is generated in "My Tax" app and sent electronically upon request.
+
+<h3>4. Delivery and Returns</h3>
+4.1. Delivery by courier or CDEK.
+4.2. <b>Attention!</b> Flowers are perishable goods and are NOT subject to return or exchange (Government Decree No. 55).
+4.3. Quality claims are accepted within 24 hours of receipt with photo evidence.
                 </div></div>`,
-                newsletter: `<div class="info-card"><div class="compact-text">
-                    <h3>Newsletter Consent</h3>
-                    By ordering, you agree to receive service messages (order status) and rare news about discounts.
-                    You can unsubscribe anytime via bot settings.
+                privacy: `<div class="info-card"><div class="legal-text">
+<h3>1. Data Collection</h3>
+We collect personal data (Name, Phone, Address) solely for fulfilling the sales contract and delivery.
+
+<h3>2. Data Usage</h3>
+2.1. We use your data to communicate regarding order status.
+2.2. Data is shared with courier services or CDEK for delivery purposes.
+2.3. We do not share your data with third parties for advertising without consent.
+
+<h3>3. Security</h3>
+We take necessary measures to protect your data in accordance with Federal Law No. 152-FZ.
+                </div></div>`,
+                newsletter: `<div class="info-card"><div class="legal-text">
+<h3>Newsletter Consent</h3>
+By ordering or clicking "Subscribe", you agree to receive informational and promotional messages from Cotton Flowers.
+
+<b>What we send:</b>
+• Order status notifications.
+• New collection info (max 2 times/month).
+• Personal promo codes.
+
+You can unsubscribe at any time by contacting support or changing settings in your profile.
                 </div></div>`
             };
 
