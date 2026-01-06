@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 26.0: DEEP LINK SHARE + NO FLICKER + COURIER ICON + SMOOTH HEADER -->
+<!-- VERSION 27.0: SEPARATE PHOTO CARDS + TITLE ON TOP + ROUNDED UI -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -182,7 +182,7 @@
         .nav-item.active .nav-icon { stroke: var(--accent); }
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
-        /* MODAL COMMON */
+        /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg); z-index: 100; 
@@ -198,14 +198,14 @@
             overscroll-behavior-y: contain;
         }
         
-        /* --- 1. STICKY TOP BAR (SMOOTH & ROUNDED) --- */
+        /* --- 1. SMOOTH HEADER --- */
         .modal-top-bar {
             position: absolute; top: 0; left: 0; width: 100%; height: 60px; /* Big height initially */
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 15px; padding-top: env(safe-area-inset-top);
             z-index: 50; 
             background: transparent; /* Initially transparent on photo */
-            /* SMOOTH TRANSITION FOR APPEARANCE */
+            /* SMOOTH TRANSITION */
             transition: background 0.4s ease, border-bottom 0.4s ease, height 0.4s ease, border-radius 0.4s ease;
             box-sizing: border-box;
             border-radius: 0 0 24px 24px; /* ROUNDED BOTTOM CORNERS */
@@ -247,56 +247,67 @@
             box-sizing: border-box;
         }
 
-        /* CARD 1: PHOTO + PRICE + DELIVERY (Unified) */
+        /* CARD 1: PHOTO + TITLE + PRICE + DELIVERY */
         .product-card-main {
             background: var(--block);
-            border-radius: 0 0 24px 24px; /* Rounded only at bottom initially */
+            border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 4px 15px var(--shadow-color);
-            margin-bottom: 12px;
-            margin-left: 8px; margin-right: 8px; margin-top: 0px;
-            border-radius: 16px; /* All rounded */
-            margin-top: 8px; /* Little gap from top edge */
+            margin: 8px 8px 12px 8px; /* Top margin small for spacing */
         }
 
         .modal-slider-wrap { 
             width: 100%; aspect-ratio: 1 / 1.1; 
-            overflow: hidden; position: relative; background: #000;
+            overflow: hidden; position: relative; background: transparent;
         }
         
-        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
+        /* SLIDER WITH GAPS (SEPARATE CARDS) */
+        .modal-slider { 
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
+            height: 100%; scrollbar-width: none; 
+            padding: 0 4px; /* Side spacing */
+        }
         .modal-slider::-webkit-scrollbar { display: none; }
-        .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; display:flex; align-items:center; justify-content:center; position: relative; }
-        .modal-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        .modal-slide { 
+            min-width: 100%; height: 100%; scroll-snap-align: center; 
+            display:flex; align-items:center; justify-content:center; position: relative;
+            padding: 0 4px; /* Gap between photos */
+            box-sizing: border-box;
+        }
+        
+        .modal-slide img { 
+            width: 100%; height: 100%; object-fit: cover; display: block; 
+            border-radius: 20px; /* Rounded images */
+        }
         
         .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
         .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        .modal-info-inner { padding: 15px 15px 20px 15px; }
+        .modal-info-inner { padding: 15px 20px 25px 20px; }
 
-        .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
+        .modal-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; color: var(--text); }
+
+        .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 20px; }
         .current-price { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
         .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
         .discount-badge { background: var(--red); color: white; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 5px; }
         
-        .delivery-row { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--text); }
+        .delivery-row { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: 10px; color: var(--text); }
         .delivery-row svg { flex-shrink: 0; color: var(--accent); }
-        .delivery-sub { font-size: 12px; color: var(--text-sec); margin-left: 34px; margin-top: -4px; margin-bottom: 10px; }
 
-        /* CARD 2: TITLE + DESC */
+        /* CARD 2: DESCRIPTION */
         .product-card-desc {
             background: var(--block);
-            border-radius: 16px;
+            border-radius: 24px;
             padding: 20px;
-            margin: 0 8px;
+            margin: 0 8px 20px 8px;
             box-shadow: 0 4px 15px var(--shadow-color);
         }
-
-        .modal-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 15px; color: var(--text); }
         
-        .desc-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
-        .desc-text { font-size: 16px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+        .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+        .desc-text { font-size: 15px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
         /* Lightbox */
         #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
@@ -615,7 +626,7 @@
 
         <div class="modal-scroll-container" id="modal-scroll">
             
-            <!-- CARD 1: PHOTO + PRICE + DELIVERY (UNIFIED) -->
+            <!-- CARD 1: PHOTO + TITLE + PRICE + DELIVERY (UNIFIED) -->
             <div class="product-card-main">
                 <div class="modal-slider-wrap">
                     <div class="modal-slider" id="m-slider"></div>
@@ -623,6 +634,8 @@
                 </div>
                 
                 <div class="modal-info-inner">
+                    <h1 id="m-title" class="modal-title"></h1>
+
                     <div class="price-row">
                         <div class="current-price" id="m-price"></div>
                         <div class="old-price" id="m-old-price"></div>
@@ -641,9 +654,8 @@
                 </div>
             </div>
 
-            <!-- CARD 2: TITLE + DESCRIPTION -->
+            <!-- CARD 2: DESCRIPTION -->
             <div class="product-card-desc">
-                <h1 id="m-title" class="modal-title"></h1>
                 <div class="desc-title">Описание</div>
                 <p id="m-desc" class="desc-text"></p>
             </div>
@@ -811,7 +823,7 @@
         tg.enableClosingConfirmation();
 
         // 👇 ВАШ БОТ (ВСТАВЬТЕ ЮЗЕРНЕЙМ БЕЗ @)
-        const BOT_USERNAME = 'Cotton_Flowers_bot'; // Пример: 'FlowerShopBot'
+        const BOT_USERNAME = 'ВАШ_БОТ'; // Пример: 'FlowerShopBot'
         
         const SUPPORT_USERNAME = 'DUROV'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
@@ -1802,6 +1814,7 @@
             }
         }
 
+        window.addEventListener('load', drawRealisticNobilis);
         window.addEventListener('resize', drawRealisticNobilis);
         document.querySelectorAll('.page').forEach(page => setupPTR(page));
         render();
