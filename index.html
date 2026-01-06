@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 32.0: FULL COMPLETE CODE (NO PLACEHOLDERS) -->
+<!-- VERSION 29.0: FULL LEGAL TEXTS + SVG DELIVERY ICONS + COMPACT NAV -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -27,9 +27,12 @@
             --border: rgba(255,255,255,0.1);
             --shadow-color: rgba(0,0,0,0.3);
             
-            --glass-bg: rgba(30, 30, 30, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --header-glass: rgba(20, 30, 25, 0.4); 
+            --nav-glass: rgba(28, 28, 30, 0.6);
+            --footer-glass: rgba(28, 28, 30, 0.8); 
             --glass-blur: blur(20px);
+            
+            --glass-btn: rgba(0, 0, 0, 0.3);
         }
 
         body.light-theme {
@@ -41,8 +44,11 @@
             --border: rgba(0,0,0,0.1);
             --shadow-color: rgba(0,0,0,0.05);
             
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(0, 0, 0, 0.1);
+            --header-glass: rgba(230, 240, 235, 0.6);
+            --nav-glass: rgba(255, 255, 255, 0.8);
+            --footer-glass: rgba(255, 255, 255, 0.8);
+            
+            --glass-btn: rgba(255, 255, 255, 0.6);
         }
 
         html { height: 100%; overflow: hidden; }
@@ -65,75 +71,45 @@
         .icon-lg { width: 24px; height: 24px; }
         .icon-xl { width: 48px; height: 48px; stroke-width: 1.5; color: var(--text-sec); opacity: 0.5; }
 
-        /* --- DYNAMIC TOP SYSTEM --- */
-        .top-system {
-            position: absolute; top: 0; left: 0; width: 100%; z-index: 60;
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            pointer-events: none; /* Let clicks pass through container */
-        }
-
-        /* HEADER */
+        /* --- HEADER --- */
         header { 
-            height: 60px; pointer-events: auto;
-            background-color: var(--glass-bg);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            position: relative; z-index: 62;
+            flex-shrink: 0; height: 63px; 
+            background-color: var(--header-glass);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 20; padding: 0; position: absolute; top: 0; left: 0; width: 100%;
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            overflow: hidden; border-radius: 0 0 24px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; opacity: 0.7; }
+        #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; }
 
         .brand-overlay { 
+            position: absolute; bottom: 8px; width: 100%; text-align: center;
             font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; 
-            font-size: 24px; letter-spacing: 1px; color: var(--text); 
-            z-index: 2; text-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            font-size: 24px; letter-spacing: 1px; color: #fff; 
+            text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* SEARCH BAR */
-        .search-bar-panel {
-            height: 54px; pointer-events: auto;
-            background-color: var(--glass-bg);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; padding: 0 16px;
-            position: relative; z-index: 61;
-            box-shadow: 0 4px 15px var(--shadow-color);
-        }
-
-        /* Class added by JS on scroll */
-        body.scrolled-down .top-system {
-            transform: translateY(-60px); /* Moves header up, leaving search */
-        }
-
-        .search-wrap { position: relative; width: 100%; }
-        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 12px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
-        .search-icon-abs { position: absolute; left: 12px; top: 10px; color: var(--text-sec); pointer-events: none; }
-
-        /* --- NAV (PERSISTENT) --- */
+        /* --- NAV (REVERTED TO v27) --- */
         nav {
-            flex-shrink: 0; height: 75px; 
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            flex-shrink: 0; height: 70px; 
+            background: var(--nav-glass); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; 
-            z-index: 200; /* Highest priority */
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute; bottom: 0; left: 0; width: 100%;
             border-radius: 24px 24px 0 0;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
         }
 
-        /* --- PAGES --- */
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 114px; /* Header + Search height */
-            padding-bottom: 90px; box-sizing: border-box;
+            padding-top: 75px; padding-bottom: 90px; box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
-        
-        #p-cart, #p-fav, #p-prof { padding-top: 60px; }
 
         /* --- SNOW --- */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
@@ -144,7 +120,7 @@
             100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
         }
 
-        /* --- UI ELEMENTS --- */
+        /* --- COMMON UI --- */
         .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; width: 100%; flex-shrink: 0; margin-top: -10px; }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -163,6 +139,10 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
+        .search-wrap { padding: 0 16px 12px 16px; position: relative;}
+        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
+        .search-icon-abs { position: absolute; left: 28px; top: 10px; color: var(--text-sec); pointer-events: none; }
+        
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -205,10 +185,8 @@
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg); z-index: 100;
+            background: var(--bg); z-index: 100; 
         }
-        
-        #modal { z-index: 150; } /* Under nav */
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
 
@@ -217,7 +195,6 @@
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
-            z-index: 250;
         }
         
         .modal-top-bar {
@@ -226,7 +203,7 @@
             padding: 0 15px; padding-top: env(safe-area-inset-top);
             z-index: 50; 
             background: transparent;
-            transition: background 0.4s ease, border-bottom 0.4s ease;
+            transition: background 0.4s ease, border-bottom 0.4s ease, height 0.4s ease, border-radius 0.4s ease;
             box-sizing: border-box;
             border-radius: 0 0 24px 24px;
         }
@@ -258,7 +235,7 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 160px 0; 
+            padding: 0 0 140px 0; 
             box-sizing: border-box;
         }
 
@@ -321,7 +298,7 @@
         .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
         .desc-text { font-size: 15px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
@@ -380,12 +357,13 @@
             border: 1px solid var(--border);
         }
 
+        /* TEXT STYLING: LEFT ALIGN, LEGIBLE */
         .legal-text {
             color: var(--text-sec);
             font-size: 14px;
             line-height: 1.5;
             white-space: pre-wrap;
-            text-align: left;
+            text-align: left; /* FIX: Left Align */
         }
         
         .legal-text h3 {
@@ -454,9 +432,9 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        .checkout-footer {
+        .checkout-footer, .modal-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--glass-bg);
+            background: var(--footer-glass);
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-top: 1px solid var(--border);
             padding: 15px 20px; z-index: 120;
@@ -472,63 +450,35 @@
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
 
-        /* --- NEW FLOATING ACTION BUTTONS --- */
-        .modal-action-bar {
-            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 500px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 8px;
-            display: flex; gap: 8px; align-items: center; justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 201; /* Above Nav */
-            pointer-events: auto;
-        }
+        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
         
-        .action-btn { 
-            flex: 1; height: 48px; border: none; border-radius: 14px; 
-            font-weight: 600; font-size: 15px; cursor: pointer; 
-            transition: all 0.2s; text-align: center;
-        }
-        
-        .buy-now { 
-            background: transparent; color: var(--text); border: 1px solid var(--text-sec);
-        }
-        .buy-now:active { background: rgba(255,255,255,0.1); }
-        
-        .add-cart { 
-            background: var(--accent); color: white; border: none;
-            box-shadow: 0 4px 15px rgba(231, 90, 124, 0.3);
-        }
+        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .buy-now { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(5px); }
+        .buy-now:active { background: rgba(255,255,255,0.2); }
+        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4); }
         .add-cart:active { transform: scale(0.96); }
 
-        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 4px 8px; flex: 1; height: 48px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.3); color: white; }
-        .modal-qty-btn { width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; cursor: pointer; }
-        .modal-qty-val { font-weight: 700; font-size: 18px; min-width: 20px; text-align: center; }
+        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4);}
+        .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- TOP SYSTEM: Header + Search -->
-        <div class="top-system" id="top-system">
-            <header>
-                <canvas id="header-canvas"></canvas>
-                <div class="brand-overlay">Cotton Flowers</div>
-            </header>
-            <div class="search-bar-panel">
-                <div class="search-wrap">
-                    <svg class="icon search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                    <input type="text" class="search-input" data-lang-ph="search_ph" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
-                </div>
-            </div>
-        </div>
+        <!-- HEADER -->
+        <header id="main-header">
+            <canvas id="header-canvas"></canvas>
+            <div class="brand-overlay">Cotton Flowers</div>
+        </header>
 
         <!-- PAGE: HOME -->
         <div id="p-home" class="page active">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
+            <div class="search-wrap">
+                <svg class="icon search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                <input type="text" class="search-input" data-lang-ph="search_ph" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
+            </div>
             <div class="grid" id="grid"></div>
         </div>
 
@@ -581,7 +531,9 @@
         <div id="p-prof" class="page">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
             <div style="text-align: center; padding: 40px 20px;">
+                <!-- REAL PROFILE IMAGE -->
                 <div style="width: 80px; height: 80px; background: var(--block); border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--border); overflow:hidden" id="u-ava">
+                    <!-- JS will inject image here -->
                     <span id="u-initials" style="font-size:24px; font-weight:700; color:var(--text-sec)">CF</span>
                 </div>
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Guest</h2>
@@ -715,8 +667,7 @@
             </div>
         </div>
 
-        <!-- NEW PREMIUM FLOATING ACTION BAR -->
-        <div class="modal-action-bar" id="modal-footer"></div>
+        <div class="modal-footer" id="modal-footer"></div>
     </div>
 
     <!-- LIGHTBOX -->
@@ -880,9 +831,8 @@
 
         // ⬇️ ВАШ БОТ (ВСТАВЬТЕ ЮЗЕРНЕЙМ БЕЗ @)
         const BOT_USERNAME = 'ВАШ_БОТ'; 
-        const APP_SHORTNAME = 'app'; // Ваше short_name из BotFather
         
-        const SUPPORT_USERNAME = 'DUROV'; 
+        const SUPPORT_USERNAME = 'Cotton_FIowers'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
 
         // TRANSLATION DICTIONARY
@@ -1420,8 +1370,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
 
         function shareProduct() {
             if(!BOT_USERNAME || BOT_USERNAME === 'ВАШ_БОТ') { tg.showAlert("Ошибка: Юзернейм бота не настроен"); return; }
-            // NEW DIRECT LINK FORMAT
-            const shareUrl = `https://t.me/${BOT_USERNAME}/${APP_SHORTNAME}?startapp=product_${currentId}`;
+            const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=product_${currentId}`;
             const p = db.find(x => x.id === currentId);
             const text = `${p.name} - ${p.price}₽`;
             tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(text));
@@ -1742,18 +1691,13 @@ You can unsubscribe at any time by contacting support or changing settings in yo
 
         function go(id, btn) {
             if (document.getElementById('p-' + id).classList.contains('active')) return;
-            
-            // KEY FIX: Close modal when navigating
-            closeModal();
-
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
         }
 
-        // --- REAL PROFILE LOGIC (WITH MOCK FALLBACK) ---
+        // --- REAL PROFILE LOGIC ---
         if(tg.initDataUnsafe?.user) {
-            // REAL TELEGRAM MODE
             const u = tg.initDataUnsafe.user;
             const fullName = `${u.first_name} ${u.last_name || ''}`.trim();
             document.getElementById('u-name').innerText = fullName;
@@ -1761,14 +1705,11 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             if(u.photo_url) {
                 document.getElementById('u-ava').innerHTML = `<img src="${u.photo_url}" style="width:100%;height:100%;object-fit:cover">`;
             } else {
+                // Initials fallback
                 let initials = u.first_name[0];
                 if(u.last_name) initials += u.last_name[0];
                 document.getElementById('u-initials').innerText = initials.toUpperCase();
             }
-        } else {
-            // BROWSER / TESTING MODE (FAKE DATA)
-            document.getElementById('u-name').innerText = "Test User";
-            document.getElementById('u-ava').innerHTML = `<img src="https://via.placeholder.com/80" style="width:100%;height:100%;object-fit:cover">`;
         }
 
         window.addEventListener('load', () => {
@@ -1778,14 +1719,6 @@ You can unsubscribe at any time by contacting support or changing settings in yo
                 const prodId = parseInt(startParam.split('_')[1]);
                 if (!isNaN(prodId)) setTimeout(() => openModal(prodId), 300);
             }
-        });
-
-        // --- SCROLL LOGIC FOR HEADER ---
-        const homePage = document.getElementById('p-home');
-        homePage.addEventListener('scroll', () => {
-            const scrollY = homePage.scrollTop;
-            if (scrollY > 10) document.body.classList.add('scrolled-down');
-            else document.body.classList.remove('scrolled-down');
         });
 
         function setupPTR(page) {
@@ -1909,4 +1842,3 @@ You can unsubscribe at any time by contacting support or changing settings in yo
     </script>
 </body>
 </html>
-<!-- END OF FILE site.html -->
