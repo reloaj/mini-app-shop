@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 31.0: FIXED PROFILE DATA LOADING + TG.READY() -->
+<!-- VERSION 32.0: DEBUG MODE + PROFILE DIAGNOSTICS -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -537,6 +537,8 @@
                     <span id="u-initials" style="font-size:24px; font-weight:700; color:var(--text-sec)">CF</span>
                 </div>
                 <h2 id="u-name" style="margin: 0; font-size: 20px;">Guest</h2>
+                <!-- DIAGNOSTIC BLOCK (NEW) -->
+                <div id="u-debug" style="margin-top:10px; font-size:11px; color:var(--red); display:none"></div>
             </div>
             <div style="padding: 0 16px; max-width: 600px; margin: 0 auto;">
                 
@@ -656,7 +658,7 @@
                         <span data-lang="del_moscow">Доставка по Москве и области</span>
                     </div>
                     <div class="delivery-row">
-                        <svg class="icon icon-sm" style="stroke-width:2.5" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg>
+                        <svg class="icon icon-sm" style="stroke-width:2.5" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
                         <span data-lang="del_russia">Доставка в регионы (СДЭК)</span>
                     </div>
                 </div>
@@ -827,15 +829,12 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready(); // Signal that app is ready
+        tg.ready(); 
 
-        // ⬇️ ВАШ БОТ (ВСТАВЬТЕ ЮЗЕРНЕЙМ БЕЗ @)
         const BOT_USERNAME = 'ВАШ_БОТ'; 
-        
         const SUPPORT_USERNAME = 'Cotton_FIowers'; 
         const DADATA_TOKEN = '69386c882701ec813abcc78b9973d255aacf9f60'; 
 
-        // TRANSLATION DICTIONARY
         const langData = {
             ru: {
                 nav_catalog: "Каталог", nav_cart: "Корзина", nav_fav: "Избранное", nav_profile: "Профиль",
@@ -1076,7 +1075,7 @@
                             </div>
                         </div>
                         <div class="delivery-svg-item">
-                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg></div>
+                            <div class="delivery-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg></div>
                             <div class="delivery-text-box">
                                 <h4>Доставка в регионы</h4>
                                 <p>Отправляем СДЭКом по всей России. Средний срок доставки: 5-7 дней.</p>
@@ -1696,44 +1695,43 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
         }
 
-        // --- NEW REAL PROFILE LOGIC (FIXED) ---
+        // --- NEW REAL PROFILE LOGIC (v32: DIAGNOSTICS) ---
         function initProfile() {
-            // 1. Log for debugging
-            console.log("InitData:", tg.initDataUnsafe);
+            try {
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const u = tg.initDataUnsafe.user;
+                    const fullName = `${u.first_name} ${u.last_name || ''}`.trim();
+                    const nameEl = document.getElementById('u-name');
+                    if(nameEl) nameEl.innerText = fullName;
 
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const u = tg.initDataUnsafe.user;
-                console.log("User found:", u);
-
-                // Set Name
-                const fullName = `${u.first_name} ${u.last_name || ''}`.trim();
-                const nameEl = document.getElementById('u-name');
-                if(nameEl) nameEl.innerText = fullName;
-
-                // Set Photo
-                const avaEl = document.getElementById('u-ava');
-                if(avaEl) {
-                    if(u.photo_url) {
-                        avaEl.innerHTML = `<img src="${u.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-                    } else {
-                        // Initials fallback
-                        let initials = (u.first_name ? u.first_name[0] : '') + (u.last_name ? u.last_name[0] : '');
-                        if (!initials) initials = "CF";
-                        document.getElementById('u-initials').innerText = initials.toUpperCase();
+                    const avaEl = document.getElementById('u-ava');
+                    if(avaEl) {
+                        if(u.photo_url) {
+                            avaEl.innerHTML = `<img src="${u.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+                        } else {
+                            let initials = (u.first_name ? u.first_name[0] : '') + (u.last_name ? u.last_name[0] : '');
+                            if (!initials) initials = "CF";
+                            document.getElementById('u-initials').innerText = initials.toUpperCase();
+                        }
+                    }
+                } else {
+                    console.log("Browser Mode: Using Mock Data");
+                    const nameEl = document.getElementById('u-name');
+                    if(nameEl) nameEl.innerText = "Browser Test User";
+                    document.getElementById('u-ava').style.backgroundColor = "#E75A7C";
+                    
+                    // --- DIAGNOSTIC DISPLAY ---
+                    const debugEl = document.getElementById('u-debug');
+                    if(debugEl) {
+                        debugEl.style.display = 'block';
+                        debugEl.innerText = "TG Data Missing! Check BotFather settings.\nPlatform: " + (tg.platform || "unknown");
                     }
                 }
-            } else {
-                // Fallback for browser testing
-                console.log("Browser Mode: Using Mock Data");
-                const nameEl = document.getElementById('u-name');
-                if(nameEl) nameEl.innerText = "Browser Test User";
-                // Color fallback
-                document.getElementById('u-ava').style.backgroundColor = "#E75A7C";
-            }
+            } catch(e) { console.error("Profile error:", e); }
         }
 
         window.addEventListener('load', () => {
-            initProfile(); // Call profile init AFTER load
+            initProfile(); 
             drawRealisticNobilis();
             const startParam = tg.initDataUnsafe?.start_param;
             if (startParam && startParam.startsWith('product_')) {
