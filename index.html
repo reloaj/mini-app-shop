@@ -1,4 +1,4 @@
-<!-- VERSION 32.0: FIXED NAV BOTTOM + CLEAN FLOATING BUTTONS -->
+<!-- VERSION 33.0: OZON-STYLE TIGHT GRID + FIXED NAV + FLOATING SEARCH -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -27,7 +27,7 @@
             --shadow-color: rgba(0,0,0,0.4);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
-            --nav-glass: rgba(28, 28, 30, 0.95); /* More opaque for bottom nav */
+            --nav-glass: rgba(28, 28, 30, 0.95); 
             --glass-blur: blur(25px);
         }
 
@@ -84,16 +84,16 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV (FIXED BOTTOM - NOT ISLAND) --- */
+        /* --- NAV (FIXED BOTTOM) --- */
         nav {
-            flex-shrink: 0; height: 80px; /* Taller for modern look */
+            flex-shrink: 0; height: 80px; 
             width: 100%;
             position: absolute; bottom: 0; left: 0;
             
             background: var(--nav-glass); 
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-top: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px 24px 0 0; /* Rounded only at top */
+            border-radius: 24px 24px 0 0;
             
             display: flex; justify-content: space-around; align-items: flex-start;
             padding-top: 12px;
@@ -168,11 +168,27 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
+        /* --- TIGHT OZON-STYLE GRID --- */
+        .grid { 
+            display: grid; 
+            gap: 2px; /* Very small gap (approx 0.5mm) */
+            padding: 0 2px; /* Almost edge-to-edge */
+            grid-template-columns: 1fr 1fr; 
+        }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
-        .card { background: var(--block); border-radius: 14px; overflow: hidden; position: relative; animation: fadeUp 0.4s backwards; cursor: pointer; box-shadow: 0 4px 15px var(--shadow-color); }
-        .card:active { transform: scale(0.97); transition: 0.1s; }
+        .card { 
+            background: var(--block); 
+            border-radius: 8px; /* Smaller radius for tight packing */
+            overflow: hidden; 
+            position: relative; 
+            animation: fadeUp 0.4s backwards; 
+            cursor: pointer; 
+            /* No shadow for flat marketplace look */
+            box-shadow: none; 
+        }
+        .card:active { transform: scale(0.98); transition: 0.1s; }
+        
         .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .slider::-webkit-scrollbar { display: none; }
