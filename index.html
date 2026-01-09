@@ -1,4 +1,4 @@
-<!-- VERSION 34.0: UNIFIED TIGHT LAYOUT (HOME, CART, FAV) -->
+<!-- VERSION 35.0: ROUNDED CARDS + INTEGRATED PREMIUM HEADER -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -26,7 +26,7 @@
             --border: rgba(255,255,255,0.1);
             --shadow-color: rgba(0,0,0,0.4);
             
-            --header-glass: rgba(20, 30, 25, 0.4); 
+            --header-glass: rgba(20, 30, 25, 0.3); /* More transparent to show Nobilis */
             --nav-glass: rgba(28, 28, 30, 0.95); 
             --glass-blur: blur(25px);
         }
@@ -64,24 +64,35 @@
         .icon-lg { width: 24px; height: 24px; }
         .icon-xl { width: 48px; height: 48px; stroke-width: 1.5; color: var(--text-sec); opacity: 0.5; }
 
-        /* --- HEADER --- */
+        /* --- HEADER (PREMIUM INTEGRATION) --- */
         header { 
-            flex-shrink: 0; height: 63px; 
+            flex-shrink: 0; height: 70px; 
             background-color: var(--header-glass);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             z-index: 20; padding: 0; position: absolute; top: 0; left: 0; width: 100%;
             border-bottom: 1px solid rgba(255,255,255,0.05); 
             overflow: hidden; border-radius: 0 0 24px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
         }
 
-        #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; }
+        #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; opacity: 0.9; }
 
         .brand-overlay { 
-            position: absolute; bottom: 8px; width: 100%; text-align: center;
-            font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; 
-            font-size: 24px; letter-spacing: 1px; color: #fff; 
-            text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
+            position: relative; z-index: 2;
+            font-family: 'Playfair Display', serif; 
+            font-style: italic; 
+            font-weight: 700; 
+            font-size: 28px; 
+            letter-spacing: 0.5px;
+            
+            /* Premium Gradient Text Effect */
+            background: linear-gradient(to bottom, #ffffff 30%, #e0d4c5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* Glow/Shadow to integrate with branches */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
         }
 
         /* --- NAV (FIXED BOTTOM) --- */
@@ -105,7 +116,7 @@
 
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 75px; padding-bottom: 160px;
+            padding-top: 80px; padding-bottom: 160px;
             box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
@@ -149,7 +160,7 @@
             100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
         }
 
-        /* --- UI ELEMENTS --- */
+        /* --- COMMON UI --- */
         .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; width: 100%; flex-shrink: 0; margin-top: -10px; }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -168,27 +179,25 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* --- UNIFIED TIGHT GRID (HOME & FAV) --- */
+        /* --- TIGHT BUT ROUNDED GRID (HOME & FAV) --- */
         .grid { 
             display: grid; 
-            gap: 1px; /* 1/5th mm gap */
-            padding: 0; /* Edge to edge */
+            gap: 4px; /* Small gap to show rounding */
+            padding: 0 4px; /* Small side padding */
             grid-template-columns: 1fr 1fr; 
-            background: var(--bg); /* To ensure gap color */
         }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
         .card { 
             background: var(--block); 
-            border-radius: 0; /* Minimal roundness for tight fit */
-            /* Optional: small radius like 4px can be added if desired, but 0 is most "seamless" */
+            border-radius: 12px; /* Soft rounding */
             overflow: hidden; 
             position: relative; 
             animation: fadeUp 0.4s backwards; 
             cursor: pointer; 
             box-shadow: none; 
         }
-        .card:active { opacity: 0.9; transition: 0.1s; }
+        .card:active { transform: scale(0.98); transition: 0.1s; }
         
         .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
@@ -210,21 +219,22 @@
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
         
-        /* --- CART LIST (TIGHT STYLE) --- */
+        /* --- CART LIST (ROUNDED PODS) --- */
         #cart-items {
-            display: flex; flex-direction: column; gap: 1px; /* Tight gap */
+            display: flex; flex-direction: column; gap: 4px; /* Gap for rounding */
+            padding: 0 4px; /* Side padding */
         }
         
         .list-row { 
             display: flex; align-items: center; gap: 12px; 
             background: var(--block); 
-            padding: 12px 16px; /* Inner padding */
-            margin: 0; /* No margin = full width */
-            border-radius: 0; /* Flat */
+            padding: 12px 16px; 
+            margin: 0; 
+            border-radius: 12px; /* Rounded Cart Items */
             animation: fadeUp 0.3s; 
         }
         
-        .list-img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; }
+        .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         .cart-item-name { font-weight: 500; font-size: 13px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .cart-item-price { color: var(--text-sec); font-size: 13px; margin-top: 2px; }
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
@@ -301,11 +311,10 @@
 
         .product-card-main {
             background: var(--block);
-            /* Tighter radius for modal card too */
-            border-radius: 12px; 
+            border-radius: 16px; /* Slightly softer for main modal card */
             overflow: hidden;
             box-shadow: 0 4px 15px var(--shadow-color);
-            margin: 4px; /* Minimal margin */
+            margin: 8px; /* Breathing room */
         }
 
         .modal-slider-wrap { 
@@ -329,7 +338,7 @@
         
         .modal-slide img { 
             width: 100%; height: 100%; object-fit: cover; display: block; 
-            border-radius: 8px; /* Tighter image radius */
+            border-radius: 12px;
         }
         
         .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
@@ -350,9 +359,9 @@
 
         .product-card-desc {
             background: var(--block);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
-            margin: 0 4px 20px 4px;
+            margin: 0 8px 20px 8px;
             box-shadow: 0 4px 15px var(--shadow-color);
         }
         
@@ -476,22 +485,6 @@
         .dd-label { color: var(--text-sec); }
         .dd-val { font-weight: 600; color: var(--text); }
         .dd-accent { color: var(--accent); }
-
-        .date-scroll { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; scrollbar-width: none; padding-bottom: 5px; }
-        .date-scroll::-webkit-scrollbar { display: none; }
-        .date-chip { 
-            flex-shrink: 0; padding: 10px 16px; background: var(--block); border: 1px solid var(--border); 
-            border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; text-align: center; min-width: 70px;
-        }
-        .date-chip.selected { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 4px 10px rgba(231, 90, 124, 0.3); }
-        
-        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 5px; }
-        .time-slot { 
-            padding: 10px; background: var(--block); border: 1px solid var(--border); border-radius: 10px; 
-            color: var(--text); font-size: 13px; text-align: center; cursor: pointer; transition: 0.2s;
-        }
-        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
-        .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
