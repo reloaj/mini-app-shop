@@ -1,4 +1,4 @@
-<!-- VERSION 33.0: OZON-STYLE TIGHT GRID + FIXED NAV + FLOATING SEARCH -->
+<!-- VERSION 34.0: UNIFIED TIGHT LAYOUT (HOME, CART, FAV) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -105,16 +105,16 @@
 
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 75px; padding-bottom: 160px; /* Space for nav + search/buttons */
+            padding-top: 75px; padding-bottom: 160px;
             box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
         
-        /* --- SEARCH BAR (FLOATING ABOVE NAV) --- */
+        /* --- SEARCH BAR --- */
         .search-wrap { 
             position: fixed; 
-            bottom: 90px; /* Sit right above Nav */
+            bottom: 90px; 
             left: 16px; right: 16px;
             z-index: 950; 
             background: transparent; border: none; padding: 0;
@@ -149,7 +149,7 @@
             100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
         }
 
-        /* --- COMMON UI --- */
+        /* --- UI ELEMENTS --- */
         .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; width: 100%; flex-shrink: 0; margin-top: -10px; }
         .ptr-icon { width: 20px; height: 20px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -168,26 +168,27 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* --- TIGHT OZON-STYLE GRID --- */
+        /* --- UNIFIED TIGHT GRID (HOME & FAV) --- */
         .grid { 
             display: grid; 
-            gap: 2px; /* Very small gap (approx 0.5mm) */
-            padding: 0 2px; /* Almost edge-to-edge */
+            gap: 1px; /* 1/5th mm gap */
+            padding: 0; /* Edge to edge */
             grid-template-columns: 1fr 1fr; 
+            background: var(--bg); /* To ensure gap color */
         }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
         .card { 
             background: var(--block); 
-            border-radius: 8px; /* Smaller radius for tight packing */
+            border-radius: 0; /* Minimal roundness for tight fit */
+            /* Optional: small radius like 4px can be added if desired, but 0 is most "seamless" */
             overflow: hidden; 
             position: relative; 
             animation: fadeUp 0.4s backwards; 
             cursor: pointer; 
-            /* No shadow for flat marketplace look */
             box-shadow: none; 
         }
-        .card:active { transform: scale(0.98); transition: 0.1s; }
+        .card:active { opacity: 0.9; transition: 0.1s; }
         
         .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
@@ -209,8 +210,21 @@
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price { font-weight: 700; font-size: 14px; color: var(--text); }
         
-        .list-row { display: flex; align-items: center; gap: 12px; background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; animation: fadeUp 0.3s; }
-        .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        /* --- CART LIST (TIGHT STYLE) --- */
+        #cart-items {
+            display: flex; flex-direction: column; gap: 1px; /* Tight gap */
+        }
+        
+        .list-row { 
+            display: flex; align-items: center; gap: 12px; 
+            background: var(--block); 
+            padding: 12px 16px; /* Inner padding */
+            margin: 0; /* No margin = full width */
+            border-radius: 0; /* Flat */
+            animation: fadeUp 0.3s; 
+        }
+        
+        .list-img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; }
         .cart-item-name { font-weight: 500; font-size: 13px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .cart-item-price { color: var(--text-sec); font-size: 13px; margin-top: 2px; }
         .qty-ctrl { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 4px; border-radius: 8px; margin-top: 5px; width: fit-content; }
@@ -229,7 +243,7 @@
             height: 100%;
             background: var(--bg); 
             z-index: 900; /* Below Nav */
-            padding-bottom: 100px; /* Space for Nav + Floating Buttons */
+            padding-bottom: 100px; 
             box-sizing: border-box;
         }
 
@@ -281,16 +295,17 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 160px 0; /* Space for Modal Footer + Nav */
+            padding: 0 0 160px 0; 
             box-sizing: border-box;
         }
 
         .product-card-main {
             background: var(--block);
-            border-radius: 24px;
+            /* Tighter radius for modal card too */
+            border-radius: 12px; 
             overflow: hidden;
             box-shadow: 0 4px 15px var(--shadow-color);
-            margin: 8px 8px 12px 8px;
+            margin: 4px; /* Minimal margin */
         }
 
         .modal-slider-wrap { 
@@ -314,7 +329,7 @@
         
         .modal-slide img { 
             width: 100%; height: 100%; object-fit: cover; display: block; 
-            border-radius: 20px;
+            border-radius: 8px; /* Tighter image radius */
         }
         
         .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
@@ -335,9 +350,9 @@
 
         .product-card-desc {
             background: var(--block);
-            border-radius: 24px;
+            border-radius: 12px;
             padding: 20px;
-            margin: 0 8px 20px 8px;
+            margin: 0 4px 20px 4px;
             box-shadow: 0 4px 15px var(--shadow-color);
         }
         
