@@ -1,5 +1,4 @@
-<!-- START OF FILE site.html -->
-<!-- VERSION 29.0: FULL LEGAL TEXTS + SVG DELIVERY ICONS + COMPACT NAV -->
+<!-- VERSION 31.0: PREMIUM FLOATING UI + SMART SEARCH HIDING -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -20,19 +19,16 @@
             --block: #1C1C1E;
             --text: #FFFFFF;
             --text-sec: #8E8E93;
-            --input-bg: #2C2C2E;
+            --input-bg: rgba(28, 28, 30, 0.6); /* Transparent for blur */
             --accent: #E75A7C;
             --green: #32D74B;
             --red: #FF453A;
             --border: rgba(255,255,255,0.1);
-            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-color: rgba(0,0,0,0.4);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
-            --nav-glass: rgba(28, 28, 30, 0.6);
-            --footer-glass: rgba(28, 28, 30, 0.8); 
-            --glass-blur: blur(20px);
-            
-            --glass-btn: rgba(0, 0, 0, 0.3);
+            --nav-glass: rgba(28, 28, 30, 0.75);
+            --glass-blur: blur(25px);
         }
 
         body.light-theme {
@@ -40,15 +36,12 @@
             --block: #FFFFFF;
             --text: #000000;
             --text-sec: #8E8E93;
-            --input-bg: #E5E5EA;
+            --input-bg: rgba(255, 255, 255, 0.6);
             --border: rgba(0,0,0,0.1);
-            --shadow-color: rgba(0,0,0,0.05);
+            --shadow-color: rgba(0,0,0,0.1);
             
             --header-glass: rgba(230, 240, 235, 0.6);
-            --nav-glass: rgba(255, 255, 255, 0.8);
-            --footer-glass: rgba(255, 255, 255, 0.8);
-            
-            --glass-btn: rgba(255, 255, 255, 0.6);
+            --nav-glass: rgba(255, 255, 255, 0.75);
         }
 
         html { height: 100%; overflow: hidden; }
@@ -77,9 +70,9 @@
             background-color: var(--header-glass);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 20; padding: 0; position: absolute; top: 0; left: 0; width: 100%;
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
             overflow: hidden; border-radius: 0 0 24px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; }
@@ -91,25 +84,68 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV (REVERTED TO v27) --- */
+        /* --- FLOATING NAV (PREMIUM ISLAND) --- */
         nav {
-            flex-shrink: 0; height: 70px; 
+            flex-shrink: 0; height: 65px; 
+            width: calc(100% - 32px); /* Island style */
+            left: 16px; 
+            bottom: 25px; /* Floating from bottom */
+            position: absolute;
+            
             background: var(--nav-glass); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 50;
-            padding-bottom: env(safe-area-inset-bottom);
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            border-radius: 24px 24px 0 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px; /* Rounded corners */
+            
+            display: flex; justify-content: space-around; align-items: center; 
+            z-index: 999; 
+            padding-bottom: 0;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transform: translateZ(0); /* Hardware acceleration */
         }
 
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 75px; padding-bottom: 90px; box-sizing: border-box;
+            padding-top: 75px; padding-bottom: 110px; box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
+        
+        /* --- PREMIUM FLOATING SEARCH BAR --- */
+        #p-home { padding-bottom: 160px; }
+        
+        .search-wrap { 
+            position: fixed; 
+            bottom: 100px; /* Above the Nav Island (25 bottom + 65 height + 10 gap) */
+            left: 16px; right: 16px;
+            z-index: 950; 
+            /* No Container Background/Border - Just the input floating */
+            background: transparent; border: none;
+            padding: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        
+        /* Hidden state for when Modal is open */
+        .search-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+        }
+        
+        .search-input { 
+            width: 100%; 
+            padding: 14px 12px 14px 45px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: var(--input-bg); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            color: var(--text); 
+            font-size: 16px; 
+            outline: none; 
+            box-sizing: border-box; 
+            box-shadow: 0 8px 25px var(--shadow-color); /* Premium Shadow */
+        }
+        .search-icon-abs { position: absolute; left: 16px; top: 16px; color: var(--text-sec); pointer-events: none; z-index: 2; }
 
         /* --- SNOW --- */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
@@ -139,10 +175,6 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        .search-wrap { padding: 0 16px 12px 16px; position: relative;}
-        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
-        .search-icon-abs { position: absolute; left: 28px; top: 10px; color: var(--text-sec); pointer-events: none; }
-        
         .grid { display: grid; gap: 12px; padding: 0 16px; grid-template-columns: 1fr 1fr; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
@@ -184,8 +216,12 @@
 
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg); z-index: 100; 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100%;
+            background: var(--bg); 
+            z-index: 900; /* Below Nav */
+            padding-bottom: 100px; /* Space for Floating Buttons/Nav */
+            box-sizing: border-box;
         }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
@@ -195,6 +231,7 @@
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
+            z-index: 1000; /* Settings/Checkout above Nav */
         }
         
         .modal-top-bar {
@@ -235,7 +272,7 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 140px 0; 
+            padding: 0 0 160px 0; /* Space for Modal Footer + Nav */
             box-sizing: border-box;
         }
 
@@ -298,7 +335,7 @@
         .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
         .desc-text { font-size: 15px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
@@ -363,7 +400,7 @@
             font-size: 14px;
             line-height: 1.5;
             white-space: pre-wrap;
-            text-align: left; /* FIX: Left Align */
+            text-align: left; 
         }
         
         .legal-text h3 {
@@ -446,19 +483,46 @@
             will-change: transform;
         }
         
+        /* PREMIUM FLOATING MODAL BUTTONS (ABOVE NAV) */
+        .modal-footer {
+            bottom: 100px; /* Aligned with Search bar height (above nav) */
+            left: 16px; right: 16px; width: auto; /* Not full width */
+            
+            background: transparent; /* Transparent container */
+            border: none;
+            box-shadow: none; /* Buttons have own shadow */
+            padding: 0;
+            border-radius: 0;
+            
+            z-index: 920; 
+            pointer-events: none; /* Let clicks pass through gaps */
+        }
+        
+        .modal-footer > * { pointer-events: auto; } /* Re-enable clicks on buttons */
+        
         .checkout-footer.hidden { transform: translateY(120%); }
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
 
         .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
         
-        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .buy-now { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(5px); }
-        .buy-now:active { background: rgba(255,255,255,0.2); }
-        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4); }
+        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
+        
+        /* Glassy buttons for floating feel */
+        .buy-now { 
+            background: rgba(44, 44, 46, 0.8); 
+            color: var(--text); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+        .light-theme .buy-now { background: rgba(255, 255, 255, 0.8); }
+
+        .buy-now:active { transform: scale(0.96); }
+        .add-cart { background: var(--accent); color: white; box-shadow: 0 8px 25px rgba(231, 90, 124, 0.4); }
         .add-cart:active { transform: scale(0.96); }
 
-        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4);}
+        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 20px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 8px 25px rgba(231, 90, 124, 0.4);}
         .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
         .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
@@ -475,11 +539,15 @@
         <!-- PAGE: HOME -->
         <div id="p-home" class="page active">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
-            <div class="search-wrap">
+            
+            <!-- PRODUCT GRID -->
+            <div class="grid" id="grid"></div>
+
+            <!-- SEARCH BAR: FLOATING & FRAMELESS -->
+             <div class="search-wrap" id="main-search">
                 <svg class="icon search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                 <input type="text" class="search-input" data-lang-ph="search_ph" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
             </div>
-            <div class="grid" id="grid"></div>
         </div>
 
         <!-- PAGE: CART -->
@@ -1605,6 +1673,9 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         }
         
         function openModal(id) {
+            // HIDE SEARCH WHEN MODAL OPENS
+            document.getElementById('main-search').classList.add('search-hidden');
+
             currentId = id; const p = db.find(x => x.id === id);
             const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join('');
             const dots = p.images.map((_, i) => `<div class="modal-dot ${i===0?'active':''}"></div>`).join('');
@@ -1673,6 +1744,12 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         function closeModal() { 
             const modal = document.getElementById('modal');
             modal.classList.remove('modal-active'); 
+            
+            // SHOW SEARCH AGAIN IF ON HOME PAGE
+            if(document.getElementById('p-home').classList.contains('active')) {
+                document.getElementById('main-search').classList.remove('search-hidden');
+            }
+
             const scrollContainer = document.getElementById('modal-scroll');
             if (scrollContainer) scrollContainer.scrollTop = 0;
             const topBar = document.getElementById('modal-top-bar');
@@ -1690,9 +1767,18 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
 
         function go(id, btn) {
+            // Close Product Modal if open
+            closeModal();
+            
             if (document.getElementById('p-' + id).classList.contains('active')) return;
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
+            
+            // SHOW SEARCH ONLY ON HOME
+            const searchBar = document.getElementById('main-search');
+            if (id === 'home') searchBar.classList.remove('search-hidden');
+            else searchBar.classList.add('search-hidden');
+
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
         }
 
