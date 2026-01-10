@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 30.0: OZON STYLE UI + FULL FUNCTIONALITY SAVED -->
+<!-- VERSION 30.0: MARKETPLACE GRID + FLOATING SEARCH + TRANSPARENT MODAL BUTTONS -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,7 +11,7 @@
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -28,15 +28,14 @@
             --shadow-color: rgba(0,0,0,0.3);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
-            --nav-glass: rgba(28, 28, 30, 0.95); /* Более плотный фон для навбара */
-            --footer-glass: rgba(28, 28, 30, 0.95); 
+            --nav-glass: rgba(28, 28, 30, 0.85); /* Чуть плотнее, так как модалка под ним */
             --glass-blur: blur(20px);
             
             --glass-btn: rgba(0, 0, 0, 0.3);
         }
 
         body.light-theme {
-            --bg: #F0F2F5; /* Ozon-like light grey */
+            --bg: #F2F2F7;
             --block: #FFFFFF;
             --text: #000000;
             --text-sec: #8E8E93;
@@ -45,8 +44,7 @@
             --shadow-color: rgba(0,0,0,0.05);
             
             --header-glass: rgba(230, 240, 235, 0.6);
-            --nav-glass: rgba(255, 255, 255, 0.95);
-            --footer-glass: rgba(255, 255, 255, 0.95);
+            --nav-glass: rgba(255, 255, 255, 0.9);
             
             --glass-btn: rgba(255, 255, 255, 0.6);
         }
@@ -91,13 +89,14 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV --- */
+        /* --- NAV (Z-INDEX ПОВЫШЕН) --- */
         nav {
             flex-shrink: 0; height: 70px; 
             background: var(--nav-glass); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 50;
+            display: flex; justify-content: space-around; align-items: center; 
+            z-index: 200; /* ВЫШЕ ЧЕМ МОДАЛКА */
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute; bottom: 0; left: 0; width: 100%;
             border-radius: 24px 24px 0 0;
@@ -110,6 +109,9 @@
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
+        
+        /* Увеличенный паддинг для главной страницы, чтобы поиск не закрывал контент */
+        #p-home { padding-bottom: 150px; } 
 
         /* --- SNOW --- */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
@@ -139,31 +141,39 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        .search-wrap { padding: 0 16px 12px 16px; position: relative;}
-        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
-        .search-icon-abs { position: absolute; left: 28px; top: 10px; color: var(--text-sec); pointer-events: none; }
+        /* --- UPDATED SEARCH (FLOATING BOTTOM) --- */
+        .search-wrap { 
+            position: fixed; 
+            bottom: calc(75px + env(safe-area-inset-bottom)); 
+            left: 0; width: 100%; 
+            padding: 0 10px; 
+            z-index: 90; /* Под модалкой, но над контентом */
+            background: transparent; /* Убран фон контейнера */
+            pointer-events: none; /* Чтобы клики сквозь паддинги проходили */
+        }
+        .search-input { 
+            width: 100%; padding: 12px 12px 12px 42px; border-radius: 14px; 
+            border: 1px solid var(--border); 
+            background: var(--input-bg); /* Сам инпут имеет фон */
+            color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            pointer-events: auto; /* Инпут кликабелен */
+        }
+        .search-icon-abs { position: absolute; left: 24px; top: 13px; color: var(--text-sec); pointer-events: none; z-index: 91; }
         
-        /* OZON STYLE GRID */
+        /* --- UPDATED GRID (MARKETPLACE STYLE) --- */
         .grid { 
             display: grid; 
-            gap: 6px; /* Маленький отступ */
-            padding: 0 6px; 
+            gap: 6px; /* Меньше отступы */
+            padding: 0 6px; /* Шире контент */
             grid-template-columns: 1fr 1fr; 
         }
-        @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
         
-        .card { 
-            background: var(--block); 
-            border-radius: 12px; /* Чуть меньше скругление для плитки */
-            overflow: hidden; 
-            position: relative; 
-            animation: fadeUp 0.4s backwards; 
-            cursor: pointer; 
-            /* box-shadow убрали для плоскости, или делаем легкую */
-        }
-        .card:active { transform: scale(0.98); transition: 0.1s; }
+        .card { background: var(--block); border-radius: 14px; overflow: hidden; position: relative; animation: fadeUp 0.4s backwards; cursor: pointer; box-shadow: 0 2px 8px var(--shadow-color); }
+        .card:active { transform: scale(0.97); transition: 0.1s; }
         
-        .slider-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1.1; overflow: hidden; } /* Более квадратные фото */
+        .slider-wrapper { position: relative; width: 100%; height: 180px; overflow: hidden; }
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .slider::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
@@ -171,17 +181,17 @@
         .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
         .dot { width: 4px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 
-        .fav-btn { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
-        .fav-btn svg { stroke: #000; width: 16px; height: 16px; } /* Черное сердце на белом фоне */
+        .fav-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
+        .light-theme .fav-btn { background: rgba(255,255,255,0.8); }
         .fav-btn.is-active svg { fill: var(--red); stroke: var(--red); }
         .fav-btn.active-anim { animation: pop 0.3s ease; }
 
-        .cart-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: var(--accent); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
+        .cart-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: var(--accent); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
-        .info { padding: 8px; padding-right: 40px; }
+        .info { padding: 8px 10px 12px 10px; padding-right: 40px; }
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .price { font-weight: 800; font-size: 15px; color: var(--text); }
+        .price { font-weight: 700; font-size: 15px; color: var(--text); }
         
         .list-row { display: flex; align-items: center; gap: 12px; background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; animation: fadeUp 0.3s; }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
@@ -200,7 +210,7 @@
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg); z-index: 100; 
+            background: var(--bg); z-index: 100; /* МЕНЬШЕ ЧЕМ NAV (200) */
         }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
@@ -210,25 +220,39 @@
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
+            z-index: 250; /* Остальные модалки перекрывают меню */
         }
         
-        /* OZON STYLE MODAL HEADER */
         .modal-top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: auto;
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 10px; padding-top: calc(10px + env(safe-area-inset-top));
-            z-index: 200; 
+            padding: 0 15px; padding-top: env(safe-area-inset-top);
+            z-index: 50; 
             background: transparent;
-            pointer-events: none; /* Пропускаем клики сквозь контейнер, ловим только на кнопках */
+            transition: background 0.4s ease, border-bottom 0.4s ease, height 0.4s ease, border-radius 0.4s ease;
+            box-sizing: border-box;
+            border-radius: 0 0 24px 24px;
+        }
+        
+        .modal-top-bar.scrolled {
+            background: var(--block);
+            height: 52px;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
         
         .glass-btn {
-            pointer-events: auto; /* Включаем клики на кнопках */
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
-            color: #fff; border: none;
-            cursor: pointer; transition: all 0.2s;
+            color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; transition: all 0.3s;
+        }
+        
+        .modal-top-bar.scrolled .glass-btn {
+            background: transparent; border-color: transparent; backdrop-filter: none;
+            width: 34px; height: 34px;
+            color: var(--text);
         }
 
         .glass-btn:active { transform: scale(0.9); }
@@ -237,55 +261,52 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 140px 0; 
+            padding: 0 0 160px 0; /* Большой отступ снизу, чтобы видеть контент под кнопками */
             box-sizing: border-box;
-            background: var(--bg);
         }
 
-        /* FULL WIDTH PRODUCT CARD */
         .product-card-main {
             background: var(--block);
-            border-radius: 0 0 24px 24px; /* Скругление только снизу */
+            border-radius: 24px;
             overflow: hidden;
-            margin: 0; /* Убираем отступы */
             box-shadow: 0 4px 15px var(--shadow-color);
-            position: relative;
+            margin: 8px 8px 12px 8px;
         }
 
         .modal-slider-wrap { 
             width: 100%; aspect-ratio: 1 / 1.1; 
-            overflow: hidden; position: relative; background: var(--block);
+            overflow: hidden; position: relative; background: transparent;
         }
         
         .modal-slider { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             height: 100%; scrollbar-width: none; 
-            padding: 0;
+            padding: 0 4px;
         }
         .modal-slider::-webkit-scrollbar { display: none; }
         
         .modal-slide { 
             min-width: 100%; height: 100%; scroll-snap-align: center; 
             display:flex; align-items:center; justify-content:center; position: relative;
-            padding: 0;
+            padding: 0 4px;
             box-sizing: border-box;
         }
         
         .modal-slide img { 
             width: 100%; height: 100%; object-fit: cover; display: block; 
-            border-radius: 0; /* Убираем скругление у самой картинки */
+            border-radius: 20px;
         }
         
-        .modal-dots { position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
-        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
+        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        .modal-info-inner { padding: 20px 20px 25px 20px; }
+        .modal-info-inner { padding: 15px 20px 25px 20px; }
 
         .modal-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; color: var(--text); }
 
         .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 20px; }
-        .current-price { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
+        .current-price { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
         .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
         .discount-badge { background: var(--red); color: white; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 5px; }
         
@@ -296,14 +317,14 @@
             background: var(--block);
             border-radius: 24px;
             padding: 20px;
-            margin: 10px; /* Вернул отступ для описания, чтобы отделить от фото */
+            margin: 0 8px 20px 8px;
             box-shadow: 0 4px 15px var(--shadow-color);
         }
         
         .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
         .desc-text { font-size: 15px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
@@ -436,12 +457,12 @@
         .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
         .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
 
-        .checkout-footer, .modal-footer {
+        .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-top: 1px solid var(--border);
-            padding: 15px 20px; z-index: 120;
+            padding: 15px 20px; z-index: 260;
             box-shadow: 0 -5px 20px var(--shadow-color);
             padding-bottom: calc(20px + env(safe-area-inset-bottom));
             box-sizing: border-box;
@@ -454,15 +475,38 @@
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
 
-        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+        /* --- UPDATED MODAL FOOTER (FLOATING BUTTONS) --- */
+        .modal-footer {
+            position: fixed; 
+            bottom: calc(85px + env(safe-area-inset-bottom)); /* Подняли выше нижнего меню (70px + safe area) */
+            left: 0; width: 100%;
+            background: transparent; /* Убрали фон */
+            border: none;
+            padding: 0 10px; 
+            z-index: 120;
+            box-sizing: border-box;
+            display: flex; gap: 10px; align-items: center; justify-content: space-between;
+            pointer-events: none; /* Сам контейнер не перекрывает клики */
+        }
         
-        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .buy-now { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(5px); }
+        .action-btn { 
+            flex: 1; padding: 14px; border: none; border-radius: 14px; 
+            font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; 
+            pointer-events: auto; /* Кнопки кликабельны */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Тень чтобы отделить от фона */
+        }
+        
+        .buy-now { background: var(--block); color: var(--text); border: 1px solid var(--border); }
         .buy-now:active { background: rgba(255,255,255,0.2); }
-        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4); }
+        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.5); }
         .add-cart:active { transform: scale(0.96); }
 
-        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4);}
+        .modal-qty-ctrl { 
+            display: flex; align-items: center; justify-content: space-between; 
+            background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; 
+            box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.5);
+            pointer-events: auto;
+        }
         .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
         .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
@@ -479,11 +523,12 @@
         <!-- PAGE: HOME -->
         <div id="p-home" class="page active">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
+            <div class="grid" id="grid"></div>
+            <!-- SEARCH MOVED TO BOTTOM -->
             <div class="search-wrap">
                 <svg class="icon search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                 <input type="text" class="search-input" data-lang-ph="search_ph" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
             </div>
-            <div class="grid" id="grid"></div>
         </div>
 
         <!-- PAGE: CART -->
@@ -602,7 +647,7 @@
             </div>
         </div>
 
-        <!-- NAVBAR -->
+        <!-- NAVBAR (Z-INDEX 200) -->
         <nav>
             <button class="nav-item active" onclick="go('home', this)">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -626,7 +671,7 @@
     
     <div id="snow-container"></div>
 
-    <!-- PRODUCT MODAL (OZON STYLE: FULL WIDTH IMAGE) -->
+    <!-- PRODUCT MODAL -->
     <div id="modal">
         <div class="modal-top-bar" id="modal-top-bar">
             <div class="glass-btn" onclick="closeModal()">
@@ -1236,7 +1281,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            tg.setBackgroundColor(isLight ? '#F0F2F5' : '#000000');
+            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
             tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
 
@@ -1245,7 +1290,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             document.body.classList.add('light-theme');
             document.getElementById('theme-toggle').checked = true;
         }
-        tg.setBackgroundColor(isLightOnLoad ? '#F0F2F5' : '#000000');
+        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
         tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
 
         function toggleLang() {
@@ -1326,20 +1371,20 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
-            // For Ozon style, just 1st image in grid to save performance
-            let slidesHtml = `<div class="slide"><img src="${p.images[0]}" loading="lazy"></div>`;
+            let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+            
+            // UPDATED: REALISTIC SHOPPING TROLLEY ICON
+            const cartIcon = `<svg class="icon icon-sm" style="stroke:white" viewBox="0 0 24 24"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /><circle cx="10" cy="21" r="1" /><circle cx="20" cy="21" r="1" /></svg>`;
+
             return `
                 <div class="card" onclick="openModal(${p.id})">
                     <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
                         <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </div>
-                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div></div>
-                    <div class="info">
-                        <div class="price">${p.price} ₽</div>
-                        <div class="name">${p.name}</div>
-                    </div>
+                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
                     <div class="cart-btn" onclick="addOne(${p.id}, event)">
-                        <svg class="icon icon-sm" style="stroke:white" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-5 2a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                        ${cartIcon}
                     </div>
                 </div>`;
         }
@@ -1631,8 +1676,12 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             modal.classList.add('modal-active');
             
             const scrollContainer = document.getElementById('modal-scroll');
-            // Reset scroll to top
-            scrollContainer.scrollTop = 0;
+            const topBar = document.getElementById('modal-top-bar');
+            
+            scrollContainer.onscroll = () => {
+                if (scrollContainer.scrollTop > 50) topBar.classList.add('scrolled');
+                else topBar.classList.remove('scrolled');
+            };
             
             const slider = document.getElementById('m-slider');
             slider.onscroll = () => {
@@ -1679,6 +1728,8 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             modal.classList.remove('modal-active'); 
             const scrollContainer = document.getElementById('modal-scroll');
             if (scrollContainer) scrollContainer.scrollTop = 0;
+            const topBar = document.getElementById('modal-top-bar');
+            if (topBar) topBar.classList.remove('scrolled');
         }
         
         const lightbox = document.getElementById('lightbox');
