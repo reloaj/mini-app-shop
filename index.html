@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 33.0: FIXED CSS SYNTAX ERROR (RESTORED BUTTON STYLES) -->
+<!-- VERSION 34.0: LOADING SCREEN WITH PLAYFUL CAT + ALL PREVIOUS FIXES -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -134,6 +134,83 @@
             50% { transform: translateY(55vh) translateX(15px) rotate(180deg); }
             100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); }
         }
+
+        /* --- LOADING SCREEN (CAT & COTTON) --- */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 10000; /* Самый верхний слой */
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        
+        #loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .loader-scene {
+            position: relative;
+            width: 200px; height: 200px;
+            display: flex; justify-content: center; align-items: flex-end;
+        }
+
+        /* Эмодзи кота */
+        .cat-emoji {
+            font-size: 80px;
+            position: absolute;
+            bottom: 20px;
+            animation: catJump 1.2s infinite ease-in-out;
+            z-index: 2;
+        }
+
+        /* Эмодзи хлопка (используем облако, так как оно похоже на хлопок) */
+        .cotton-emoji {
+            font-size: 50px;
+            position: absolute;
+            top: 20px;
+            opacity: 0.9;
+            animation: cottonFloat 1.2s infinite ease-in-out;
+            z-index: 1;
+        }
+        
+        /* Дополнительные хлопки для фона */
+        .cotton-bg {
+            position: absolute; font-size: 30px; opacity: 0.5;
+        }
+        .c1 { top: 40px; left: 20px; animation: floatRandom 3s infinite ease-in-out; }
+        .c2 { top: 50px; right: 30px; animation: floatRandom 4s infinite ease-in-out reverse; }
+        .c3 { bottom: 60px; left: 10px; animation: floatRandom 3.5s infinite ease-in-out; }
+
+        .loading-text {
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-style: italic;
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes catJump {
+            0%, 100% { transform: translateY(0) scale(1, 1); }
+            40% { transform: translateY(0) scale(1.1, 0.9); } /* Приседает */
+            50% { transform: translateY(-60px) scale(0.9, 1.1); } /* Прыжок вверх */
+            60% { transform: translateY(-60px) rotate(-10deg); } /* Касается лапкой */
+            70% { transform: translateY(0) scale(1, 1); }
+        }
+
+        @keyframes cottonFloat {
+            0%, 100% { transform: translateY(0); }
+            55% { transform: translateY(-10px); } /* Хлопок реагирует чуть раньше */
+            60% { transform: translateY(-30px) rotate(20deg); } /* Отлетает от удара */
+            80% { transform: translateY(0); }
+        }
+        
+        @keyframes floatRandom {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
 
         /* --- COMMON UI --- */
         .ptr-spinner { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: height 0.2s; width: 100%; flex-shrink: 0; margin-top: -10px; }
@@ -534,6 +611,18 @@
     </style>
 </head>
 <body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="loader-scene">
+            <div class="cotton-emoji">☁️</div>
+            <div class="cotton-bg c1">☁️</div>
+            <div class="cotton-bg c2">☁️</div>
+            <div class="cotton-bg c3">☁️</div>
+            <div class="cat-emoji">🐈</div>
+        </div>
+        <div class="loading-text">Cotton Flowers</div>
+    </div>
 
     <div class="app-container">
         <!-- HEADER -->
@@ -1795,6 +1884,11 @@ You can unsubscribe at any time by contacting support or changing settings in yo
                 const prodId = parseInt(startParam.split('_')[1]);
                 if (!isNaN(prodId)) setTimeout(() => openModal(prodId), 300);
             }
+            // HIDE LOADER AFTER 3 SEC
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                if(loader) loader.classList.add('hidden');
+            }, 3000);
         });
 
         function setupPTR(page) {
