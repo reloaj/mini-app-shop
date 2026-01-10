@@ -1,3 +1,5 @@
+<!-- START OF FILE site.html -->
+<!-- VERSION 30.0: OZON STYLE UI + FULL FUNCTIONALITY SAVED -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,7 +11,7 @@
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -18,35 +20,35 @@
             --block: #1C1C1E;
             --text: #FFFFFF;
             --text-sec: #8E8E93;
-            --input-bg: rgba(28, 28, 30, 0.6);
+            --input-bg: #2C2C2E;
             --accent: #E75A7C;
             --green: #32D74B;
             --red: #FF453A;
             --border: rgba(255,255,255,0.1);
-            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-color: rgba(0,0,0,0.3);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
-            --nav-glass: rgba(28, 28, 30, 0.95); 
-            --glass-blur: blur(25px);
-
-            /* SMART SNOW: DEFAULT (DARK MODE) */
-            --snow-color: #FFFFFF;
+            --nav-glass: rgba(28, 28, 30, 0.95); /* Более плотный фон для навбара */
+            --footer-glass: rgba(28, 28, 30, 0.95); 
+            --glass-blur: blur(20px);
+            
+            --glass-btn: rgba(0, 0, 0, 0.3);
         }
 
         body.light-theme {
-            --bg: #F2F2F7;
+            --bg: #F0F2F5; /* Ozon-like light grey */
             --block: #FFFFFF;
             --text: #000000;
             --text-sec: #8E8E93;
-            --input-bg: rgba(255, 255, 255, 0.6);
+            --input-bg: #E5E5EA;
             --border: rgba(0,0,0,0.1);
-            --shadow-color: rgba(0,0,0,0.1);
+            --shadow-color: rgba(0,0,0,0.05);
             
             --header-glass: rgba(230, 240, 235, 0.6);
             --nav-glass: rgba(255, 255, 255, 0.95);
-
-            /* SMART SNOW: LIGHT MODE (BLUE) */
-            --snow-color: #5AC8FA;
+            --footer-glass: rgba(255, 255, 255, 0.95);
+            
+            --glass-btn: rgba(255, 255, 255, 0.6);
         }
 
         html { height: 100%; overflow: hidden; }
@@ -69,15 +71,15 @@
         .icon-lg { width: 24px; height: 24px; }
         .icon-xl { width: 48px; height: 48px; stroke-width: 1.5; color: var(--text-sec); opacity: 0.5; }
 
-        /* --- HEADER (CLEAN VERSION) --- */
+        /* --- HEADER --- */
         header { 
             flex-shrink: 0; height: 63px; 
             background-color: var(--header-glass);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 20; padding: 0; position: absolute; top: 0; left: 0; width: 100%;
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
             overflow: hidden; border-radius: 0 0 24px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 1; }
@@ -89,74 +91,29 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV (FIXED BOTTOM) --- */
+        /* --- NAV --- */
         nav {
-            flex-shrink: 0; height: 80px; 
-            width: 100%;
-            position: absolute; bottom: 0; left: 0;
-            
+            flex-shrink: 0; height: 70px; 
             background: var(--nav-glass); 
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-top: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px 24px 0 0;
-            
-            display: flex; justify-content: space-around; align-items: flex-start;
-            padding-top: 12px;
-            box-sizing: border-box;
-            z-index: 999; 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
-            box-shadow: 0 -5px 30px var(--shadow-color);
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
         }
 
         .page {
             display: none; width: 100%; height: 100%; overflow-y: scroll; 
-            padding-top: 75px; padding-bottom: 160px;
-            box-sizing: border-box;
+            padding-top: 75px; padding-bottom: 90px; box-sizing: border-box;
             overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; 
         }
         .page.active { display: block; }
-        
-        /* --- SEARCH BAR --- */
-        .search-wrap { 
-            position: fixed; 
-            bottom: 90px; 
-            left: 16px; right: 16px;
-            z-index: 950; 
-            background: transparent; border: none; padding: 0;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        
-        .search-hidden {
-            opacity: 0; pointer-events: none; transform: translateY(10px);
-        }
-        
-        .search-input { 
-            width: 100%; 
-            padding: 14px 12px 14px 45px; 
-            border-radius: 18px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            background: var(--input-bg); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            color: var(--text); 
-            font-size: 16px; 
-            outline: none; 
-            box-sizing: border-box; 
-            box-shadow: 0 4px 15px var(--shadow-color);
-        }
-        .search-icon-abs { position: absolute; left: 16px; top: 16px; color: var(--text-sec); pointer-events: none; z-index: 2; }
 
-        /* --- SMART SNOW --- */
+        /* --- SNOW --- */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
-        
-        .snowflake { 
-            position: absolute; top: -10px; 
-            /* COLOR CONTROLLED BY THEME */
-            color: var(--snow-color); 
-            font-size: 1em; opacity: 0.8; user-select: none; 
-            animation-name: fall; animation-timing-function: linear; 
-            transition: color 0.5s ease;
-        }
-        
+        .snowflake { position: absolute; top: -10px; color: white; font-size: 1em; opacity: 0.8; user-select: none; animation-name: fall; animation-timing-function: linear; }
         @keyframes fall {
             0% { transform: translateY(-10px) translateX(0px) rotate(0deg); }
             50% { transform: translateY(55vh) translateX(15px) rotate(180deg); }
@@ -182,27 +139,31 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* --- ROUNDED GRID (LIKE v35) --- */
+        .search-wrap { padding: 0 16px 12px 16px; position: relative;}
+        .search-input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
+        .search-icon-abs { position: absolute; left: 28px; top: 10px; color: var(--text-sec); pointer-events: none; }
+        
+        /* OZON STYLE GRID */
         .grid { 
             display: grid; 
-            gap: 4px; /* Slight gap for rounded cards */
-            padding: 0 4px; 
+            gap: 6px; /* Маленький отступ */
+            padding: 0 6px; 
             grid-template-columns: 1fr 1fr; 
         }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
         
         .card { 
             background: var(--block); 
-            border-radius: 12px; /* Soft rounding */
+            border-radius: 12px; /* Чуть меньше скругление для плитки */
             overflow: hidden; 
             position: relative; 
             animation: fadeUp 0.4s backwards; 
             cursor: pointer; 
-            box-shadow: none; 
+            /* box-shadow убрали для плоскости, или делаем легкую */
         }
         .card:active { transform: scale(0.98); transition: 0.1s; }
         
-        .slider-wrapper { position: relative; width: 100%; height: 170px; overflow: hidden; }
+        .slider-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1.1; overflow: hidden; } /* Более квадратные фото */
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none; }
         .slider::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 100%; scroll-snap-align: center; }
@@ -210,33 +171,19 @@
         .dots { position: absolute; bottom: 8px; left: 0; width: 100%; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
         .dot { width: 4px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 
-        .fav-btn { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
-        .light-theme .fav-btn { background: rgba(255,255,255,0.8); }
+        .fav-btn { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
+        .fav-btn svg { stroke: #000; width: 16px; height: 16px; } /* Черное сердце на белом фоне */
         .fav-btn.is-active svg { fill: var(--red); stroke: var(--red); }
         .fav-btn.active-anim { animation: pop 0.3s ease; }
 
-        .cart-btn { position: absolute; bottom: 10px; right: 10px; width: 34px; height: 34px; background: var(--accent); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
+        .cart-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: var(--accent); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
         .cart-btn:active { transform: scale(0.9); background: var(--green); }
 
-        .info { padding: 10px; padding-right: 45px; }
+        .info { padding: 8px; padding-right: 40px; }
         .name { font-weight: 500; font-size: 13px; margin-bottom: 4px; height: 32px; line-height: 1.25; overflow: hidden; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .price { font-weight: 700; font-size: 14px; color: var(--text); }
+        .price { font-weight: 800; font-size: 15px; color: var(--text); }
         
-        /* --- ROUNDED CART ITEMS --- */
-        #cart-items {
-            display: flex; flex-direction: column; gap: 4px; 
-            padding: 0 4px;
-        }
-        
-        .list-row { 
-            display: flex; align-items: center; gap: 12px; 
-            background: var(--block); 
-            padding: 12px 16px; 
-            margin: 0; 
-            border-radius: 12px; /* Consistent Rounding */
-            animation: fadeUp 0.3s; 
-        }
-        
+        .list-row { display: flex; align-items: center; gap: 12px; background: var(--block); padding: 10px; margin: 10px 16px; border-radius: 12px; animation: fadeUp 0.3s; }
         .list-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         .cart-item-name { font-weight: 500; font-size: 13px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .cart-item-price { color: var(--text-sec); font-size: 13px; margin-top: 2px; }
@@ -245,19 +192,15 @@
         .qty-val { font-weight: 600; min-width: 16px; text-align: center; font-size: 14px; color: var(--text); }
 
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #636366; background: none; border: none; cursor: pointer; width: 25%; height: 100%; transition: color 0.2s; }
-        .nav-icon { width: 22px; height: 22px; margin-bottom: 5px; stroke: #636366; stroke-width: 2; transition: stroke 0.2s; }
+        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; stroke: #636366; stroke-width: 2; transition: stroke 0.2s; }
         .nav-item.active { color: var(--accent); }
         .nav-item.active .nav-icon { stroke: var(--accent); }
         .badge { position: absolute; top: 8px; margin-left: 14px; background: var(--red); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; display: none; animation: pop 0.3s; z-index: 10; }
 
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; 
-            height: 100%;
-            background: var(--bg); 
-            z-index: 900; /* Below Nav */
-            padding-bottom: 100px; 
-            box-sizing: border-box;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 100; 
         }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
@@ -267,39 +210,25 @@
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
-            z-index: 1000; /* Settings/Checkout ABOVE Nav */
         }
         
+        /* OZON STYLE MODAL HEADER */
         .modal-top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            position: absolute; top: 0; left: 0; width: 100%; height: auto;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 15px; padding-top: env(safe-area-inset-top);
-            z-index: 50; 
+            padding: 10px 10px; padding-top: calc(10px + env(safe-area-inset-top));
+            z-index: 200; 
             background: transparent;
-            transition: background 0.4s ease, border-bottom 0.4s ease, height 0.4s ease, border-radius 0.4s ease;
-            box-sizing: border-box;
-            border-radius: 0 0 24px 24px;
-        }
-        
-        .modal-top-bar.scrolled {
-            background: var(--block);
-            height: 52px;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 20px var(--shadow-color);
+            pointer-events: none; /* Пропускаем клики сквозь контейнер, ловим только на кнопках */
         }
         
         .glass-btn {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
+            pointer-events: auto; /* Включаем клики на кнопках */
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
-            color: #fff; border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer; transition: all 0.3s;
-        }
-        
-        .modal-top-bar.scrolled .glass-btn {
-            background: transparent; border-color: transparent; backdrop-filter: none;
-            width: 34px; height: 34px;
-            color: var(--text);
+            color: #fff; border: none;
+            cursor: pointer; transition: all 0.2s;
         }
 
         .glass-btn:active { transform: scale(0.9); }
@@ -308,52 +237,55 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 160px 0; 
+            padding: 0 0 140px 0; 
             box-sizing: border-box;
+            background: var(--bg);
         }
 
+        /* FULL WIDTH PRODUCT CARD */
         .product-card-main {
             background: var(--block);
-            border-radius: 16px;
+            border-radius: 0 0 24px 24px; /* Скругление только снизу */
             overflow: hidden;
+            margin: 0; /* Убираем отступы */
             box-shadow: 0 4px 15px var(--shadow-color);
-            margin: 8px;
+            position: relative;
         }
 
         .modal-slider-wrap { 
             width: 100%; aspect-ratio: 1 / 1.1; 
-            overflow: hidden; position: relative; background: transparent;
+            overflow: hidden; position: relative; background: var(--block);
         }
         
         .modal-slider { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             height: 100%; scrollbar-width: none; 
-            padding: 0 4px;
+            padding: 0;
         }
         .modal-slider::-webkit-scrollbar { display: none; }
         
         .modal-slide { 
             min-width: 100%; height: 100%; scroll-snap-align: center; 
             display:flex; align-items:center; justify-content:center; position: relative;
-            padding: 0 4px;
+            padding: 0;
             box-sizing: border-box;
         }
         
         .modal-slide img { 
             width: 100%; height: 100%; object-fit: cover; display: block; 
-            border-radius: 12px;
+            border-radius: 0; /* Убираем скругление у самой картинки */
         }
         
-        .modal-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
-        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .modal-dots { position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; pointer-events: none; z-index: 5; }
+        .modal-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         .modal-dot.active { background: #fff; transform: scale(1.2); }
 
-        .modal-info-inner { padding: 15px 20px 25px 20px; }
+        .modal-info-inner { padding: 20px 20px 25px 20px; }
 
         .modal-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; color: var(--text); }
 
         .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 20px; }
-        .current-price { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+        .current-price { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
         .old-price { font-size: 16px; color: var(--text-sec); text-decoration: line-through; margin-bottom: 4px; }
         .discount-badge { background: var(--red); color: white; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 5px; }
         
@@ -362,16 +294,16 @@
 
         .product-card-desc {
             background: var(--block);
-            border-radius: 16px;
+            border-radius: 24px;
             padding: 20px;
-            margin: 0 8px 20px 8px;
+            margin: 10px; /* Вернул отступ для описания, чтобы отделить от фото */
             box-shadow: 0 4px 15px var(--shadow-color);
         }
         
         .desc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
         .desc-text { font-size: 15px; line-height: 1.6; color: var(--text-sec); white-space: pre-wrap; }
 
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; touch-action: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         #lightbox.visible { opacity: 1; }
         #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.1s linear; }
         .lightbox-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; z-index: 201; }
@@ -430,13 +362,12 @@
             border: 1px solid var(--border);
         }
 
-        /* TEXT STYLING: LEFT ALIGN, LEGIBLE */
         .legal-text {
             color: var(--text-sec);
             font-size: 14px;
             line-height: 1.5;
             white-space: pre-wrap;
-            text-align: left; 
+            text-align: left;
         }
         
         .legal-text h3 {
@@ -489,7 +420,23 @@
         .dd-val { font-weight: 600; color: var(--text); }
         .dd-accent { color: var(--accent); }
 
-        .checkout-footer {
+        .date-scroll { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; scrollbar-width: none; padding-bottom: 5px; }
+        .date-scroll::-webkit-scrollbar { display: none; }
+        .date-chip { 
+            flex-shrink: 0; padding: 10px 16px; background: var(--block); border: 1px solid var(--border); 
+            border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; text-align: center; min-width: 70px;
+        }
+        .date-chip.selected { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 4px 10px rgba(231, 90, 124, 0.3); }
+        
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 5px; }
+        .time-slot { 
+            padding: 10px; background: var(--block); border: 1px solid var(--border); border-radius: 10px; 
+            color: var(--text); font-size: 13px; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
+        .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+        .checkout-footer, .modal-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -503,47 +450,19 @@
             will-change: transform;
         }
         
-        /* PREMIUM FLOATING MODAL BUTTONS (NO BACKGROUND BOX) */
-        .modal-footer {
-            position: fixed; 
-            bottom: 90px; /* Sit right above Nav */
-            left: 16px; right: 16px; 
-            
-            background: transparent !important; /* Force transparent container */
-            border: none !important;
-            box-shadow: none !important;
-            backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-            
-            padding: 0;
-            z-index: 920; 
-            pointer-events: none; /* Allow clicks through gaps */
-            
-            display: flex; gap: 10px; align-items: center; justify-content: space-between;
-        }
-        
-        .modal-footer > * { pointer-events: auto; } /* Enable clicks on buttons */
-        
         .checkout-footer.hidden { transform: translateY(120%); }
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
-        
-        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
-        
-        /* Glassy buttons for floating feel */
-        .buy-now { 
-            background: rgba(44, 44, 46, 0.85); 
-            color: var(--text); 
-            border: 1px solid rgba(255,255,255,0.15); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 25px var(--shadow-color);
-        }
-        .light-theme .buy-now { background: rgba(255, 255, 255, 0.85); }
 
-        .buy-now:active { transform: scale(0.96); }
-        .add-cart { background: var(--accent); color: white; box-shadow: 0 8px 25px rgba(231, 90, 124, 0.4); }
+        .modal-footer { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+        
+        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .buy-now { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(5px); }
+        .buy-now:active { background: rgba(255,255,255,0.2); }
+        .add-cart { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4); }
         .add-cart:active { transform: scale(0.96); }
 
-        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 20px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 8px 25px rgba(231, 90, 124, 0.4);}
+        .modal-qty-ctrl { display: flex; align-items: center; justify-content: space-between; background: var(--accent); border-radius: 14px; padding: 6px; flex: 1; height: 46px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(231, 90, 124, 0.4);}
         .modal-qty-btn { width: 36px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
         .modal-qty-val { color: white; font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
     </style>
@@ -560,15 +479,11 @@
         <!-- PAGE: HOME -->
         <div id="p-home" class="page active">
             <div class="ptr-spinner"><div class="ptr-icon"></div></div>
-            
-            <!-- PRODUCT GRID -->
-            <div class="grid" id="grid"></div>
-
-            <!-- SEARCH BAR: FLOATING & FRAMELESS -->
-             <div class="search-wrap" id="main-search">
+            <div class="search-wrap">
                 <svg class="icon search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                 <input type="text" class="search-input" data-lang-ph="search_ph" placeholder="Поиск цветов..." oninput="doSearch(this.value)">
             </div>
+            <div class="grid" id="grid"></div>
         </div>
 
         <!-- PAGE: CART -->
@@ -711,7 +626,7 @@
     
     <div id="snow-container"></div>
 
-    <!-- PRODUCT MODAL -->
+    <!-- PRODUCT MODAL (OZON STYLE: FULL WIDTH IMAGE) -->
     <div id="modal">
         <div class="modal-top-bar" id="modal-top-bar">
             <div class="glass-btn" onclick="closeModal()">
@@ -1321,7 +1236,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             document.body.classList.toggle('light-theme');
             const isLight = document.body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            tg.setBackgroundColor(isLight ? '#F2F2F7' : '#000000');
+            tg.setBackgroundColor(isLight ? '#F0F2F5' : '#000000');
             tg.setHeaderColor(isLight ? '#FFFFFF' : '#1C1C1E');
         }
 
@@ -1330,7 +1245,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             document.body.classList.add('light-theme');
             document.getElementById('theme-toggle').checked = true;
         }
-        tg.setBackgroundColor(isLightOnLoad ? '#F2F2F7' : '#000000');
+        tg.setBackgroundColor(isLightOnLoad ? '#F0F2F5' : '#000000');
         tg.setHeaderColor(isLightOnLoad ? '#FFFFFF' : '#1C1C1E');
 
         function toggleLang() {
@@ -1411,14 +1326,18 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         function drawCard(p) {
             const isFav = favs.includes(p.id);
             const activeClass = isFav ? 'is-active' : '';
-            let slidesHtml = p.images.map(url => `<div class="slide"><img src="${url}" loading="lazy"></div>`).join('');
+            // For Ozon style, just 1st image in grid to save performance
+            let slidesHtml = `<div class="slide"><img src="${p.images[0]}" loading="lazy"></div>`;
             return `
                 <div class="card" onclick="openModal(${p.id})">
                     <div class="fav-btn ${activeClass}" id="fav-btn-${p.id}" onclick="toggleFav(${p.id}, event)">
                         <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </div>
-                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-                    <div class="info"><div class="name">${p.name}</div><div class="price">${p.price} ₽</div></div>
+                    <div class="slider-wrapper"><div class="slider">${slidesHtml}</div></div>
+                    <div class="info">
+                        <div class="price">${p.price} ₽</div>
+                        <div class="name">${p.name}</div>
+                    </div>
                     <div class="cart-btn" onclick="addOne(${p.id}, event)">
                         <svg class="icon icon-sm" style="stroke:white" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-5 2a2 2 0 110-4 2 2 0 010 4z"/></svg>
                     </div>
@@ -1694,9 +1613,6 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         }
         
         function openModal(id) {
-            // HIDE SEARCH WHEN MODAL OPENS
-            document.getElementById('main-search').classList.add('search-hidden');
-
             currentId = id; const p = db.find(x => x.id === id);
             const slides = p.images.map(url => `<div class="modal-slide"><img src="${url}" onclick="openLightbox('${url}')"></div>`).join('');
             const dots = p.images.map((_, i) => `<div class="modal-dot ${i===0?'active':''}"></div>`).join('');
@@ -1715,12 +1631,8 @@ You can unsubscribe at any time by contacting support or changing settings in yo
             modal.classList.add('modal-active');
             
             const scrollContainer = document.getElementById('modal-scroll');
-            const topBar = document.getElementById('modal-top-bar');
-            
-            scrollContainer.onscroll = () => {
-                if (scrollContainer.scrollTop > 50) topBar.classList.add('scrolled');
-                else topBar.classList.remove('scrolled');
-            };
+            // Reset scroll to top
+            scrollContainer.scrollTop = 0;
             
             const slider = document.getElementById('m-slider');
             slider.onscroll = () => {
@@ -1765,16 +1677,8 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         function closeModal() { 
             const modal = document.getElementById('modal');
             modal.classList.remove('modal-active'); 
-            
-            // SHOW SEARCH AGAIN IF ON HOME PAGE
-            if(document.getElementById('p-home').classList.contains('active')) {
-                document.getElementById('main-search').classList.remove('search-hidden');
-            }
-
             const scrollContainer = document.getElementById('modal-scroll');
             if (scrollContainer) scrollContainer.scrollTop = 0;
-            const topBar = document.getElementById('modal-top-bar');
-            if (topBar) topBar.classList.remove('scrolled');
         }
         
         const lightbox = document.getElementById('lightbox');
@@ -1788,18 +1692,9 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
 
         function go(id, btn) {
-            // Close Product Modal if open
-            closeModal();
-            
             if (document.getElementById('p-' + id).classList.contains('active')) return;
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
-            
-            // SHOW SEARCH ONLY ON HOME
-            const searchBar = document.getElementById('main-search');
-            if (id === 'home') searchBar.classList.remove('search-hidden');
-            else searchBar.classList.add('search-hidden');
-
             if(id === 'fav') renderFavs(); if(id === 'cart') renderCartList(); if(id === 'home') render();
         }
 
