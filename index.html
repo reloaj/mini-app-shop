@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 32.0: THEMED SNOW (WHITE/BLUE) + ALL PREVIOUS FIXES -->
+<!-- VERSION 33.0: FIXED CSS SYNTAX ERROR (RESTORED BUTTON STYLES) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -52,7 +52,7 @@
             --glass-btn: rgba(255, 255, 255, 0.6);
 
             /* SNOW COLOR (LIGHT THEME) */
-            --snow-color: #007AFF; /* Голубой цвет для контраста на белом */
+            --snow-color: #007AFF; 
         }
 
         html { height: 100%; overflow: hidden; }
@@ -102,7 +102,7 @@
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; 
-            z-index: 200; /* ВЫШЕ ЧЕМ МОДАЛКА */
+            z-index: 200; 
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute; bottom: 0; left: 0; width: 100%;
             border-radius: 24px 24px 0 0;
@@ -121,13 +121,12 @@
         /* --- SNOW --- */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
         
-        /* UPDATED SNOWFLAKE CSS TO USE VARIABLE */
         .snowflake { 
             position: absolute; top: -10px; 
-            color: var(--snow-color); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
+            color: var(--snow-color); 
             font-size: 1em; opacity: 0.8; user-select: none; 
             animation-name: fall; animation-timing-function: linear; 
-            transition: color 0.5s ease; /* Плавная смена цвета */
+            transition: color 0.5s ease;
         }
 
         @keyframes fall {
@@ -234,7 +233,7 @@
         /* MODALS */
         #modal, #settings-modal, #checkout-modal, #info-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg); z-index: 100; /* МЕНЬШЕ ЧЕМ NAV (200) */
+            background: var(--bg); z-index: 100; 
         }
 
         .modal-active { display: block !important; animation: fadeUp 0.3s; }
@@ -244,7 +243,7 @@
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             overscroll-behavior-y: contain;
-            z-index: 250; /* Остальные модалки перекрывают меню */
+            z-index: 250;
         }
         
         .modal-top-bar {
@@ -465,6 +464,22 @@
         .dd-val { font-weight: 600; color: var(--text); }
         .dd-accent { color: var(--accent); }
 
+        .date-scroll { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; scrollbar-width: none; padding-bottom: 5px; }
+        .date-scroll::-webkit-scrollbar { display: none; }
+        .date-chip { 
+            flex-shrink: 0; padding: 10px 16px; background: var(--block); border: 1px solid var(--border); 
+            border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; text-align: center; min-width: 70px;
+        }
+        .date-chip.selected { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 4px 10px rgba(231, 90, 124, 0.3); }
+        
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 5px; }
+        .time-slot { 
+            padding: 10px; background: var(--block); border: 1px solid var(--border); border-radius: 10px; 
+            color: var(--text); font-size: 13px; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(100,100,100,0.1); }
+        .time-slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
         .checkout-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--footer-glass);
@@ -485,22 +500,22 @@
 
         .modal-footer {
             position: fixed; 
-            bottom: calc(85px + env(safe-area-inset-bottom)); /* Подняли выше нижнего меню (70px + safe area) */
+            bottom: calc(85px + env(safe-area-inset-bottom)); 
             left: 0; width: 100%;
-            background: transparent; /* Убрали фон */
+            background: transparent; 
             border: none;
             padding: 0 10px; 
             z-index: 120;
             box-sizing: border-box;
             display: flex; gap: 10px; align-items: center; justify-content: space-between;
-            pointer-events: none; /* Сам контейнер не перекрывает клики */
+            pointer-events: none; 
         }
         
         .action-btn { 
             flex: 1; padding: 14px; border: none; border-radius: 14px; 
             font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; 
-            pointer-events: auto; /* Кнопки кликабельны */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Тень чтобы отделить от фона */
+            pointer-events: auto; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
         }
         
         .buy-now { background: var(--block); color: var(--text); border: 1px solid var(--border); }
