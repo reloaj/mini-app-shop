@@ -1,5 +1,5 @@
 <!-- START OF FILE site.html -->
-<!-- VERSION 30.0: MARKETPLACE GRID + FLOATING SEARCH + TRANSPARENT MODAL BUTTONS -->
+<!-- VERSION 31.0: FIXED SEARCH OVERFLOW & OPACITY + AUTO CLOSE MODAL ON NAV -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -28,7 +28,7 @@
             --shadow-color: rgba(0,0,0,0.3);
             
             --header-glass: rgba(20, 30, 25, 0.4); 
-            --nav-glass: rgba(28, 28, 30, 0.85); /* Чуть плотнее, так как модалка под ним */
+            --nav-glass: rgba(28, 28, 30, 0.85);
             --glass-blur: blur(20px);
             
             --glass-btn: rgba(0, 0, 0, 0.3);
@@ -89,7 +89,7 @@
             text-shadow: 0 2px 15px rgba(0,0,0,0.8); pointer-events: none; z-index: 2;
         }
 
-        /* --- NAV (Z-INDEX ПОВЫШЕН) --- */
+        /* --- NAV (Z-INDEX 200) --- */
         nav {
             flex-shrink: 0; height: 70px; 
             background: var(--nav-glass); 
@@ -110,7 +110,6 @@
         }
         .page.active { display: block; }
         
-        /* Увеличенный паддинг для главной страницы, чтобы поиск не закрывал контент */
         #p-home { padding-bottom: 150px; } 
 
         /* --- SNOW --- */
@@ -141,31 +140,41 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.2); } }
 
-        /* --- UPDATED SEARCH (FLOATING BOTTOM) --- */
+        /* --- UPDATED SEARCH (FIXED OVERFLOW & OPACITY) --- */
         .search-wrap { 
             position: fixed; 
             bottom: calc(75px + env(safe-area-inset-bottom)); 
-            left: 0; width: 100%; 
+            left: 0; 
+            right: 0; /* FIX: Прижимаем к краям, вместо width:100% */
+            width: auto;
             padding: 0 10px; 
-            z-index: 90; /* Под модалкой, но над контентом */
-            background: transparent; /* Убран фон контейнера */
-            pointer-events: none; /* Чтобы клики сквозь паддинги проходили */
+            z-index: 90; 
+            background: transparent; 
+            pointer-events: none; 
+            box-sizing: border-box; /* FIX: Учитываем паддинги */
+            opacity: 0.7; /* FIX: 30% прозрачности в покое */
+            transition: opacity 0.3s ease;
         }
+        
+        .search-wrap:focus-within {
+            opacity: 1; /* FIX: Полная непрозрачность при фокусе */
+        }
+
         .search-input { 
             width: 100%; padding: 12px 12px 12px 42px; border-radius: 14px; 
             border: 1px solid var(--border); 
-            background: var(--input-bg); /* Сам инпут имеет фон */
+            background: var(--input-bg); 
             color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            pointer-events: auto; /* Инпут кликабелен */
+            pointer-events: auto; 
         }
         .search-icon-abs { position: absolute; left: 24px; top: 13px; color: var(--text-sec); pointer-events: none; z-index: 91; }
         
-        /* --- UPDATED GRID (MARKETPLACE STYLE) --- */
+        /* --- GRID --- */
         .grid { 
             display: grid; 
-            gap: 6px; /* Меньше отступы */
-            padding: 0 6px; /* Шире контент */
+            gap: 6px; 
+            padding: 0 6px; 
             grid-template-columns: 1fr 1fr; 
         }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
@@ -261,7 +270,7 @@
         .modal-scroll-container {
             width: 100%; height: 100%;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 0 0 160px 0; /* Большой отступ снизу, чтобы видеть контент под кнопками */
+            padding: 0 0 160px 0; 
             box-sizing: border-box;
         }
 
@@ -475,7 +484,6 @@
         #order-form { padding-bottom: 160px; }
         .static-footer-block { margin-top: 30px; padding-bottom: 30px; }
 
-        /* --- UPDATED MODAL FOOTER (FLOATING BUTTONS) --- */
         .modal-footer {
             position: fixed; 
             bottom: calc(85px + env(safe-area-inset-bottom)); /* Подняли выше нижнего меню (70px + safe area) */
@@ -1743,6 +1751,7 @@ You can unsubscribe at any time by contacting support or changing settings in yo
         lightbox.addEventListener('touchend', e => { if (e.changedTouches.length === 1 && currentScale === 1) { const diff = e.changedTouches[0].clientY - touchStartY; if (Math.abs(diff) < 10) closeLightbox(); if (diff > 100) closeLightbox(); } });
 
         function go(id, btn) {
+            closeModal(); // FIX: Закрываем модальное окно при навигации
             if (document.getElementById('p-' + id).classList.contains('active')) return;
             document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active')); btn.classList.add('active');
