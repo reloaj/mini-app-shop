@@ -1,1 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мрамор из Узбекистана | Прямые поставки в Москву и РФ</title>
+    <style>
+        /* Базовые стили и премиальная цветовая палитра */
+        :root {
+            --bg-dark: #121619;       /* Глубокий темный (цвет сланца) */
+            --card-bg: #1a1f24;       /* Текстурный серый для карточек */
+            --gold: #d4af37;          /* Благородное золото для акцентов */
+            --gold-hover: #aa8c2c;
+            --text-light: #f5f6f7;    /* Белоснежный мраморный текст */
+            --text-muted: #9ca3af;    /* Серый текст для описаний */
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Шапка сайта */
+        header {
+            background-color: rgba(18, 22, 25, 0.95);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            color: var(--text-light);
+        }
+
+        .logo span {
+            color: var(--gold);
+        }
+
+        .header-contacts a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 20px;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .header-contacts a:hover {
+            color: var(--text-light);
+        }
+
+        /* Главный экран */
+        .hero {
+            padding: 180px 0 100px 0;
+            background: linear-gradient(rgba(18, 22, 25, 0.85), rgba(18, 22, 25, 1)), 
+                        url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+            display: block;
+            font-size: 1.8rem;
+            margin-top: 10px;
+            letter-spacing: 4px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--gold);
+            color: #000;
+            padding: 15px 35px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Секция Преимущества */
+        .features {
+            padding: 80px 0;
+            background-color: rgba(26, 31, 36, 0.5);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--gold);
+            margin: 15px auto 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 4px;
+            border-top: 3px solid var(--gold);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            color: var(--text-light);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Секция Каталог/Портфолио */
+        .catalog {
+            padding: 80px 0;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: border 0.3s;
+        }
+
+        .product-card:hover {
+            border-color: var(--gold);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            filter: grayscale(20%);
+            transition: filter 0.3s;
+        }
+
+        .product-card:hover .product-img {
+            filter: grayscale(0%);
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+
+        .product-info .origin {
+            color: var(--gold);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .product-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        /* Форма заявки */
+        .order-zone {
+            padding: 80px 0;
+            background-color: rgba(26, 31, 36, 0.5);
+        }
+
+        .form-wrap {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--text-light);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        select.form-control option {
+            background-color: var(--card-bg);
+        }
+
+        /* Контакты / Подвал */
+        footer {
+            background-color: var(--bg-dark);
+            padding: 60px 0 30px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center;
+        }
+
+        .footer-contacts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .contact-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+        .contact-link:hover {
+            color: var(--gold);
+        }
+
+        .contact-link span {
+            color: var(--gold);
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .footer-credits {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Адаптивность для мобилок */
+        @media (max-width: 768px) {
+            .header-wrap {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .header-contacts a {
+                margin: 0 10px;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero h1 span {
+                font-size: 1.3rem;
+            }
+            .form-wrap {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-wrap">
+            <div class="logo">UZB<span>MARBLE</span></div>
+            <div class="header-contacts">
+                <a href="tel:+79991112233">📞 +7 (999) 111-22-33</a>
+                <a href="https://t.me/max_marble" target="_blank">💬 Telegram</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Узбекский Мрамор Напрямую<span>Оптом и в розницу в Москве и по всей РФ</span></h1>
+            <p>Премиальный природный камень напрямую с карьеров Узбекистана. Идеальное решение для облицовки фасадных работ, интерьеров и масштабных строительных объектов под ключ.</p>
+            <a href="#order" class="btn">Узнать стоимость поставки</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Почему выбирают наш камень</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Выгода до 40%</h3>
+                    <p>Прямая логистика из Узбекистана в Москву без посредников и переплат цепочкам перекупщиков.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Колоссальные объемы</h3>
+                    <p>Стабильные и бесперебойные отгрузки любых партий камня для крупных застройщиков и частных объектов.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Высочайшая прочность</h3>
+                    <p>Узбекский мрамор славится своей плотностью, износостойкостью и долговечностью в суровом климате РФ.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog">
+        <div class="container">
+            <h2 class="section-title">Популярные сорта мрамора</h2>
+            <div class="catalog-grid">
+                
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="Белый мрамор" class="product-img">
+                    <div class="product-info">
+                        <h3>Royal White</h3>
+                        <div class="origin">Месторождение: Газган</div>
+                        <p>Изящный белый камень с благородными серыми прожилками. Идеален для внутренней отделки и элитных интерьеров.</p>
+                        <a href="#order" class="btn" onclick="selectStone('Royal White')">Заказать расчет</a>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80" alt="Кремовый мрамор" class="product-img">
+                    <div class="product-info">
+                        <h3>Cream Uzbekistan</h3>
+                        <div class="origin">Месторождение: Навои</div>
+                        <p>Теплый бежево-кремовый оттенок с мягкой текстурой. Отлично подходит для масштабной облицовки фасадов зданий.</p>
+                        <a href="#order" class="btn" onclick="selectStone('Cream Uzbekistan')">Заказать расчет</a>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80" alt="Серый мрамор" class="product-img">
+                    <div class="product-info">
+                        <h3>Gazan Grey</h3>
+                        <div class="origin">Месторождение: Самарканд</div>
+                        <p>Строгий, глубокий серый мрамор с уникальным природным рисунком. Высокая прочность для мощения и ступеней.</p>
+                        <a href="#order" class="btn" onclick="selectStone('Gazan Grey')">Заказать расчет</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="order-zone" id="order">
+        <div class="container">
+            <h2 class="section-title">Быстрый расчет стоимости</h2>
+            <div class="form-wrap">
+                <form id="marbleForm">
+                    <div class="form-group">
+                        <label for="stone">Выберите сорт мрамора:</label>
+                        <select id="stone" class="form-control">
+                            <option value="Royal White">Royal White (Белый)</option>
+                            <option value="Cream Uzbekistan">Cream Uzbekistan (Кремовый)</option>
+                            <option value="Gazan Grey">Gazan Grey (Серый)</option>
+                            <option value="Нужна консультация">Еще не определился / Нужна консультация</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="volume">Примерный объем (в кв. метрах или тоннах):</label>
+                        <input type="text" id="volume" class="form-control" placeholder="Например: 150 кв.м." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Город доставки:</label>
+                        <input type="text" id="city" class="form-control" placeholder="Например: Москва" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Отправить запрос Максу</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h2 class="section-title" style="margin-bottom: 30px;">Связаться напрямую</h2>
+            <div class="footer-contacts">
+                <a href="tel:+79991112233" class="contact-link"><span>📞 Телефон:</span> +7 (999) 111-22-33</a>
+                <a href="https://t.me/max_marble" target="_blank" class="contact-link"><span>✈️ Telegram:</span> @max_marble</a>
+                <a href="https://wa.me/79991112233" target="_blank" class="contact-link"><span>💬 WhatsApp:</span> Написать Максу</a>
+                <a href="mailto:max.marble@mail.ru" class="contact-link"><span>✉️ Email:</span> max.marble@mail.ru</a>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 Поставки натурального камня из Узбекистана. Все права защищены.</p>
+                <p style="margin-top: 5px; font-size: 0.75rem; color: rgba(212,175,55,0.4)">Ориентировочный стартовый бюджет проекта: 5,000 ₽</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Функция автоматического выбора камня при клике на карточку
+        function selectStone(stoneName) {
+            document.getElementById('stone').value = stoneName;
+        }
+
+        // Перехват отправки формы
+        document.getElementById('marbleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Собираем данные из полей ввода
+            const stone = document.getElementById('stone').value;
+            const volume = document.getElementById('volume').value;
+            const city = document.getElementById('city').value;
+            
+            // Формируем красивое текстовое сообщение
+            const message = `Привет, Макс! Интересует мрамор из Узбекистана.%0A%0A` +
+                            `💎 Сорт: ${stone}%0A` +
+                            `📦 Объем: ${volume}%0A` +
+                            `📍 Доставка в г.: ${city}`;
+            
+            // Ссылка на Telegram Макса (откроется диалог с уже вбитым текстом заявки)
+            const telegramUrl = `https://t.me/max_marble?text=${message}`;
+            
+            // Открываем чат в новой вкладке
+            window.open(telegramUrl, '_blank');
+        });
+    </script>
+</body>
+</html>
