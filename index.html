@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мрамор из Узбекистана | Прямые поставки в Москву и РФ</title>
+    <title>SEREGA MRAMOR | Прямые поставки из Узбекистана</title>
     <style>
-        /* Базовые стили и премиальная цветовая палитра */
+        /* Светлая, яркая и свежая цветовая палитра (Горная свежесть) */
         :root {
-            --bg-dark: #121619;       /* Глубокий темный (цвет сланца) */
-            --card-bg: #1a1f24;       /* Текстурный серый для карточек */
-            --gold: #d4af37;          /* Благородное золото для акцентов */
-            --gold-hover: #aa8c2c;
-            --text-light: #f5f6f7;    /* Белоснежный мраморный текст */
-            --text-muted: #9ca3af;    /* Серый текст для описаний */
+            --bg-light: #f4f8fa;       /* Свежий бело-голубой оттенок снежных гор */
+            --card-bg: #ffffff;        /* Чистый белый для карточек */
+            --accent-blue: #00a8cc;    /* Яркий бирюзовый / цвет горного озера */
+            --accent-green: #2ecc71;   /* Сочный зеленый для эко-эффекта */
+            --gold: #d4af37;           /* Золото для благородных акцентов */
+            --text-dark: #2c3e50;      /* Глубокий темный для хорошей читаемости */
+            --text-muted: #7f8c8d;     /* Серый для описаний */
         }
 
         * {
@@ -23,8 +24,8 @@
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             line-height: 1.6;
         }
 
@@ -36,14 +37,15 @@
 
         /* Шапка сайта */
         header {
-            background-color: rgba(18, 22, 25, 0.95);
+            background-color: rgba(255, 255, 255, 0.95);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 2px solid var(--accent-blue);
             backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
         }
 
         .header-wrap {
@@ -54,18 +56,18 @@
         }
 
         .logo {
-            font-weight: 700;
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            color: var(--text-light);
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: var(--text-dark);
         }
 
         .logo span {
-            color: var(--gold);
+            color: var(--accent-blue);
         }
 
         .header-contacts a {
-            color: var(--gold);
+            color: var(--text-dark);
             text-decoration: none;
             font-weight: 600;
             margin-left: 20px;
@@ -74,82 +76,165 @@
         }
 
         .header-contacts a:hover {
-            color: var(--text-light);
+            color: var(--accent-blue);
         }
 
-        /* Главный экран */
+        /* Главный экран - Горная свежесть */
         .hero {
-            padding: 180px 0 100px 0;
-            background: linear-gradient(rgba(18, 22, 25, 0.85), rgba(18, 22, 25, 1)), 
-                        url('https://mtdata.ru/u15/photo42CC/20616461284-0/original.jpg') no-repeat center center/cover;
-            text-align: center;
+            padding: 200px 0 120px 0;
+            background: linear-gradient(rgba(244, 248, 250, 0.85), rgba(244, 248, 250, 0.95)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.2rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            line-height: 1.2;
             margin-bottom: 20px;
-            text-transform: uppercase;
+            color: var(--text-dark);
         }
 
         .hero h1 span {
-            color: var(--gold);
+            color: var(--accent-blue);
             display: block;
             font-size: 1.8rem;
             margin-top: 10px;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
         }
 
         .hero p {
             font-size: 1.2rem;
             color: var(--text-muted);
-            max-width: 700px;
-            margin: 0 auto 40px auto;
+            margin-bottom: 40px;
         }
 
-        .btn {
+        /* Кнопки отделов */
+        .dept-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .btn-dept {
+            background: #ffffff;
+            color: var(--text-dark);
+            border: 2px solid var(--accent-blue);
+            padding: 12px 10px;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .btn-dept:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-main {
             display: inline-block;
-            background-color: var(--gold);
-            color: #000;
-            padding: 15px 35px;
-            border-radius: 4px;
+            background-color: var(--accent-green);
+            color: #fff;
+            padding: 16px 40px;
+            border-radius: 6px;
             font-weight: 700;
             text-decoration: none;
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+            text-align: center;
         }
 
-        .btn:hover {
-            background-color: var(--gold-hover);
+        .btn-main:hover {
+            background-color: #27ae60;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* Секция Преимущества */
+        /* КРУТЯЩИЙСЯ 3D БРИЛЛИАНТ / ГРАНИТ */
+        .stage-3d {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 350px;
+            perspective: 1000px;
+        }
+
+        .diamond-3d {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            transform-style: preserve-3d;
+            animation: rotate3d 12s infinite linear;
+        }
+
+        @keyframes rotate3d {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+
+        /* Грани кристалла с текстурой переливающегося гранита */
+        .face {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-bottom: 130px solid rgba(0, 168, 204, 0.65);
+            transform-origin: 50% 100%;
+            filter: drop-shadow(0 0 15px rgba(0,168,204,0.2));
+        }
+
+        /* Стилизация граней под углом для эффекта объема */
+        .f1 { transform: rotateY(0deg) rotateX(35deg) translateZ(0px); border-bottom-color: rgba(212, 175, 55, 0.6); }
+        .f2 { transform: rotateY(90deg) rotateX(35deg) translateZ(0px); border-bottom-color: rgba(0, 168, 204, 0.7); }
+        .f3 { transform: rotateY(180deg) rotateX(35deg) translateZ(0px); border-bottom-color: rgba(46, 204, 113, 0.6); }
+        .f4 { transform: rotateY(270deg) rotateX(35deg) translateZ(0px); border-bottom-color: rgba(255, 255, 255, 0.8); }
+        
+        .f5 { transform: rotateY(0deg) rotateX(-35deg) translateZ(0px) scaleY(-1); border-bottom-color: rgba(0, 168, 204, 0.5); }
+        .f6 { transform: rotateY(90deg) rotateX(-35deg) translateZ(0px) scaleY(-1); border-bottom-color: rgba(212, 175, 55, 0.5); }
+        .f7 { transform: rotateY(180deg) rotateX(-35deg) translateZ(0px) scaleY(-1); border-bottom-color: rgba(46, 204, 113, 0.5); }
+        .f8 { transform: rotateY(270deg) rotateX(-35deg) translateZ(0px) scaleY(-1); border-bottom-color: rgba(244, 248, 250, 0.9); }
+
+        /* Преимущества */
         .features {
             padding: 80px 0;
-            background-color: rgba(26, 31, 36, 0.5);
+            background-color: #ffffff;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.02);
         }
 
         .section-title {
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 50px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .section-title::after {
             content: '';
             display: block;
-            width: 60px;
-            height: 3px;
-            background-color: var(--gold);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-blue);
             margin: 15px auto 0 auto;
+            border-radius: 2px;
         }
 
         .features-grid {
@@ -159,30 +244,31 @@
         }
 
         .feature-card {
-            background-color: var(--card-bg);
+            background-color: var(--bg-light);
             padding: 40px 30px;
-            border-radius: 4px;
-            border-top: 3px solid var(--gold);
+            border-radius: 8px;
+            border-bottom: 4px solid var(--accent-blue);
             text-align: center;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,168,204,0.1);
         }
 
         .feature-card h3 {
             margin-bottom: 15px;
             font-size: 1.3rem;
-            color: var(--text-light);
+            color: var(--text-dark);
         }
 
         .feature-card p {
             color: var(--text-muted);
-            font-size: 0.95rem;
         }
 
-        /* Секция Каталог/Портфолио */
+        /* Каталог */
         .catalog {
             padding: 80px 0;
         }
@@ -195,26 +281,23 @@
 
         .product-card {
             background-color: var(--card-bg);
-            border-radius: 4px;
+            border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            transition: border 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 168, 204, 0.1);
         }
 
         .product-card:hover {
-            border-color: var(--gold);
+            border-color: var(--accent-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,168,204,0.15);
         }
 
         .product-img {
             width: 100%;
-            height: 240px;
+            height: 250px;
             object-fit: cover;
-            filter: grayscale(20%);
-            transition: filter 0.3s;
-        }
-
-        .product-card:hover .product-img {
-            filter: grayscale(0%);
         }
 
         .product-info {
@@ -224,38 +307,37 @@
         .product-info h3 {
             font-size: 1.4rem;
             margin-bottom: 10px;
-            color: var(--text-light);
         }
 
         .product-info .origin {
-            color: var(--gold);
+            color: var(--accent-blue);
             font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
         .product-info p {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-bottom: 20px;
-            height: 60px;
-            overflow: hidden;
+            height: 70px;
         }
 
-        /* Форма заявки */
+        /* Форма заказа */
         .order-zone {
             padding: 80px 0;
-            background-color: rgba(26, 31, 36, 0.5);
+            background-color: #ffffff;
         }
 
         .form-wrap {
             max-width: 600px;
             margin: 0 auto;
-            background-color: var(--card-bg);
+            background-color: var(--bg-light);
             padding: 40px;
-            border-radius: 4px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 168, 204, 0.1);
         }
 
         .form-group {
@@ -265,34 +347,30 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--text-light);
-            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px;
-            background-color: var(--bg-dark);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--text-light);
-            border-radius: 4px;
+            padding: 14px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            color: var(--text-dark);
+            border-radius: 6px;
             font-size: 1rem;
+            transition: border 0.3s;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--gold);
+            border-color: var(--accent-blue);
         }
 
-        select.form-control option {
-            background-color: var(--card-bg);
-        }
-
-        /* Контакты / Подвал */
+        /* Подвал */
         footer {
-            background-color: var(--bg-dark);
+            background-color: var(--text-dark);
+            color: #ffffff;
             padding: 60px 0 30px 0;
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
             text-align: center;
         }
 
@@ -305,7 +383,7 @@
         }
 
         .contact-link {
-            color: var(--text-light);
+            color: #ffffff;
             text-decoration: none;
             font-size: 1.1rem;
             display: flex;
@@ -314,37 +392,31 @@
         }
 
         .contact-link:hover {
-            color: var(--gold);
+            color: var(--accent-blue);
         }
 
         .contact-link span {
-            color: var(--gold);
+            color: var(--accent-blue);
             margin-right: 8px;
-            font-weight: bold;
         }
 
-        .footer-credits {
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        /* Разделы для кнопок логистики и рекламы */
+        .info-section {
+            padding: 60px 0;
+            background: #fff;
+            border-top: 1px solid #eee;
         }
 
-        /* Адаптивность для мобилок */
-        @media (max-width: 768px) {
-            .header-wrap {
-                flex-direction: column;
-                gap: 10px;
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
-            .header-contacts a {
-                margin: 0 10px;
+            .stage-3d {
+                height: 250px;
             }
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .hero h1 span {
-                font-size: 1.3rem;
-            }
-            .form-wrap {
-                padding: 20px;
+            .dept-buttons {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -363,27 +435,51 @@
 
     <section class="hero">
         <div class="container">
-            <h1>Узбекский Мрамор Напрямую<span>Оптом и в розницу в Москве и по всей РФ</span></h1>
-            <p>Премиальный природный камень напрямую с карьеров Узбекистана. Идеальное решение для облицовки фасадных работ, интерьеров и масштабных строительных объектов под ключ.</p>
-            <a href="#order" class="btn">Узнать стоимость поставки</a>
+            <div class="hero-grid">
+                <div>
+                    <h1>Горная Свежесть Узбекского Камня<span>Эксклюзивный Мрамор и Гранит в МСК и РФ</span></h1>
+                    <p>Экологически чистый природный камень с вершин Узбекистана. Прямые поставки без переплат. Настоящая природная прочность и чистота для ваших лучших проектов.</p>
+                    
+                    <div class="dept-buttons">
+                        <a href="https://t.me/reloaj?text=Здравствуйте,%20Сергей!%20Хочу%20связаться%20с%20Руководством." target="_blank" class="btn-dept">💼 Руководство</a>
+                        <a href="#logistics" class="btn-dept">🚛 Логистика</a>
+                        <a href="https://t.me/reloaj?text=Привет!%20Интересует%20Рекламный%20отдел." target="_blank" class="btn-dept">📢 Реклама</a>
+                    </div>
+
+                    <a href="#order" class="btn-main">Рассчитать поставку</a>
+                </div>
+                
+                <div class="stage-3d">
+                    <div class="diamond-3d">
+                        <div class="face f1"></div>
+                        <div class="face f2"></div>
+                        <div class="face f3"></div>
+                        <div class="face f4"></div>
+                        <div class="face f5"></div>
+                        <div class="face f6"></div>
+                        <div class="face f7"></div>
+                        <div class="face f8"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <section class="features">
         <div class="container">
-            <h2 class="section-title">Почему выбирают наш камень</h2>
+            <h2 class="section-title">Абсолютная чистота и надежность</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>Выгода до 40%</h3>
-                    <p>Прямая логистика из Узбекистана в Москву без посредников и переплат цепочкам перекупщиков.</p>
+                    <h3>Горная свежесть цветов</h3>
+                    <p>Уникальные светлые, чистые оттенки камня, создающие ощущение простора, свежести и роскоши в любом интерьере.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Колоссальные объемы</h3>
-                    <p>Стабильные и бесперебойные отгрузки любых партий камня для крупных застройщиков и частных объектов.</p>
+                    <h3>Собственная Логистика</h3>
+                    <p>Контролируем каждый километр пути из Узбекистана до вашего объекта в Москве или любой точке РФ.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Высочайшая прочность</h3>
-                    <p>Узбекский мрамор славится своей плотностью, износостойкостью и долговечностью в суровом климате РФ.</p>
+                    <h3>Прямой контакт</h3>
+                    <p>Связывайтесь напрямую с руководством или рекламным отделом для быстрого решения любых коммерческих вопросов.</p>
                 </div>
             </div>
         </div>
@@ -391,16 +487,16 @@
 
     <section class="catalog">
         <div class="container">
-            <h2 class="section-title">Популярные сорта мрамора</h2>
+            <h2 class="section-title">Наши лучшие сорта камня</h2>
             <div class="catalog-grid">
                 
                 <div class="product-card">
                     <img src="https://main-cdn.sbermegamarket.ru/big1/hlr-system/894/643/012/102/016/100058979681b0.jpg" alt="Белый мрамор" class="product-img">
                     <div class="product-info">
                         <h3>Royal White</h3>
-                        <div class="origin">Месторождение: ...</div>
-                        <p>Изящный белый камень с благородными серыми прожилками. Идеален для внутренней отделки и элитных интерьеров.</p>
-                        <a href="#order" class="btn" onclick="selectStone('Royal White')">Заказать расчет</a>
+                        <div class="origin">Свежесть белоснежных гор</div>
+                        <p>Изящный белый камень с благородными текстурными прожилками. Придает объектам невероятный свет и визуальную чистоту.</p>
+                        <a href="#order" class="btn-main" style="padding: 10px 20px; font-size: 0.85rem;" onclick="selectStone('Royal White')">Заказать расчет</a>
                     </div>
                 </div>
 
@@ -408,9 +504,9 @@
                     <img src="https://img.santehnica.ru/files/images/resized/products/1/3/13250610-keramogranit-staro-palacio-nestle-sky-polished-s0004053-60-x-120-sm-goluboy.1200x1200.jpg" alt="Кремовый мрамор" class="product-img">
                     <div class="product-info">
                         <h3>Cream Uzbekistan</h3>
-                        <div class="origin">Месторождение: ...</div>
-                        <p>Теплый бежево-кремовый оттенок с мягкой текстурой. Отлично подходит для масштабной облицовки фасадов зданий.</p>
-                        <a href="#order" class="btn" onclick="selectStone('Cream Uzbekistan')">Заказать расчет</a>
+                        <div class="origin">Теплый природный гранит</div>
+                        <p>Мягкий кремово-песочный оттенок, напоминающий о горных каньонах под солнцем. Идеален для фасадов.</p>
+                        <a href="#order" class="btn-main" style="padding: 10px 20px; font-size: 0.85rem;" onclick="selectStone('Cream Uzbekistan')">Заказать расчет</a>
                     </div>
                 </div>
 
@@ -418,9 +514,9 @@
                     <img src="https://avatars.mds.yandex.net/i?id=dc835243396f55068fc059d8629c73d6_l-5244772-images-thumbs&n=13" alt="Серый мрамор" class="product-img">
                     <div class="product-info">
                         <h3>Gazan Grey</h3>
-                        <div class="origin">Месторождение: ...</div>
-                        <p>Строгий, глубокий серый мрамор с уникальным природным рисунком. Высокая прочность для мощения и ступеней.</p>
-                        <a href="#order" class="btn" onclick="selectStone('Gazan Grey')">Заказать расчет</a>
+                        <div class="origin">Строгий монументальный камень</div>
+                        <p>Глубокий серый цвет с кристаллическими вкраплениями. Максимальная износостойкость для любых климатических условий.</p>
+                        <a href="#order" class="btn-main" style="padding: 10px 20px; font-size: 0.85rem;" onclick="selectStone('Gazan Grey')">Заказать расчет</a>
                     </div>
                 </div>
 
@@ -428,29 +524,37 @@
         </div>
     </section>
 
+    <section class="info-section" id="logistics">
+        <div class="container" style="text-align: center;">
+            <h2 class="section-title">🚛 Отдел Логистики</h2>
+            <p style="max-width: 600px; margin: 0 auto 20px auto; color: var(--text-muted);">Мы полностью берем на себя таможенное оформление, погрузку и доставку камня еврофурами или ж/д транспортом напрямую в Москву и регионы РФ.</p>
+            <a href="https://t.me/reloaj?text=Привет!%20Вопрос%20по%20поводу%20логистики%20и%20доставки%20камня." target="_blank" class="btn-main" style="background-color: var(--accent-blue); box-shadow: none;">Связаться по доставке</a>
+        </div>
+    </section>
+
     <section class="order-zone" id="order">
         <div class="container">
-            <h2 class="section-title">Быстрый расчет стоимости</h2>
+            <h2 class="section-title">Быстрый расчет стоимости по ТЗ</h2>
             <div class="form-wrap">
                 <form id="marbleForm">
                     <div class="form-group">
-                        <label for="stone">Выберите сорт мрамора:</label>
+                        <label for="stone">Сорт камня:</label>
                         <select id="stone" class="form-control">
-                            <option value="Royal White">Royal White (Белый)</option>
-                            <option value="Cream Uzbekistan">Cream Uzbekistan (Кремовый)</option>
-                            <option value="Gazan Grey">Gazan Grey (Серый)</option>
-                            <option value="Нужна консультация">Еще не определился / Нужна консультация</option>
+                            <option value="Royal White">Royal White (Белый мрамор)</option>
+                            <option value="Cream Uzbekistan">Cream Uzbekistan (Кремовый гранит)</option>
+                            <option value="Gazan Grey">Gazan Grey (Серый камень)</option>
+                            <option value="Нужна консультация">Требуется подбор / Консультация</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="volume">Примерный объем (в кв. метрах или тоннах):</label>
-                        <input type="text" id="volume" class="form-control" placeholder="Например: 150 кв.м." required>
+                        <label for="volume">Объем поставки:</label>
+                        <input type="text" id="volume" class="form-control" placeholder="Например: 200 кв.м. или 20 тонн" required>
                     </div>
                     <div class="form-group">
-                        <label for="city">Город доставки:</label>
+                        <label for="city">Пункт назначения (Город):</label>
                         <input type="text" id="city" class="form-control" placeholder="Например: Москва" required>
                     </div>
-                    <button type="submit" class="btn" style="width: 100%;">Отправить запрос менеджеру</button>
+                    <button type="submit" class="btn-main" style="width: 100%; border: none; cursor: pointer;">Отправить запрос Сергею</button>
                 </form>
             </div>
         </div>
@@ -458,15 +562,15 @@
 
     <footer>
         <div class="container">
-            <h2 class="section-title" style="margin-bottom: 30px;">Связаться напрямую</h2>
+            <h2 class="section-title" style="margin-bottom: 30px; color: #fff;">Контакты отделов</h2>
             <div class="footer-contacts">
-                <a href="tel:+79287014445" class="contact-link"><span>📞 Телефон:</span> +7 (928) 701-44-45</a>
+                <a href="tel:+79287014445" class="contact-link"><span>📞 Тел:</span> +7 (928) 701-44-45</a>
                 <a href="https://t.me/reloaj" target="_blank" class="contact-link"><span>✈️ Telegram:</span> @reloaj</a>
                 <a href="https://wa.me/79287014445" target="_blank" class="contact-link"><span>💬 WhatsApp:</span> Написать Сергею</a>
                 <a href="mailto:sellerrockmramor@mail.ru" class="contact-link"><span>✉️ Email:</span> sellerrockmramor@mail.ru</a>
             </div>
             <div class="footer-credits">
-                <p>© 2026 Поставки натурального камня из Узбекистана. Все права защищены.</p>
+                <p>© 2026 SEREGA MRAMOR. Поставки натурального камня из Узбекистана. Все права защищены.</p>
             </div>
         </div>
     </footer>
@@ -484,9 +588,9 @@
             const city = document.getElementById('city').value;
             
             const message = `Привет, Сергей! Интересует мрамор из Узбекистана.%0A%0A` +
-                            `💎 Сорт: ${stone}%0A` +
-                            `📦 Объем: ${volume}%0A` +
-                            `📍 Доставка в г.: ${city}`;
+                            `💎 Выбранный сорт: ${stone}%0A` +
+                            `📦 Необходимый объем: ${volume}%0A` +
+                            `📍 Город доставки: ${city}`;
             
             const telegramUrl = `https://t.me/reloaj?text=${message}`;
             window.open(telegramUrl, '_blank');
