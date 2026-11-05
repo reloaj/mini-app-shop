@@ -10,6 +10,15 @@
         body { font-family: 'Inter', sans-serif; }
         .fade-in { animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Скрываем системный скроллбар для слайдера, оставляя функционал свайпа */
+        .hide-scroll-bar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .hide-scroll-bar::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-200">
@@ -37,7 +46,7 @@
     </header>
 
     <!-- Главный экран -->
-    <section class="pt-32 pb-20 lg:pt-40 lg:pb-28 px-4 fade-in">
+    <section id="services" class="pt-32 pb-20 lg:pt-40 lg:pb-28 px-4 fade-in">
         <div class="max-w-7xl mx-auto text-center">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6 border border-blue-100">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -51,10 +60,10 @@
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="#requisites" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                    Скачать карточку предприятия
+                    Перейти к реквизитам
                 </a>
                 <a href="#portfolio" class="bg-white text-slate-700 border-2 border-slate-200 px-8 py-4 rounded-xl font-medium text-lg hover:border-slate-300 hover:bg-slate-50 transition-all">
-                    Смотреть выполненные объекты
+                    Смотреть фото объектов
                 </a>
             </div>
         </div>
@@ -68,7 +77,6 @@
                 <p class="text-slate-600 text-lg">Полная юридическая прозрачность. Готовы к любым проверкам службы безопасности генподрядчика.</p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Карточка 1 -->
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                     <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                         <span class="text-2xl">📝</span>
@@ -76,7 +84,6 @@
                     <h3 class="font-bold text-lg mb-2">Формы КС-2, КС-3</h3>
                     <p class="text-slate-600 text-sm">Сдаем работы по актам строгой отчетности. Прозрачные сметы без скрытых доплат.</p>
                 </div>
-                <!-- Карточка 2 -->
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                     <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                         <span class="text-2xl">💻</span>
@@ -84,7 +91,6 @@
                     <h3 class="font-bold text-lg mb-2">Работаем в ЭДО</h3>
                     <p class="text-slate-600 text-sm">Быстрый обмен документами через Диадок/СБИС. Экономим время бухгалтерии.</p>
                 </div>
-                <!-- Карточка 3 -->
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                     <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                         <span class="text-2xl">🏦</span>
@@ -92,7 +98,6 @@
                     <h3 class="font-bold text-lg mb-2">Чистая история</h3>
                     <p class="text-slate-600 text-sm">Отсутствие судов и задолженностей ФНС. Открыт расчетный счет в АО «ТБанк».</p>
                 </div>
-                <!-- Карточка 4 -->
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                     <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                         <span class="text-2xl">👷‍♂️</span>
@@ -104,46 +109,106 @@
         </div>
     </section>
 
-    <!-- Портфолио -->
+    <!-- Портфолио / Галерея работ (Слайдер) -->
     <section id="portfolio" class="py-20 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold mb-10 text-slate-900">Реализованные объекты</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Объект 1 -->
-                <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-100">
-                    <div class="h-64 bg-slate-200 flex items-center justify-center text-slate-400">
-                        [Вставить реальное фото отделки/сварки]
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-xl font-bold mb-3">Капитальный ремонт бизнес-центра, 850 м²</h3>
-                        <ul class="text-slate-600 text-sm space-y-2 mb-6">
-                            <li class="flex gap-2"><span>✓</span> Демонтажные работы и вывоз мусора</li>
-                            <li class="flex gap-2"><span>✓</span> Черновая и чистовая отделка помещений</li>
-                            <li class="flex gap-2"><span>✓</span> Разводка инженерных сетей (электрика)</li>
-                        </ul>
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span class="text-sm font-medium text-slate-500">Срок реализации: 45 дней</span>
-                            <span class="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">Сдан по КС-2</span>
-                        </div>
-                    </div>
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900">Процесс и результаты работ</h2>
+                    <p class="text-slate-600 max-w-2xl text-lg">Реальные кадры с наших объектов: от масштабного демонтажа и подготовки до финальной отделки.</p>
                 </div>
-                <!-- Объект 2 -->
-                <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-100">
-                    <div class="h-64 bg-slate-200 flex items-center justify-center text-slate-400">
-                        [Вставить реальное фото объекта]
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-xl font-bold mb-3">Реконструкция торговых площадей, 1200 м²</h3>
-                        <ul class="text-slate-600 text-sm space-y-2 mb-6">
-                            <li class="flex gap-2"><span>✓</span> Возведение перегородок из ГКЛ</li>
-                            <li class="flex gap-2"><span>✓</span> Монтаж металлоконструкций</li>
-                            <li class="flex gap-2"><span>✓</span> Укладка керамогранита</li>
-                        </ul>
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span class="text-sm font-medium text-slate-500">Срок реализации: 60 дней</span>
-                            <span class="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">Гарантия 3 года</span>
+                <!-- Кнопки управления для ПК -->
+                <div class="hidden md:flex gap-3">
+                    <button id="prevBtn" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="nextBtn" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Контейнер слайдера -->
+            <div class="relative w-full -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div id="slider" class="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-8 hide-scroll-bar scroll-smooth">
+                    
+                    <!-- Слайд 1: Демонтаж -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1488.jpg" alt="Масштабный демонтаж" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Демонтажные работы</h3>
+                            <p class="text-sm text-slate-600 mt-1">Снятие старых покрытий, стяжки и плитки в коммерческих помещениях.</p>
                         </div>
                     </div>
+
+                    <!-- Слайд 2: Вывоз мусора -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1497.jpg" alt="Вывоз мусора ПУХТО" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Логистика и очистка</h3>
+                            <p class="text-sm text-slate-600 mt-1">Организация ПУХТО 27м³ и оперативный вывоз строительного боя.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 3: Бетонные работы (Процесс) -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1344.jpg" alt="Армирование перед заливкой" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Бетонные работы: подготовка</h3>
+                            <p class="text-sm text-slate-600 mt-1">Укладка гидроизоляции и армирующей сетки перед заливкой.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 4: Бетонные работы (Результат) -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1348.jpg" alt="Готовая стяжка/пандус" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Устройство площадок и пандусов</h3>
+                            <p class="text-sm text-slate-600 mt-1">Заливка бетона с соблюдением уклонов и нормативных допусков.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 5: Черновая отделка -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1389.jpg" alt="Штукатурка проемов" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Черновая отделка</h3>
+                            <p class="text-sm text-slate-600 mt-1">Выравнивание стен и подготовка дверных проемов смесями.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 6: Дверь ДО -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1509.jpg" alt="Дверь до отделки" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Установка входных групп (До)</h3>
+                            <p class="text-sm text-slate-600 mt-1">Монтаж металлической двери на пену, подготовка к заделке откосов.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 7: Дверь ПОСЛЕ -->
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] flex flex-col gap-4 group">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="images/1501.jpg" alt="Дверь после отделки" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-green-700">Финальный результат (После)</h3>
+                            <p class="text-sm text-slate-600 mt-1">Чистовая отделка откосов, покраска, сдача в эксплуатацию.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -158,10 +223,6 @@
                         <h2 class="text-2xl font-bold mb-2">Реквизиты контрагента</h2>
                         <p class="text-slate-400">Индивидуальный предприниматель Медведев Павел Михайлович</p>
                     </div>
-                    <a href="[ССЫЛКА_НА_ВАШУ_КАРТОЧКУ_PDF]" download class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-lg text-sm font-medium transition-all backdrop-blur-sm flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Скачать PDF
-                    </a>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm">
@@ -219,5 +280,25 @@
         </div>
     </footer>
 
+    <!-- Скрипт для управления слайдером на ПК -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById('slider');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if(slider && prevBtn && nextBtn) {
+                const scrollStep = window.innerWidth > 1024 ? window.innerWidth * 0.3 : window.innerWidth * 0.85;
+
+                nextBtn.addEventListener('click', () => {
+                    slider.scrollBy({ left: scrollStep, behavior: 'smooth' });
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    slider.scrollBy({ left: -scrollStep, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
 </body>
 </html>
