@@ -264,7 +264,7 @@
     </section>
 
     <!-- Подвал / Контакты -->
-    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12 pb-24 md:pb-12">
+    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12 pb-28 md:pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
                 <div class="font-bold text-xl text-slate-900 mb-2">ИП Медведев П.М.</div>
@@ -280,25 +280,32 @@
         </div>
     </footer>
 
-    <!-- Плавающий блок связи (Висит в воздухе снизу справа при скролле) -->
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+    <!-- Плавающий блок (Стрелка вверх + Мессенджеры строго в один вертикальный ряд) -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+        <!-- Кнопка «Наверх» -->
+        <button id="scrollToTopBtn" aria-label="Наверх" class="w-12 h-12 bg-white/95 border border-slate-200 shadow-md hover:shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all opacity-0 pointer-events-none translate-y-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+        </button>
+
         <!-- Telegram -->
-        <a href="https://t.me/+79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в Telegram" class="w-14 h-14 bg-sky-500 hover:bg-sky-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all backdrop-blur-sm group">
-            <svg class="w-7 h-7 fill-current translate-x-[-1px] translate-y-[1px]" viewBox="0 0 24 24">
+        <a href="https://t.me/+79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в Telegram" class="w-12 h-12 sm:w-14 sm:h-14 bg-sky-500 hover:bg-sky-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7 fill-current translate-x-[-1px] translate-y-[1px]" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
             </svg>
         </a>
+
         <!-- WhatsApp -->
-        <a href="https://wa.me/79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в WhatsApp" class="w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all backdrop-blur-sm group">
-            <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+        <a href="https://wa.me/79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в WhatsApp" class="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7 fill-current" viewBox="0 0 24 24">
                 <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24M8.53 7.33c-.16 0-.35.06-.53.27-.18.21-.71.69-.71 1.69s.73 1.96.83 2.1c.11.14 1.41 2.22 3.48 3.07 1.72.71 2.07.57 2.45.53.37-.03 1.21-.49 1.38-.97.18-.48.18-.89.12-.97-.05-.08-.21-.14-.45-.26-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.19-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.41-.55-.41z"/>
             </svg>
         </a>
     </div>
 
-    <!-- Скрипт для управления слайдером на ПК -->
+    <!-- Скрипт для слайдера и кнопки «Наверх» -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Слайдер
             const slider = document.getElementById('slider');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
@@ -314,6 +321,22 @@
                     slider.scrollBy({ left: -scrollStep, behavior: 'smooth' });
                 });
             }
+
+            // Кнопка наверх
+            const topBtn = document.getElementById('scrollToTopBtn');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    topBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+                    topBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                } else {
+                    topBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+                    topBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                }
+            });
+
+            topBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         });
     </script>
 </body>
