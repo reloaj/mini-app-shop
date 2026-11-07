@@ -21,10 +21,10 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-200">
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-200 relative">
 
     <!-- Навигация -->
-    <header class="fixed w-full top-0 bg-white/90 backdrop-blur-md z-50 border-b border-slate-200 shadow-sm transition-all">
+    <header class="fixed w-full top-0 bg-white/90 backdrop-blur-md z-40 border-b border-slate-200 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">М</div>
@@ -40,7 +40,7 @@
             </nav>
             <div class="flex items-center gap-4">
                 <a href="tel:+79999936000" class="font-semibold text-slate-900 hidden sm:block">+7 (999) 993-60-00</a>
-                <a href="#contacts" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md hover:shadow-lg">Связаться</a>
+                <a href="#contacts" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md hover:shadow-lg">Контакты</a>
             </div>
         </div>
     </header>
@@ -49,7 +49,7 @@
     <section id="services" class="pt-32 pb-20 lg:pt-40 lg:pb-28 px-4 fade-in">
         <div class="max-w-7xl mx-auto text-center">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6 border border-blue-100">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                 Официальный подрядчик. 15 лет на рынке
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-slate-900">
@@ -77,30 +77,34 @@
                 <p class="text-slate-600 text-lg">Полная юридическая прозрачность. Общестрой, инженерные сети и внутренняя отделка с гарантией.</p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                        <span class="text-2xl">📝</span>
+                <!-- Карточка 1 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg mb-2">Формы КС-2, КС-3</h3>
                     <p class="text-slate-600 text-sm">Сдаем работы по актам строгой отчетности. Прозрачные сметы без скрытых переплат.</p>
                 </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                        <span class="text-2xl">💻</span>
+                <!-- Карточка 2 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg mb-2">Работаем в ЭДО</h3>
                     <p class="text-slate-600 text-sm">Быстрый обмен закрывающими документами через Диадок/СБИС.</p>
                 </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                        <span class="text-2xl">🏦</span>
+                <!-- Карточка 3 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg mb-2">Чистая история</h3>
                     <p class="text-slate-600 text-sm">Отсутствие судов и задолженностей ФНС. Открыт расчетный счет в АО «ТБанк».</p>
                 </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                        <span class="text-2xl">🔧</span>
+                <!-- Карточка 4 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg mb-2">Инженерия и ГОСТ</h3>
                     <p class="text-slate-600 text-sm">Монтаж сантехники, электрики и вентиляции со строгим соблюдением СНиП и норм ТБ.</p>
@@ -119,10 +123,10 @@
                 </div>
                 <!-- Кнопки управления для ПК -->
                 <div class="hidden md:flex gap-3">
-                    <button id="prevBtn" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
+                    <button id="prevBtn" aria-label="Предыдущий слайд" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
-                    <button id="nextBtn" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
+                    <button id="nextBtn" aria-label="Следующий слайд" class="w-12 h-12 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
@@ -260,25 +264,37 @@
     </section>
 
     <!-- Подвал / Контакты -->
-    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12">
+    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12 pb-24 md:pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
                 <div class="font-bold text-xl text-slate-900 mb-2">ИП Медведев П.М.</div>
                 <div class="text-sm text-slate-500">Строительство, отделка и инженерные сети © 2026</div>
             </div>
             <div class="flex flex-col sm:flex-row items-center gap-6">
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 text-center sm:text-left">
                     <a href="mailto:medpavel14@gmail.com" class="text-slate-600 hover:text-blue-600 font-medium">medpavel14@gmail.com</a>
                     <a href="mailto:Pavel_mm@vk.com" class="text-slate-600 hover:text-blue-600 font-medium text-sm">Pavel_mm@vk.com</a>
                 </div>
                 <a href="tel:+79999936000" class="text-slate-900 font-bold text-lg hover:text-blue-600 transition-colors">+7 (999) 993-60-00</a>
-                <div class="flex gap-3">
-                    <a href="https://t.me/79999936000" class="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-blue-500 hover:border-blue-500 transition-all">TG</a>
-                    <a href="https://wa.me/79999936000" class="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-green-500 hover:border-green-500 transition-all">WA</a>
-                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Плавающий блок связи (Висит в воздухе снизу справа при скролле) -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        <!-- Telegram -->
+        <a href="https://t.me/+79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в Telegram" class="w-14 h-14 bg-sky-500 hover:bg-sky-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all backdrop-blur-sm group">
+            <svg class="w-7 h-7 fill-current translate-x-[-1px] translate-y-[1px]" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+            </svg>
+        </a>
+        <!-- WhatsApp -->
+        <a href="https://wa.me/79999936000" target="_blank" rel="noopener noreferrer" aria-label="Связаться в WhatsApp" class="w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all backdrop-blur-sm group">
+            <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24M8.53 7.33c-.16 0-.35.06-.53.27-.18.21-.71.69-.71 1.69s.73 1.96.83 2.1c.11.14 1.41 2.22 3.48 3.07 1.72.71 2.07.57 2.45.53.37-.03 1.21-.49 1.38-.97.18-.48.18-.89.12-.97-.05-.08-.21-.14-.45-.26-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.19-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.41-.55-.41z"/>
+            </svg>
+        </a>
+    </div>
 
     <!-- Скрипт для управления слайдером на ПК -->
     <script>
