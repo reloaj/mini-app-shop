@@ -113,7 +113,7 @@
         </div>
     </section>
 
-    <!-- Портфолио / Галерея работ (Слайдер с нативными кнопками для мобилы и ПК) -->
+    <!-- Портфолио / Галерея работ (Слайдер) -->
     <section id="portfolio" class="py-20 bg-slate-50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-10">
@@ -123,12 +123,12 @@
 
             <!-- Внешний контейнер со стрелками по краям -->
             <div class="relative group">
-                <!-- Стрелка влево (доступна на ПК и телефоне) -->
+                <!-- Стрелка влево -->
                 <button id="prevBtn" aria-label="Предыдущий слайд" class="absolute left-2 sm:-left-4 top-[35%] -translate-y-1/2 z-20 w-11 h-11 sm:w-13 sm:h-13 bg-white/95 hover:bg-white border border-slate-200 text-slate-700 hover:text-blue-600 shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm">
                     <svg class="w-6 h-6 pr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
 
-                <!-- Стрелка вправо (доступна на ПК и телефоне) -->
+                <!-- Стрелка вправо -->
                 <button id="nextBtn" aria-label="Следующий слайд" class="absolute right-2 sm:-right-4 top-[35%] -translate-y-1/2 z-20 w-11 h-11 sm:w-13 sm:h-13 bg-white/95 hover:bg-white border border-slate-200 text-slate-700 hover:text-blue-600 shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm">
                     <svg class="w-6 h-6 pl-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
@@ -264,7 +264,7 @@
     </section>
 
     <!-- Подвал / Контакты -->
-    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12 pb-28 md:pb-12">
+    <footer id="contacts" class="bg-slate-50 border-t border-slate-200 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
                 <div class="font-bold text-xl text-slate-900 mb-2">ИП Медведев П.М.</div>
@@ -294,17 +294,9 @@
         </a>
     </div>
 
-    <!-- Кнопка «Наверх» (Справа снизу) -->
-    <div class="fixed bottom-6 right-6 z-50">
-        <button id="scrollToTopBtn" aria-label="Наверх" class="w-12 h-12 sm:w-14 sm:h-14 bg-white/95 border border-slate-200 shadow-md hover:shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all opacity-0 pointer-events-none translate-y-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-        </button>
-    </div>
-
-    <!-- Скрипт для слайдера и кнопки «Наверх» -->
+    <!-- Скрипт для слайдера объектов -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Слайдер объектов
             const slider = document.getElementById('slider');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
@@ -325,22 +317,6 @@
                     slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
                 });
             }
-
-            // Кнопка наверх
-            const topBtn = document.getElementById('scrollToTopBtn');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 400) {
-                    topBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
-                    topBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
-                } else {
-                    topBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
-                    topBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
-                }
-            });
-
-            topBtn.addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
         });
     </script>
 </body>
