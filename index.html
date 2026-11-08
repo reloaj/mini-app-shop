@@ -74,7 +74,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-12">
                 <h2 class="text-3xl font-bold mb-4 text-slate-900">Сотрудничество по госконтрактам и тендерам</h2>
-                <p class="text-slate-600 text-lg">Полная юридическая прозрачность. Общестрой, инженерные сети и внутренняя отделка с гарантией.</p>
+                <p class="text-slate-600 text-lg">Полная юридическая прозрачность. Общестрой, металлоконструкции, инженерные сети и внутренняя отделка с гарантией.</p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Карточка 1 -->
@@ -113,15 +113,15 @@
         </div>
     </section>
 
-    <!-- Портфолио / Галерея работ (Слайдер) -->
+    <!-- Портфолио / Галерея работ (Слайдер со всеми объектами) -->
     <section id="portfolio" class="py-20 bg-slate-50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-10">
                 <h2 class="text-3xl font-bold mb-4 text-slate-900">Процесс и результаты работ</h2>
-                <p class="text-slate-600 max-w-2xl text-lg">Реальные кадры с наших объектов: от масштабного демонтажа и подготовки до финишной отделки и монтажа коммуникаций.</p>
+                <p class="text-slate-600 max-w-2xl text-lg">Реальные объекты подряда: кровельные металлоконструкции, монтаж инженерных коммуникаций и комплексная чистовая отделка.</p>
             </div>
 
-            <!-- Внешний контейнер со стрелками по краям -->
+            <!-- Внешний контейнер со стрелками по бокам -->
             <div class="relative group">
                 <!-- Стрелка влево -->
                 <button id="prevBtn" aria-label="Предыдущий слайд" class="absolute left-2 sm:-left-4 top-[35%] -translate-y-1/2 z-20 w-11 h-11 sm:w-13 sm:h-13 bg-white/95 hover:bg-white border border-slate-200 text-slate-700 hover:text-blue-600 shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm">
@@ -133,83 +133,193 @@
                     <svg class="w-6 h-6 pl-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
-                <!-- Лента карточек со свайпом -->
+                <!-- Лента карточек -->
                 <div id="slider" class="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-6 hide-scroll-bar scroll-smooth px-1">
                     
-                    <!-- Слайд 1: Демонтаж -->
+                    <!-- Слайд 1: Кровля Сварка -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1973.jpg" alt="Сварочные работы на кровле" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Модернизация парапетов кровли</h3>
+                            <p class="text-sm text-slate-600 mt-1">Сварочные работы: наращивание высоты перильного ограждения ТЦ до нормативных требований.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 2: Кровля Покраска -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1972.jpg" alt="Покраска металлоконструкций" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Антикоррозийная обработка</h3>
+                            <p class="text-sm text-slate-600 mt-1">Демонтаж ветхой сетки, зачистка металлокаркаса и нанесение защитных полимерных грунт-эмалей.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 3: Кровля Готово Общий -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1974.jpg" alt="Готовое кровельное ограждение" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-green-700">Готовое ограждение кровли</h3>
+                            <p class="text-sm text-slate-600 mt-1">Монтаж защитной сетки, финишная окраска 230+ п.м. ограждения в единый архитектурный стандарт.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 4: Кровля Ракурс Линия -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1971.jpg" alt="Сдача узла ограждения" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Сдача объекта технадзору</h3>
+                            <p class="text-sm text-slate-600 mt-1">Проверка прочности сварных швов, жесткости стоек и соответствия нормам СП по охране труда.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 5: Инженерия Кабели -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1965.jpg" alt="Монтаж электросетей" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Электромонтажные трассы</h3>
+                            <p class="text-sm text-slate-600 mt-1">Скрытая прокладка кабельных линий ГОСТ в гофре, формирование кабельных стволов и штробление.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 6: Инженерия Щит -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1963.jpg" alt="Сборка распределительного щита" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Установка ГРЩ и автоматики</h3>
+                            <p class="text-sm text-slate-600 mt-1">Монтаж распределительного щита, разделение групп нагрузок, защитная автоматика УЗО/дифавтоматы.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 7: Инженерия Входная зона -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1966.jpg" alt="Разводка освещения и вентиляции" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Монтаж потолочных трасс</h3>
+                            <p class="text-sm text-slate-600 mt-1">Интеграция каналов освещения и слаботочных систем во входной группе коммерческого помещения.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 8: Отделка Стены комната -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1964.jpg" alt="Выравнивание стен и потолка" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Подготовка под финишную отделку</h3>
+                            <p class="text-sm text-slate-600 mt-1">Монтаж подвесных металлоконструкций потолка, шпаклевание поверхностей с защитой оконных блоков.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 9: Отделка Зал с окнами -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1961.jpg" alt="Отопление и предчистовая отделка" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Отопление и предчистовая отделка</h3>
+                            <p class="text-sm text-slate-600 mt-1">Подключение радиаторной сети, пароизоляция перекрытий, идеальная стяжка пола под напольные покрытия.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 10: Отделка Геометрия коридор -->
+                    <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
+                        <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                            <img src="1959.jpg" alt="Финальная геометрия стен" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-green-700">Строгая геометрия углов</h3>
+                            <p class="text-sm text-slate-600 mt-1">Выведение плоскостей под 90 градусов, чистовая затирка под малярные работы премиум-класса.</p>
+                        </div>
+                    </div>
+
+                    <!-- Слайд 11: Демонтаж стяжки (предыдущий объект) -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1488.jpg" alt="Масштабный демонтаж" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
                             <h3 class="font-bold text-lg text-slate-900">Демонтажные работы</h3>
-                            <p class="text-sm text-slate-600 mt-1">Снятие старых покрытий, стяжки и плитки в коммерческих помещениях.</p>
+                            <p class="text-sm text-slate-600 mt-1">Механизированное снятие старых покрытий, стяжки и плитки в коммерческих залах.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 2: Вывоз мусора -->
+                    <!-- Слайд 12: Вывоз мусора ПУХТО -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1497.jpg" alt="Вывоз мусора ПУХТО" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
                             <h3 class="font-bold text-lg text-slate-900">Логистика и очистка</h3>
-                            <p class="text-sm text-slate-600 mt-1">Организация ПУХТО 27м³ и оперативный вывоз строительного боя.</p>
+                            <p class="text-sm text-slate-600 mt-1">Организация бункеров ПУХТО 27м³ и оперативный вывоз строительного боя с объекта.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 3: Бетонные работы (Процесс) -->
+                    <!-- Слайд 13: Бетонные работы Подготовка -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1344.jpg" alt="Армирование перед заливкой" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
                             <h3 class="font-bold text-lg text-slate-900">Бетонные работы: подготовка</h3>
-                            <p class="text-sm text-slate-600 mt-1">Укладка гидроизоляции и армирующей сетки перед заливкой.</p>
+                            <p class="text-sm text-slate-600 mt-1">Укладка гидроизоляционных рулонных материалов и монтаж армирующей сетки.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 4: Бетонные работы (Результат) -->
+                    <!-- Слайд 14: Бетонные работы Результат -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1348.jpg" alt="Готовая стяжка/пандус" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-slate-900">Устройство площадок и пандусов</h3>
-                            <p class="text-sm text-slate-600 mt-1">Заливка бетона с соблюдением уклонов и нормативных допусков.</p>
+                            <h3 class="font-bold text-lg text-slate-900">Устройство пандусов и площадок</h3>
+                            <p class="text-sm text-slate-600 mt-1">Прием бетона с соблюдением проектных уклонов и нормативных допусков СНиП.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 5: Черновая отделка -->
+                    <!-- Слайд 15: Штукатурка проемов -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1389.jpg" alt="Штукатурка проемов" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-slate-900">Черновая отделка</h3>
-                            <p class="text-sm text-slate-600 mt-1">Выравнивание стен и подготовка дверных проемов смесями.</p>
+                            <h3 class="font-bold text-lg text-slate-900">Штукатурные работы</h3>
+                            <p class="text-sm text-slate-600 mt-1">Формирование геометрии дверных откосов специализированными смесями.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 6: Дверь ДО -->
+                    <!-- Слайд 16: Дверь ДО -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1509.jpg" alt="Дверь до отделки" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-slate-900">Установка входных групп (До)</h3>
-                            <p class="text-sm text-slate-600 mt-1">Монтаж металлической двери на пену, подготовка к заделке откосов.</p>
+                            <h3 class="font-bold text-lg text-slate-900">Монтаж дверей (До)</h3>
+                            <p class="text-sm text-slate-600 mt-1">Установка специализированных входных групп эвакуационного выхода.</p>
                         </div>
                     </div>
 
-                    <!-- Слайд 7: Дверь ПОСЛЕ -->
+                    <!-- Слайд 17: Дверь ПОСЛЕ -->
                     <div class="snap-start shrink-0 w-[84vw] sm:w-[58vw] md:w-[38vw] lg:w-[30vw] flex flex-col gap-4 group/card">
                         <div class="relative w-full h-80 sm:h-96 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                             <img src="1501.jpg" alt="Дверь после отделки" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         <div>
                             <h3 class="font-bold text-lg text-green-700">Финальный результат (После)</h3>
-                            <p class="text-sm text-slate-600 mt-1">Чистовая отделка откосов, покраска, сдача в эксплуатацию.</p>
+                            <p class="text-sm text-slate-600 mt-1">Заделка откосов, окрашивание, установка доводчиков и сдача в эксплуатацию.</p>
                         </div>
                     </div>
 
